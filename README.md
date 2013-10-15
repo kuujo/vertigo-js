@@ -28,7 +28,6 @@ communication between components in a **predictable and reliable** manner.
    * [Creating the worker](#creating-the-worker)
    * [Deploying the network](#deploying-the-network)
    * [Executing the network as a remote procedure](#executing-the-network-as-a-remote-procedure)
-   * [The complete network](#the-complete-network)
 1. [Creating Components](#creating-components)
    * [Contexts](#contexts)
       * [WorkerContext](#workercontext)
@@ -180,11 +179,14 @@ Vertigo, let's take a look at a simple network example.
 Vertigo networks are defined using the [definitions](#defining-networks)
 API.
 
-```java
-Network network = new Network("word_count");
-network.fromVerticle("word_feeder", WordFeeder.class.getName())
-  .toVerticle("word_counter", WordCountWorker.class.getName(), 4)
-  .groupBy(new FieldsGrouping("word"));
+```javascript
+var vertigo = require('vertigo');
+var grouping = require('vertigo/grouping');
+
+var network = vertigo.createNetwork('word_count');
+network.fromVerticle('word_feeder', 'word_feeder.js')
+  .toVerticle('word_counter', 'word_counter.js', 4)
+  .groupBy(new grouping.FieldsGrouping('word'));
 ```
 
 This network definition defines a simple network that consists of only two
