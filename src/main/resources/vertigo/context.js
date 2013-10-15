@@ -1,6 +1,10 @@
 var context = {};
 
+var network = require('vertigo/network');
+
 context.WorkerContext = function(jcontext) {
+  this.__jcontext = jcontext;
+
   this.address = jcontext.address();
 
   var config = jcontext.config();
@@ -17,24 +21,36 @@ context.WorkerContext = function(jcontext) {
 }
 
 context.ComponentContext = function(jcontext) {
+  this.__jcontext = jcontext;
+
   var name = jcontext.name();
 
   var address = jcontext.address();
 
   var connectionContexts = function() {
-    return jcontext.getConnectionContexts();
+    var contexts = jcontext.getConnectionContexts().toArray();
+    var arr = new Array(contexts.length);
+    for (var i = 0; i < contexts.length; i++) {
+      arr[i] = new context.ConnectionContext(contexts[i]);
+    }
+    return arr;
   }
 
   var connectionContext = function(name) {
     var connection = jcontext.getConnectionContext(name);
-    if (connection) {
+    if (connection != null) {
       return new context.ConnectionContext(connection);
     }
     return null;
   }
 
   var workerContexts = function() {
-    var contexts = jcontext.getWorkerContexts();
+    var contexts = jcontext.getWorkerContexts().toArray();
+    var arr = new Array(contexts.length);
+    for (var i = 0; i < contexts.length; i++) {
+      arr[i] = new context.WorkerContext(contexts[i]);
+    }
+    return arr;
   }
 
   var networkContext = function() {
@@ -43,24 +59,41 @@ context.ComponentContext = function(jcontext) {
 }
 
 context.NetworkContext = function(jcontext) {
-  var address = jcontext.address();
+  this.__jcontext = jcontext;
 
-  var broadcastAddress = jcontext.getBroadcastAddress();
+  this.address = jcontext.address();
 
-  var numAuditors = jcontext.getNumAuditors();
-
-  var auditors = jcontext.getAuditors();
-
-  var componentContexts = function() {
-    var contexts = jcontext.getComponentContexts();
+  this.broadcastAddress = function() {
+    return jcontext.getBroadcastAddress();
   }
 
-  var componentContext = function(name) {
+  this.numAuditors = function() {
+    return jcontext.getNumAuditors();
+  }
+
+  this.auditors = function() {
+    return jcontext.getAuditors().toArray();
+  }
+
+  this.componentContexts = function() {
+    var contexts = jcontext.getComponentContexts().toArray();
+    var arr = new Array(contexts.length);
+    for (var i = 0; i < contexts.length; i++) {
+      arr[i] = new context.ComponentContext(contexts[i]);
+    }
+    return arr;
+  }
+
+  this.componentContext = function(name) {
     var component = jcontext.getComponentContext(name);
+    if (component != null) {
+      return new context.ComponentContext(component);
+    }
+    return null;
   }
 
-  var definition = function() {
-    
+  this.definition = function() {
+    return new network.Network(jcontext.getDefinition());
   }
 
 }
