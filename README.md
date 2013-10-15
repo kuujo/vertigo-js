@@ -1,6 +1,9 @@
 Vert.igo Javascript API
 =======================
 
+**The Vertigo Javascript API is still under heavy development and is only recommended
+for testing and contributions :-)**
+
 [Vertigo](https://github.com/kuujo/vertigo) is a distributed event processing
 framework built on the [Vert.x](http://vertx.io/) application platform. Following
 a concept and structure similar to [Storm](https://github.com/nathanmarz/storm),
