@@ -1,3 +1,20 @@
+/*
+ * Copyright 2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+load('vertx/helpers.js');
+
 var worker = {};
 
 /**
@@ -19,11 +36,25 @@ function wrap_message(jmessage) {
   return message;
 }
 
+/**
+ * A basic worker.
+ */
 worker.Worker = function() {
 
   var that = this;
-  var jworker = new net.kuujo.vertigo.component.worker.DefaultWorker(__jvertx, __jcontainer, new net.kuujo.vertigo.context.WorkerContext(__jcontainer.config()));
+  var jworker = new net.kuujo.vertigo.component.worker.BasicWorker(__jvertx, __jcontainer, net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
 
+  var config = jworker.config();
+  if (config != null) {
+    this.config = JSON.parse(config.encode());
+  }
+  else {
+    this.config = {};
+  }
+
+  /**
+   * Starts the worker.
+   */
   this.start = function(handler) {
     if (handler) {
       handler = adaptAsyncResultHandler(handler, function(result) {
@@ -37,6 +68,9 @@ worker.Worker = function() {
     return that;
   }
 
+  /**
+   * Sets a message handler on the worker.
+   */
   this.messageHandler = function(handler) {
     jworker.messageHandler(function(jmessage) {
       handler(wrap_message(jmessage));
@@ -44,19 +78,33 @@ worker.Worker = function() {
     return that;
   }
 
-  this.emit = function() {
+  /**
+   * Emits a message.
+   */
+  this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
-    var data = getArgValue('object', args);
+    args.shift();
     var tag = getArgValue('string', args);
-    jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
+    if (typeof(data) != 'object') {
+      throw 'Invalid data type for emit()';
+    }
+    else {
+      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
+    }
     return that;
   }
 
+  /**
+   * Acks a message.
+   */
   this.ack = function(message) {
     jworker.ack(message.__jmessage);
     return that;
   }
 
+  /**
+   * Fails a message.
+   */
   this.fail = function(message, failMessage) {
     jworker.fail(message.__jmessage, failMessage);
     return that;
