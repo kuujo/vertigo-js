@@ -84,12 +84,22 @@ worker.Worker = function() {
   this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
+    var parent = getArgValue('object', args);
     var tag = getArgValue('string', args);
     if (typeof(data) != 'object') {
       throw 'Invalid data type for emit()';
     }
-    else {
+    else if (parent != null && tag != null) {
+      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, parent.__jmessage);
+    }
+    else if (parent != null) {
+      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), parent.__jmessage)
+    }
+    else if (tag != null) {
       jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
+    }
+    else {
+      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)));
     }
     return that;
   }
@@ -106,7 +116,12 @@ worker.Worker = function() {
    * Fails a message.
    */
   this.fail = function(message, failMessage) {
-    jworker.fail(message.__jmessage, failMessage);
+    if (failMessage === undefined) {
+      jworker.fail(message.__jmessage);
+    }
+    else {
+      jworker.fail(message.__jmessage, failMessage);
+    }
     return that;
   }
 
