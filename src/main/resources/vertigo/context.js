@@ -1,11 +1,15 @@
 var context = {};
 
 context.WorkerContext = function(jcontext) {
-  var jcontext = jcontext;
-
   this.address = jcontext.address();
 
-  this.config = JSON.parse(jcontext.config().encode());
+  var config = jcontext.config();
+  if (config != null) {
+    this.config = JSON.parse(config.encode());
+  }
+  else {
+    this.config = {};
+  }
 
   this.componentContext = function() {
     return new context.ComponentContext(jcontext.getComponentContext());
@@ -13,8 +17,6 @@ context.WorkerContext = function(jcontext) {
 }
 
 context.ComponentContext = function(jcontext) {
-  var jcontext = jcontext;
-
   var name = jcontext.name();
 
   var address = jcontext.address();
@@ -28,6 +30,7 @@ context.ComponentContext = function(jcontext) {
     if (connection) {
       return new context.ConnectionContext(connection);
     }
+    return null;
   }
 
   var workerContexts = function() {
@@ -40,8 +43,6 @@ context.ComponentContext = function(jcontext) {
 }
 
 context.NetworkContext = function(jcontext) {
-  var jcontext = jcontext;
-
   var address = jcontext.address();
 
   var broadcastAddress = jcontext.getBroadcastAddress();

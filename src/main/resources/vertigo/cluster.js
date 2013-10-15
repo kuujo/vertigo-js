@@ -1,6 +1,6 @@
 load('vertx/helpers.js');
 
-var cluter = {}
+var cluster = {}
 
 var context = require('vertigo/context');
 

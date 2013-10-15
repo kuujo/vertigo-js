@@ -1,8 +1,16 @@
 var network = {}
 
-network.Network = function(name) {
+load("vertx/helpers.js");
+
+network.Network = function(obj) {
   var that = this;
-  var jnetwork = new net.kuujo.vertigo.Network(name);
+
+  if (typeof obj == 'string') {
+    var jnetwork = new net.kuujo.vertigo.Network(obj);
+  }
+  else {
+    var jnetwork = obj;
+  }
 
   this.__jnetwork = jnetwork;
 
@@ -55,29 +63,69 @@ network.Network = function(name) {
     return component;
   }
 
-  this.fromVerticle = function(name, main, config, instances) {
-    if (config) {
+  this.fromVerticle = function(name) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    var main = getArgValue('string', args);
+    if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    var component = new network.Component(name);
-    component.__jcomponent = jnetwork.fromVerticle(name, main, config, instances);
-    return component;
+    if (main != null && config != null && instances != null) {
+      return new network.Component(jnetwork.fromVerticle(name, main, config, instances));
+    }
+    else if (main != null && config != null) {
+      return new network.Component(jnetwork.fromVerticle(name, main, config));
+    }
+    else if (main != null && config != null) {
+      return new network.Component(jnetwork.fromVerticle(name, main, instances));
+    }
+    else if (main != null) {
+      return new network.Component(jnetwork.fromVerticle(name, main));
+    }
+    else {
+      return new network.Component(jnetwork.fromVerticle(name));
+    }
   }
 
-  this.fromModule = function(name, moduleName, config, instances) {
+  this.fromModule = function(name) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    var moduleName = getArgValue('string', args);
     if (config) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    var component = new network.Component(name);
-    component.__jcomponent = jnetwork.fromModule(name, moduleName, config, instances);
-    return component;
+    if (moduleName != null && config != null && instances != null) {
+      return new network.Component(jnetwork.fromModule(name, moduleName, config, instances));
+    }
+    else if (moduleName != null && config != null) {
+      return new network.Component(jnetwork.fromModule(name, moduleName, config));
+    }
+    else if (moduleName != null && instances != null) {
+      return new network.Component(jnetwork.fromModule(name, moduleName, instances));
+    }
+    else if (moduleName != null) {
+      return new network.Component(jnetwork.fromModule(name, moduleName));
+    }
+    else {
+      return new network.Component(jnetwork.fromModule(name));
+    }
   }
 
 }
 
-network.Component = function(name) {
+network.Component = function(obj) {
   var that = this;
-  var jcomponent = new net.kuujo.vertigo.Component(name);
+
+  if (typeof(obj) == 'string') {
+    var jcomponent = new net.kuujo.vertigo.Component(obj);
+  }
+  else {
+    var jcomponent = obj;
+  }
 
   this.__jcomponent = jcomponent;
 
@@ -156,22 +204,56 @@ network.Component = function(name) {
     return component;
   }
 
-  this.toVerticle = function(name, main, config, instances) {
+  this.toVerticle = function(name) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    var main = getArgValue('string', args);
     if (config) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    var component = new network.Component(name);
-    component.__jcomponent = jcomponent.toVerticle(name, main, config, instances);
-    return component;
+    if (main != null && config != null && instances != null) {
+      return new network.Component(jcomponent.toVerticle(name, main, config, instances));
+    }
+    else if (main != null && config != null) {
+      return new network.Component(jcomponent.toVerticle(name, main, config));
+    }
+    else if (main != null && instances != null) {
+      return new network.Component(jcomponent.toVerticle(name, main, instances));
+    }
+    else if (main != null) {
+      return new network.Component(jcomponent.toVerticle(name, main));
+    }
+    else {
+      return new network.Component(jcomponent.toVerticle(name));
+    }
   }
 
-  this.toModule = function(name, moduleName, config, instances) {
+  this.toModule = function(name) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    var moduleName = getArgValue('string', args);
     if (config) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    var component = new network.Component(name);
-    component.__jcomponent = jcomponent.toMoudle(name, moduleName, config, instances);
-    return component;
+    if (moduleName != null && config != null && instances != null) {
+      return new network.Component(jcomponent.toModule(name, moduleName, config, instances));
+    }
+    else if (moduleName != null && config != null) {
+      return new network.Component(jcomponent.toModule(name, moduleName, config));
+    }
+    else if (moduleName != null && instances != null) {
+      return new network.Component(jcomponent.toModule(name, moduleName, instances));
+    }
+    else if (moduleName != null) {
+      return new network.Component(jcomponent.toModule(name, moduleName));
+    }
+    else {
+      return new network.Component(jcomponent.toModule(name));
+    }
   }
 
 }

@@ -5,7 +5,7 @@ var vertigo = {};
 
 var context = require('vertigo/context');
 
-vertigo.context = new context.WorkerContext(new net.kuujo.vertigo.context.WorkerContext(__jcontainer.config()));
+vertigo.context = new context.WorkerContext(net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
 
 vertigo.network = require('vertigo/network');
 
@@ -13,10 +13,8 @@ vertigo.createNetwork = function(name) {
   return new vertigo.network.Network(name);
 }
 
-vertigo.component = require('vertigo/component');
-
 vertigo.createComponent = function(name) {
-  return new vertigo.component.Component(name);
+  return new vertigo.network.Component(name);
 }
 
 vertigo.feeder = require('vertigo/feeder');
