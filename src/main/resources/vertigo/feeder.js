@@ -21,9 +21,10 @@ var feeder = {};
  * A basic feeder.
  */
 feeder.BasicFeeder = function() {
-
   var that = this;
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultBasicFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
+  var context = __jcontainer.config().getObject('__context__');
+  __jcontainer.config().removeField('__context__');
+  var jfeeder = new net.kuujo.vertigo.feeder.DefaultBasicFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
   var config = jfeeder.config();
   if (config != null) {
@@ -121,9 +122,10 @@ feeder.BasicFeeder = function() {
  * A polling feeder.
  */
 feeder.PollingFeeder = function() {
-
   var that = this;
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultPollingFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
+  var context = __jcontainer.config().getObject('__context__');
+  __jcontainer.config().removeField('__context__');
+  var jfeeder = new net.kuujo.vertigo.feeder.DefaultPollingFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
   var config = jfeeder.config();
   if (config != null) {
@@ -245,9 +247,10 @@ feeder.PollingFeeder = function() {
  * A ReadStream integration feeder.
  */
 feeder.StreamFeeder = function() {
-
   var that = this;
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultStreamFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
+  var context = __jcontainer.config().getObject('__context__');
+  __jcontainer.config().removeField('__context__');
+  var jfeeder = new net.kuujo.vertigo.feeder.DefaultStreamFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
   var config = jfeeder.config();
   if (config != null) {

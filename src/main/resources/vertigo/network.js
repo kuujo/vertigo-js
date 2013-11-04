@@ -17,6 +17,8 @@ var network = {}
 
 load("vertx/helpers.js");
 
+var input = require('vertigo/input');
+
 /**
  * A Vertigo network.
  * @constructor
@@ -142,19 +144,19 @@ network.Network = function(obj) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
     if (main != null && config != null && instances != null) {
-      return new network.Verticle(jnetwork.fromVerticle(address, main, config, instances));
+      return new network.Verticle(jnetwork.addVerticle(address, main, config, instances));
     }
     else if (main != null && config != null) {
-      return new network.Verticle(jnetwork.fromVerticle(address, main, config));
+      return new network.Verticle(jnetwork.addVerticle(address, main, config));
     }
     else if (main != null && config != null) {
-      return new network.Verticle(jnetwork.fromVerticle(address, main, instances));
+      return new network.Verticle(jnetwork.addVerticle(address, main, instances));
     }
     else if (main != null) {
-      return new network.Verticle(jnetwork.fromVerticle(address, main));
+      return new network.Verticle(jnetwork.addVerticle(address, main));
     }
     else {
-      return new network.Verticle(jnetwork.fromVerticle(address));
+      return new network.Verticle(jnetwork.addVerticle(address));
     }
   }
 
@@ -176,19 +178,19 @@ network.Network = function(obj) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
     if (moduleName != null && config != null && instances != null) {
-      return new network.Module(jnetwork.fromVerticle(address, moduleName, config, instances));
+      return new network.Module(jnetwork.addModule(address, moduleName, config, instances));
     }
     else if (moduleName != null && config != null) {
-      return new network.Module(jnetwork.fromVerticle(address, moduleName, config));
+      return new network.Module(jnetwork.addModule(address, moduleName, config));
     }
     else if (moduleName != null && config != null) {
-      return new network.Module(jnetwork.fromVerticle(address, moduleName, instances));
+      return new network.Module(jnetwork.addModule(address, moduleName, instances));
     }
     else if (moduleName != null) {
-      return new network.Module(jnetwork.fromVerticle(address, moduleName));
+      return new network.Module(jnetwork.addModule(address, moduleName));
     }
     else {
-      return new network.Module(jnetwork.fromVerticle(address));
+      return new network.Module(jnetwork.addModule(address));
     }
   }
 
@@ -255,15 +257,11 @@ network.Verticle = function(obj) {
   /**
    * Adds an input to the component.
    *
-   * @param {module:vertigo/input.Input} input The input to add
+   * @param {string} address The input address
    * @returns {module:vertigo/input.Input} The added input instance
    */
-  this.addInput = function(input) {
-    if (typeof(input) == 'string') {
-      input = new input.Input(input);
-    }
-    jcomponent.addInput(input.__jinput);
-    return input;
+  this.addInput = function(address) {
+    return new input.Input(jcomponent.addInput(address));
   }
 
 }
@@ -329,12 +327,11 @@ network.Module = function(obj) {
   /**
    * Adds an input to the component.
    *
-   * @param {module:vertigo/input.Input} input The input to add
+   * @param {string} address The input address
    * @returns {module:vertigo/input.Input} The added input instance
    */
-  this.addInput = function(input) {
-    jcomponent.addInput(input.__jinput);
-    return input;
+  this.addInput = function(address) {
+    return new input.Input(jcomponent.addInput(address));
   }
 
 }

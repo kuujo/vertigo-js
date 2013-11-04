@@ -40,9 +40,10 @@ function wrap_message(jmessage) {
  * A basic worker.
  */
 worker.Worker = function() {
-
   var that = this;
-  var jworker = new net.kuujo.vertigo.worker.BasicWorker(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
+  var context = __jcontainer.config().getObject('__context__');
+  __jcontainer.config().removeField('__context__');
+  var jworker = new net.kuujo.vertigo.worker.BasicWorker(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
   var config = jworker.config();
   if (config != null) {

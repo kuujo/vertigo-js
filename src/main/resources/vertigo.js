@@ -20,7 +20,10 @@ var vertigo = {};
 
 var context = require('vertigo/context');
 
-vertigo.context = new context.WorkerContext(net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
+var config = __jcontainer.config();
+if (config !== null && config.getFieldNames().contains('__context__')) {
+  vertigo.context = new context.InstanceContext(net.kuujo.vertigo.context.InstanceContext.fromJson(config.getObject('__context__')));
+}
 
 vertigo.network = require('vertigo/network');
 
