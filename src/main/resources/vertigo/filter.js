@@ -43,23 +43,26 @@ function convertValue(value) {
 
 /**
  * A field/value based filter.
+ * @constructor
  */
 filter.FieldFilter = function(fieldName, value) {
-  this.__jfilter = new net.kuujo.vertigo.filter.FieldFilter(fieldName, convertValue(value));
+  this.__jfilter = new net.kuujo.vertigo.input.filter.FieldFilter(fieldName, convertValue(value));
 }
 
 /**
  * A source-based filter.
+ * @constructor
  */
 filter.SourceFilter = function(source) {
-  this.__jfilter = new net.kuujo.vertigo.filter.SourceFilter(source);
+  this.__jfilter = new net.kuujo.vertigo.input.filter.SourceFilter(source);
 }
 
 /**
  * A tags-based filter.
+ * @constructor
  */
 filter.TagsFilter = function(tags) {
-  this.__jfilter = new net.kuujo.vertigo.filter.TagsFilter(tags);
+  this.__jfilter = new net.kuujo.vertigo.input.filter.TagsFilter(tags);
 }
 
 module.exports = filter;

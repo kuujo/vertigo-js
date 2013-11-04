@@ -17,11 +17,15 @@ var network = {}
 
 load("vertx/helpers.js");
 
+/**
+ * A Vertigo network.
+ * @constructor
+ */
 network.Network = function(obj) {
   var that = this;
 
   if (typeof obj == 'string') {
-    var jnetwork = new net.kuujo.vertigo.Network(obj);
+    var jnetwork = new net.kuujo.vertigo.network.Network(obj);
   }
   else {
     var jnetwork = obj;
@@ -29,30 +33,53 @@ network.Network = function(obj) {
 
   this.__jnetwork = jnetwork;
 
-  this.address = function(addr) {
-    if (addr == undefined) {
-      return jnetwork.address();
+  this.address = jnetwork.getAddress();
+
+  /**
+   * Gets or sets the network broadcast address.
+   */
+  this.broadcastAddress = function(address) {
+    if (address === undefined) {
+      return jnetwork.getBroadcastAddress();
     }
     else {
-      jnetwork.setAddress(addr);
+      jnetwork.setBroadcastAddress(address);
       return that;
     }
   }
 
+  /**
+   * Enables acking on the network.
+   *
+   * @returns {module:vertigo/network.Network} this
+   */
   this.enableAcking = function() {
     jnetwork.enableAcking();
     return that;
   }
 
+  /**
+   * Disables acking on the network.
+   *
+   * @returns {module:vertigo/network.Network} this
+   */
   this.disableAcking = function() {
     jnetwork.disableAcking();
     return that;
   }
 
+  /**
+   * Indicates whether acking is enabled on the network.
+   *
+   * @returns {boolean} indicates whether acking is enabled.
+   */
   this.ackingEnabled = function() {
     return jnetwork.isAckingEnabled();
   }
 
+  /**
+   * Sets or gets the number of network auditors.
+   */
   this.numAuditors = function(num) {
     if (num === undefined) {
       return jnetwork.getNumAuditors();
@@ -63,6 +90,9 @@ network.Network = function(obj) {
     }
   }
 
+  /**
+   * Sets or gets the network ack expiration.
+   */
   this.ackExpire = function(expire) {
     if (expire === undefined) {
       return jnetwork.getAckExpire();
@@ -73,12 +103,36 @@ network.Network = function(obj) {
     }
   }
 
-  this.from = function(component) {
-    jnetwork.from(component.__jcomponent);
+  /**
+   * Sets or gets the network ack delay.
+   */
+  this.ackDelay = function(delay) {
+    if (delay === undefined) {
+      return jnetwork.getAckExpire();
+    }
+    else {
+      jnetwork.setAckExpire(delay);
+      return that;
+    }
+  }
+
+  /**
+   * Adds a component to the network.
+   */
+  this.addComponent = function(component) {
+    jnetwork.addComponent(component.__jcomponent);
     return component;
   }
 
-  this.fromVerticle = function(name) {
+  /**
+   * Adds a verticle component to the network.
+   *
+   * @param {string} address The network address
+   * @param {string} main The verticle main
+   * @param {object} config The verticle configuration
+   * @param {number} instances The number of component instances
+   */
+  this.addVerticle = function(address) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     var instances = getArgValue('number', args);
@@ -88,55 +142,67 @@ network.Network = function(obj) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
     if (main != null && config != null && instances != null) {
-      return new network.Component(jnetwork.fromVerticle(name, main, config, instances));
+      return new network.Verticle(jnetwork.fromVerticle(address, main, config, instances));
     }
     else if (main != null && config != null) {
-      return new network.Component(jnetwork.fromVerticle(name, main, config));
+      return new network.Verticle(jnetwork.fromVerticle(address, main, config));
     }
     else if (main != null && config != null) {
-      return new network.Component(jnetwork.fromVerticle(name, main, instances));
+      return new network.Verticle(jnetwork.fromVerticle(address, main, instances));
     }
     else if (main != null) {
-      return new network.Component(jnetwork.fromVerticle(name, main));
+      return new network.Verticle(jnetwork.fromVerticle(address, main));
     }
     else {
-      return new network.Component(jnetwork.fromVerticle(name));
+      return new network.Verticle(jnetwork.fromVerticle(address));
     }
   }
 
-  this.fromModule = function(name) {
+  /**
+   * Adds a module component to the network.
+   *
+   * @param {string} address The network address
+   * @param {string} moduleName The module name
+   * @param {object} config The module configuration
+   * @param {number} instances The number of component instances
+   */
+  this.addModule = function(address) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
     var moduleName = getArgValue('string', args);
-    if (config) {
+    if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
     if (moduleName != null && config != null && instances != null) {
-      return new network.Component(jnetwork.fromModule(name, moduleName, config, instances));
+      return new network.Module(jnetwork.fromVerticle(address, moduleName, config, instances));
     }
     else if (moduleName != null && config != null) {
-      return new network.Component(jnetwork.fromModule(name, moduleName, config));
+      return new network.Module(jnetwork.fromVerticle(address, moduleName, config));
     }
-    else if (moduleName != null && instances != null) {
-      return new network.Component(jnetwork.fromModule(name, moduleName, instances));
+    else if (moduleName != null && config != null) {
+      return new network.Module(jnetwork.fromVerticle(address, moduleName, instances));
     }
     else if (moduleName != null) {
-      return new network.Component(jnetwork.fromModule(name, moduleName));
+      return new network.Module(jnetwork.fromVerticle(address, moduleName));
     }
     else {
-      return new network.Component(jnetwork.fromModule(name));
+      return new network.Module(jnetwork.fromVerticle(address));
     }
   }
 
 }
 
-network.Component = function(obj) {
+/**
+ * A verticle component.
+ * @constructor
+ */
+network.Verticle = function(obj) {
   var that = this;
 
   if (typeof(obj) == 'string') {
-    var jcomponent = new net.kuujo.vertigo.Component(obj);
+    var jcomponent = new net.kuujo.vertigo.network.Verticle(obj);
   }
   else {
     var jcomponent = obj;
@@ -144,29 +210,15 @@ network.Component = function(obj) {
 
   this.__jcomponent = jcomponent;
 
-  this.name = function(name) {
-    if (name === undefined) {
-      return jcomponent.name();
-    }
-    else {
-      jcomponent.setName(name);
-      return that;
-    }
-  }
+  this.type = 'verticle';
+  this.address = jcomponent.getAddress();
 
-  this.type = function(type) {
-    if (type === undefined) {
-      return jcomponent.type();
-    }
-    else {
-      jcomponent.setType(type);
-      return that;
-    }
-  }
-
+  /**
+   * Sets or gets the verticle main.
+   */
   this.main = function(main) {
     if (main === undefined) {
-      return jcomponent.main();
+      return jcomponent.getMain();
     }
     else {
       jcomponent.setMain(main);
@@ -174,19 +226,12 @@ network.Component = function(obj) {
     }
   }
 
-  this.module = function(module) {
-    if (module === undefined) {
-      return jcomponent.module();
-    }
-    else {
-      jcomponent.setModule(module);
-      return that;
-    }
-  }
-
+  /**
+   * Sets or gets the verticle configuration.
+   */
   this.config = function(config) {
     if (config === undefined) {
-      return JSON.parse(jcomponent.config().encode());
+      return JSON.parse(jcomponent.getConfig().encode());
     }
     else {
       jcomponent.setConfig(new org.vertx.java.core.json.JsonObject(JSON.stringify(config)));
@@ -194,81 +239,102 @@ network.Component = function(obj) {
     }
   }
 
-  this.workers = function(workers) {
-    if (workers === undefined) {
-      return jcomponent.workers();
+  /**
+   * Sets or gets the number of component instances.
+   */
+  this.instances = function(instances) {
+    if (instances === undefined) {
+      return jcomponent.getNumInstances();
     }
     else {
-      jcomponent.setWorkers(workers);
+      jcomponent.setNumInstances(instances);
       return that;
     }
   }
 
-  this.groupBy = function(grouping) {
-    jcomponent.groupBy(grouping.__jgrouping);
-    return that;
+  /**
+   * Adds an input to the component.
+   *
+   * @param {module:vertigo/input.Input} input The input to add
+   * @returns {module:vertigo/input.Input} The added input instance
+   */
+  this.addInput = function(input) {
+    if (typeof(input) == 'string') {
+      input = new input.Input(input);
+    }
+    jcomponent.addInput(input.__jinput);
+    return input;
   }
 
-  this.filterBy = function(filter) {
-    jcomponent.filterBy(filter.__jfilter);
-    return that;
+}
+
+/**
+ * A module component.
+ * @constructor
+ */
+network.Module = function(obj) {
+  var that = this;
+
+  if (typeof(obj) == 'string') {
+    var jcomponent = new net.kuujo.vertigo.network.Module(obj);
+  }
+  else {
+    var jcomponent = obj;
   }
 
-  this.to = function(component) {
-    jcomponent.to(component.__jcomponent);
-    return component;
-  }
+  this.__jcomponent = jcomponent;
 
-  this.toVerticle = function(name) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var instances = getArgValue('number', args);
-    var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
-    if (config) {
-      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
-    }
-    if (main != null && config != null && instances != null) {
-      return new network.Component(jcomponent.toVerticle(name, main, config, instances));
-    }
-    else if (main != null && config != null) {
-      return new network.Component(jcomponent.toVerticle(name, main, config));
-    }
-    else if (main != null && instances != null) {
-      return new network.Component(jcomponent.toVerticle(name, main, instances));
-    }
-    else if (main != null) {
-      return new network.Component(jcomponent.toVerticle(name, main));
+  this.type = 'module';
+  this.address = jcomponent.getAddress();
+
+  /**
+   * Sets or gets the module name.
+   */
+  this.module = function(module) {
+    if (module === undefined) {
+      return jcomponent.getModule();
     }
     else {
-      return new network.Component(jcomponent.toVerticle(name));
+      jcomponent.setModule(module);
+      return that;
     }
   }
 
-  this.toModule = function(name) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var instances = getArgValue('number', args);
-    var config = getArgValue('object', args);
-    var moduleName = getArgValue('string', args);
-    if (config) {
-      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
-    }
-    if (moduleName != null && config != null && instances != null) {
-      return new network.Component(jcomponent.toModule(name, moduleName, config, instances));
-    }
-    else if (moduleName != null && config != null) {
-      return new network.Component(jcomponent.toModule(name, moduleName, config));
-    }
-    else if (moduleName != null && instances != null) {
-      return new network.Component(jcomponent.toModule(name, moduleName, instances));
-    }
-    else if (moduleName != null) {
-      return new network.Component(jcomponent.toModule(name, moduleName));
+  /**
+   * Sets or gets the module configuration.
+   */
+  this.config = function(config) {
+    if (config === undefined) {
+      return JSON.parse(jcomponent.getConfig().encode());
     }
     else {
-      return new network.Component(jcomponent.toModule(name));
+      jcomponent.setConfig(new org.vertx.java.core.json.JsonObject(JSON.stringify(config)));
+      return that;
     }
+  }
+
+  /**
+   * Sets or gets the number of component instances.
+   */
+  this.instances = function(instances) {
+    if (instances === undefined) {
+      return jcomponent.getNumInstances();
+    }
+    else {
+      jcomponent.setNumInstances(instances);
+      return that;
+    }
+  }
+
+  /**
+   * Adds an input to the component.
+   *
+   * @param {module:vertigo/input.Input} input The input to add
+   * @returns {module:vertigo/input.Input} The added input instance
+   */
+  this.addInput = function(input) {
+    jcomponent.addInput(input.__jinput);
+    return input;
   }
 
 }

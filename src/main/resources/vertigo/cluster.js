@@ -19,10 +19,20 @@ var cluster = {}
 
 var context = require('vertigo/context');
 
+/**
+ * A local cluster.
+ * @constructor
+ */
 cluster.LocalCluster = function() {
   var that = this;
-  var jcluster = new net.kuujo.vertigo.LocalCluster(__jvertx, __jcontainer);
+  var jcluster = new net.kuujo.vertigo.cluster.LocalCluster(__jvertx, __jcontainer);
 
+  /**
+   * Deploys a network.
+   *
+   * @param {module:vertigo/network.Network} network The network to deploy
+   * @param handler An asynchronous result handler
+   */
   this.deploy = function(network, handler) {
     if (handler) {
       handler = adaptAsyncResultHandler(handler, function(jcontext) {
@@ -35,6 +45,12 @@ cluster.LocalCluster = function() {
     }
   }
 
+  /**
+   * Shuts down a network.
+   *
+   * @param {module:vertigo/context.NetworkContext} network A network context
+   * @param handler An asynchronous result handler
+   */
   this.shutdown = function(context, handler) {
     if (handler) {
       handler = adaptAsyncResultHandler(handler);
@@ -46,12 +62,22 @@ cluster.LocalCluster = function() {
   }
 }
 
+/**
+ * A remote (Via) cluster.
+ * @constructor
+ */
 cluster.ViaCluster = function(address) {
   var that = this;
-  var jcluster = new net.kuujo.vertigo.ViaCluster(__jvertx, __jcontainer, address);
+  var jcluster = new net.kuujo.vertigo.cluster.ViaCluster(__jvertx, __jcontainer, address);
 
   this.address = address;
 
+  /**
+   * Deploys a network.
+   *
+   * @param {module:vertigo/network.Network} network The network to deploy
+   * @param handler An asynchronous result handler
+   */
   this.deploy = function(network, handler) {
     if (handler) {
       handler = adaptAsyncResultHandler(handler, function(jcontext) {
@@ -64,6 +90,12 @@ cluster.ViaCluster = function(address) {
     }
   }
 
+  /**
+   * Shuts down a network.
+   *
+   * @param {module:vertigo/context.NetworkContext} network A network context
+   * @param handler An asynchronous result handler
+   */
   this.shutdown = function(context, handler) {
     if (handler) {
       handler = adaptAsyncResultHandler(handler);

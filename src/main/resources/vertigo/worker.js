@@ -42,7 +42,7 @@ function wrap_message(jmessage) {
 worker.Worker = function() {
 
   var that = this;
-  var jworker = new net.kuujo.vertigo.component.worker.BasicWorker(__jvertx, __jcontainer, net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
+  var jworker = new net.kuujo.vertigo.worker.BasicWorker(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
 
   var config = jworker.config();
   if (config != null) {
@@ -115,13 +115,8 @@ worker.Worker = function() {
   /**
    * Fails a message.
    */
-  this.fail = function(message, failMessage) {
-    if (failMessage === undefined) {
-      jworker.fail(message.__jmessage);
-    }
-    else {
-      jworker.fail(message.__jmessage, failMessage);
-    }
+  this.fail = function(message) {
+    jworker.fail(message.__jmessage);
     return that;
   }
 

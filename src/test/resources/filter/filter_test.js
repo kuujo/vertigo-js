@@ -20,20 +20,20 @@ var filter = require('vertigo/filter');
 var filter_tests = {
   testFieldFilter: function() {
     var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).filterBy(new filter.FieldFilter('foo', 'bar'))
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).filterBy(new filter.FieldFilter('foo', 'bar'));
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').filterBy(new filter.FieldFilter('foo', 'bar'));
     test.testComplete();
   },
   testTagsFilter: function() {
     var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).filterBy(new filter.TagsFilter('foo'))
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).filterBy(new filter.TagsFilter('bar'));
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').filterBy(new filter.TagsFilter('bar'));
     test.testComplete();
   },
   testSourceFilter: function() {
     var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).filterBy(new filter.SourceFilter('foo'))
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).filterBy(new filter.SourceFilter('bar'));
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').filterBy(new filter.SourceFilter('bar'));
     test.testComplete();
   },
 }

@@ -20,26 +20,25 @@ var grouping = require('vertigo/grouping');
 var grouping_tests = {
   testRandomGrouping: function() {
     var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).groupBy(new grouping.RandomGrouping())
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).groupBy(new grouping.RandomGrouping());
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.RandomGrouping());
     test.testComplete();
   },
   testRoundGrouping: function() {
     var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).groupBy(new grouping.RoundGrouping())
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).groupBy(new grouping.RoundGrouping());
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.RoundGrouping());
     test.testComplete();
   },
   testFieldsGrouping: function() {
     var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).groupBy(new grouping.FieldsGrouping('foo'))
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).groupBy(new grouping.FieldsGrouping('bar'));
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.FieldsGrouping('bar'));
     test.testComplete();
   },
   testAllGrouping: function() {
-    var network = vertigo.createNetwork('test');
-    network.fromVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2).groupBy(new grouping.AllGrouping())
-      .toVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).groupBy(new grouping.AllGrouping());
+    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.AllGrouping());
     test.testComplete();
   }
 }

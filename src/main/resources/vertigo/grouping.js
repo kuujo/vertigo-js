@@ -17,30 +17,34 @@ var grouping = {}
 
 /**
  * A random grouping.
+ * @constructor
  */
 grouping.RandomGrouping = function() {
-  this.__jgrouping = new net.kuujo.vertigo.grouping.RandomGrouping();
+  this.__jgrouping = new net.kuujo.vertigo.input.grouping.RandomGrouping();
 }
 
 /**
  * A round-robin based grouping.
+ * @constructor
  */
 grouping.RoundGrouping = function() {
-  this.__jgrouping = new net.kuujo.vertigo.grouping.RoundGrouping();
+  this.__jgrouping = new net.kuujo.vertigo.input.grouping.RoundGrouping();
 }
 
 /**
  * A fields-based (consistent hashing) grouping.
+ * @constructor
  */
-grouping.FieldsGrouping = function(field) {
-  this.__jgrouping = new net.kuujo.vertigo.grouping.FieldsGrouping(field);
+grouping.FieldsGrouping = function(fields) {
+  this.__jgrouping = new net.kuujo.vertigo.input.grouping.FieldsGrouping(fields);
 }
 
 /**
  * A "fanout" grouping.
+ * @constructor
  */
 grouping.AllGrouping = function() {
-  this.__jgrouping = new net.kuujo.vertigo.grouping.AllGrouping();
+  this.__jgrouping = new net.kuujo.vertigo.input.grouping.AllGrouping();
 }
 
 module.exports = grouping;

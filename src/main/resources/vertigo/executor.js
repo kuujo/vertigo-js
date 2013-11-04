@@ -42,7 +42,7 @@ function wrap_message(jmessage) {
 executor.BasicExecutor = function() {
 
   var that = this;
-  var jexecutor = new net.kuujo.vertigo.component.executor.DefaultBasicExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
+  var jexecutor = new net.kuujo.vertigo.executor.DefaultBasicExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
 
   var config = jexecutor.config();
   if (config != null) {
@@ -126,7 +126,7 @@ executor.BasicExecutor = function() {
 executor.PollingExecutor = function() {
 
   var that = this;
-  var jexecutor = new net.kuujo.vertigo.component.executor.DefaultPollingExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
+  var jexecutor = new net.kuujo.vertigo.executor.DefaultPollingExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
 
   var config = jexecutor.config();
   if (config != null) {
@@ -233,7 +233,7 @@ executor.PollingExecutor = function() {
 executor.StreamExecutor = function() {
 
   var that = this;
-  var jexecutor = new net.kuujo.vertigo.component.executor.DefaultStreamExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
+  var jexecutor = new net.kuujo.vertigo.executor.DefaultStreamExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
 
   var config = jexecutor.config();
   if (config != null) {

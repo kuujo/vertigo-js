@@ -20,22 +20,18 @@ var vertigo = {};
 
 var context = require('vertigo/context');
 
-vertigo.context = new context.WorkerContext(net.kuujo.vertigo.context.WorkerContext.fromJson(__jcontainer.config()));
+vertigo.context = new context.WorkerContext(net.kuujo.vertigo.context.InstanceContext.fromJson(__jcontainer.config()));
 
 vertigo.network = require('vertigo/network');
 
 /**
  * Creates a new Vertigo network.
+ *
+ * @param {string} address The network address
+ * @returns {module:vertigo/network.Network} A new network definition
  */
-vertigo.createNetwork = function(name) {
-  return new vertigo.network.Network(name);
-}
-
-/**
- * Creates a new Vertigo component.
- */
-vertigo.createComponent = function(name) {
-  return new vertigo.network.Component(name);
+vertigo.createNetwork = function(address) {
+  return new vertigo.network.Network(address);
 }
 
 vertigo.feeder = require('vertigo/feeder');
@@ -108,6 +104,9 @@ vertigo.createLocalCluster = function() {
 
 /**
  * Creates a new Via cluster.
+ *
+ * @param {string} address The Via cluster address
+ * @returns {module:vertigo/cluster.ViaCluster} A new Via cluster instance
  */
 vertigo.createViaCluster = function(address) {
   return new vertigo.cluster.ViaCluster(address);
