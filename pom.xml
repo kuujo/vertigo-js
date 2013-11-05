@@ -9,7 +9,7 @@
 
   <groupId>net.kuujo</groupId>
   <artifactId>vertigo-js</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Vertigo Javascript API</name>
   <description>Javascript API for Vert.igo: a distributed event processing framework for Vert.x.</description>
