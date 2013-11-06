@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * The <code>vertigo/grouping</code> module provides classes for creating
+ * Vertigo input groupings.
+ * @exports vertigo/grouping
+ */
 var grouping = {}
 
 /**

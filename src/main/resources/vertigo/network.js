@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var network = {}
 
 load("vertx/helpers.js");
 
 var input = require('vertigo/input');
+
+/**
+ * The <code>vertigo/network</code> module provides classes for creating
+ * Vertigo networks and components.
+ * @exports vertigo/network
+ */
+var network = {}
 
 /**
  * A Vertigo network.

@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * The <code>vertigo/message</code> module provides classes for
+ * wrapping Vertigo messages.
+ * @exports vertigo/message
+ */
 var message = {}
 
 /**

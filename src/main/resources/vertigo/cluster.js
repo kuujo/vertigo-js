@@ -15,6 +15,11 @@
  */
 load('vertx/helpers.js');
 
+/**
+ * The <code>vertigo/cluster</code> module provides interfaces to
+ * deploying/undeploying Vertigo networks.
+ * @exports vertigo/cluster
+ */
 var cluster = {}
 
 var context = require('vertigo/context');

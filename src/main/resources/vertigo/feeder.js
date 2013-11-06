@@ -17,10 +17,16 @@ load('vertx/helpers.js');
 
 var vertigo = require('vertigo');
 
+/**
+ * The <code>vertigo/feeder</code> module provides Vertigo feeder
+ * component classes.
+ * @exports vertigo/feeder
+ */
 var feeder = {};
 
 /**
  * A basic feeder.
+ * @constructor
  */
 feeder.BasicFeeder = function(context) {
   var that = this;
@@ -118,6 +124,7 @@ feeder.BasicFeeder = function(context) {
 
 /**
  * A polling feeder.
+ * @constructor
  */
 feeder.PollingFeeder = function(context) {
   var that = this;
@@ -239,6 +246,7 @@ feeder.PollingFeeder = function(context) {
 
 /**
  * A ReadStream integration feeder.
+ * @constructor
  */
 feeder.StreamFeeder = function(context) {
   var that = this;

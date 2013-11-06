@@ -18,12 +18,18 @@ load('vertx/helpers.js');
 var vertigo = require('vertigo');
 var message = require('vertigo/message');
 
-var executor = {};
+/**
+ * The <code>vertigo/rpc</code> module provides Vertigo executor
+ * component classes.
+ * @exports vertigo/rpc
+ */
+var rpc = {};
 
 /**
  * A basic executor.
+ * @constructor
  */
-executor.BasicExecutor = function(context) {
+rpc.BasicExecutor = function(context) {
   var that = this;
 
   if (context === undefined) {
@@ -31,7 +37,7 @@ executor.BasicExecutor = function(context) {
   }
 
   this.context = context;
-  var jexecutor = new net.kuujo.vertigo.executor.DefaultBasicExecutor(__jvertx, __jcontainer, this.context.__jcontext);
+  var jexecutor = new net.kuujo.vertigo.rpc.DefaultBasicExecutor(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets or gets the maximum execute queue size.
@@ -103,8 +109,9 @@ executor.BasicExecutor = function(context) {
 
 /**
  * A polling executor.
+ * @constructor
  */
-executor.PollingExecutor = function(context) {
+rpc.PollingExecutor = function(context) {
   var that = this;
 
   if (context === undefined) {
@@ -112,7 +119,7 @@ executor.PollingExecutor = function(context) {
   }
 
   this.context = context;
-  var jexecutor = new net.kuujo.vertigo.executor.DefaultPollingExecutor(__jvertx, __jcontainer, this.context.__jcontext);
+  var jexecutor = new net.kuujo.vertigo.rpc.DefaultPollingExecutor(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets or gets the maximum execute queue size.
@@ -207,8 +214,9 @@ executor.PollingExecutor = function(context) {
 
 /**
  * A ReadStream integration executor.
+ * @constructor
  */
-executor.StreamExecutor = function(context) {
+rpc.StreamExecutor = function(context) {
   var that = this;
 
   if (context === undefined) {
@@ -216,7 +224,7 @@ executor.StreamExecutor = function(context) {
   }
 
   this.context = context;
-  var jexecutor = new net.kuujo.vertigo.executor.DefaultStreamExecutor(__jvertx, __jcontainer, this.context.__jcontext);
+  var jexecutor = new net.kuujo.vertigo.rpc.DefaultStreamExecutor(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets or gets the maximum executor queue size.
@@ -302,4 +310,4 @@ executor.StreamExecutor = function(context) {
 
 }
 
-module.exports = executor;
+module.exports = rpc;

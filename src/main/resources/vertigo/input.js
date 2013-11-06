@@ -15,6 +15,13 @@
  */
 load('vertx/helpers.js');
 
+var message = require('vertigo/message');
+
+/**
+ * The <code>vertigo/input</code> module provides classes for operating
+ * on component inputs.
+ * @exports vertigo/input
+ */
 var input = {}
 
 /**
@@ -64,25 +71,6 @@ input.Input = function(obj) {
     return that;
   }
 
-}
-
-/**
- * Wraps a Java JsonMessage.
- */
-function wrap_message(jmessage) {
-  var message = {};
-  message.__jmessage = jmessage;
-  message.id = jmessage.id();
-  message.body = JSON.parse(jmessage.body().encode());
-  message.tag = jmessage.tag();
-  message.parent = jmessage.parent();
-  message.ancestor = jmessage.ancestor();
-  message.source = jmessage.source();
-  message.auditor = jmessage.auditor();
-  message.copy = function() {
-    return wrap_message(jmessage.copy());
-  }
-  return message;
 }
 
 /**
@@ -136,7 +124,7 @@ input.Listener = function(obj) {
    */
   this.messageHandler = function(handler) {
     jlistener.messageHandler(function(jmessage) {
-      handler(wrap_message(jmessage));
+      handler(new message.Message(jmessage));
     });
     return that;
   }

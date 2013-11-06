@@ -15,6 +15,11 @@
  */
 load('vertigo/helpers.js');
 
+/**
+ * The <code>vertigo/filter</code> module provides classes for creating
+ * Vertigo input filters.
+ * @exports vertigo/filter
+ */
 var filter = {}
 
 /**

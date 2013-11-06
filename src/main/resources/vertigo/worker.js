@@ -18,10 +18,16 @@ load('vertx/helpers.js');
 var vertigo = require('vertigo');
 var message = require('vertigo/message');
 
+/**
+ * The <code>vertigo/worker</code> module provides Vertigo worker
+ * component classes.
+ * @exports vertigo/worker
+ */
 var worker = {};
 
 /**
  * A basic worker.
+ * @constructor
  */
 worker.BasicWorker = function(context) {
   var that = this;
@@ -103,6 +109,10 @@ worker.BasicWorker = function(context) {
 
 }
 
+/**
+ * A basic worker.
+ * @constructor
+ */
 worker.Worker = worker.BasicWorker;
 
 module.exports = worker;
