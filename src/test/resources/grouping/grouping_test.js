@@ -37,6 +37,7 @@ var grouping_tests = {
     test.testComplete();
   },
   testAllGrouping: function() {
+	var network = vertigo.createNetwork('test');
     network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
     network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.AllGrouping());
     test.testComplete();

@@ -246,10 +246,10 @@ network.Verticle = function(obj) {
    */
   this.instances = function(instances) {
     if (instances === undefined) {
-      return jcomponent.getNumInstances();
+      return jcomponent.getInstances();
     }
     else {
-      jcomponent.setNumInstances(instances);
+      jcomponent.setInstances(instances);
       return that;
     }
   }
@@ -316,10 +316,10 @@ network.Module = function(obj) {
    */
   this.instances = function(instances) {
     if (instances === undefined) {
-      return jcomponent.getNumInstances();
+      return jcomponent.getInstances();
     }
     else {
-      jcomponent.setNumInstances(instances);
+      jcomponent.setInstances(instances);
       return that;
     }
   }

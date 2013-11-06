@@ -13,32 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-load('vertigo/helpers.js');
-
-var filter = {}
+var message = {}
 
 /**
- * A field/value based filter.
+ * A component message.
  * @constructor
  */
-filter.FieldFilter = function(fieldName, value) {
-  this.__jfilter = new net.kuujo.vertigo.input.filter.FieldFilter(fieldName, convert_value(value));
+message.Message = function(jmessage) {
+  var that = this;
+
+  this.__jmessage = jmessage;
+  this.__jmessage = jmessage;
+  this.id = jmessage.id();
+  this.body = JSON.parse(jmessage.body().encode());
+  this.tag = jmessage.tag();
+  this.parent = jmessage.parent();
+  this.ancestor = jmessage.ancestor();
+  this.source = jmessage.source();
+  this.auditor = jmessage.auditor();
+
+  /**
+   * Copies the message.
+   *
+   * @returns {module:vertigo/message.Message} A copy of the message
+   */
+  this.copy = function() {
+    return new message.Message(jmessage.copy());
+  }
 }
 
-/**
- * A source-based filter.
- * @constructor
- */
-filter.SourceFilter = function(source) {
-  this.__jfilter = new net.kuujo.vertigo.input.filter.SourceFilter(source);
-}
-
-/**
- * A tags-based filter.
- * @constructor
- */
-filter.TagsFilter = function(tags) {
-  this.__jfilter = new net.kuujo.vertigo.input.filter.TagsFilter(tags);
-}
-
-module.exports = filter;
+module.exports = message;

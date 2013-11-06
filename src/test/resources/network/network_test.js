@@ -66,7 +66,7 @@ var network_tests = {
   testCreateComponent: function() {
     var network = vertigo.createNetwork('test');
     var test_verticle = network.addVerticle('test_verticle', 'test_verticle.js', {'foo': 'bar'}, 2);
-    test.assertEquals('verticle', test_verticle.type());
+    test.assertEquals('verticle', test_verticle.type);
     test.assertEquals('test_verticle.js', test_verticle.main());
     test.assertEquals('bar', test_verticle.config()['foo']);
     test.assertEquals(2, test_verticle.instances());

@@ -24,6 +24,9 @@ var config = __jcontainer.config();
 if (config !== null && config.getFieldNames().contains('__context__')) {
   vertigo.context = new context.InstanceContext(net.kuujo.vertigo.context.InstanceContext.fromJson(config.getObject('__context__')));
 }
+else {
+  vertigo.context = null;
+}
 
 vertigo.network = require('vertigo/network');
 
@@ -40,73 +43,87 @@ vertigo.createNetwork = function(address) {
 vertigo.feeder = require('vertigo/feeder');
 
 /**
- * Creates a new basic feeder.
+ * Creates a basic feeder.
+ *
+ * @returns {module:vertigo/feeder.BasicFeeder} A basic feeder
  */
 vertigo.createBasicFeeder = function() {
-  return new vertigo.feeder.BasicFeeder();
+  return new vertigo.feeder.BasicFeeder(vertigo.context);
 }
 
 vertigo.createFeeder = vertigo.createBasicFeeder;
 
 /**
- * Creates a new polling feeder.
+ * Creates a polling feeder.
+ *
+ * @returns {module:vertigo/feeder.PollingFeeder} A polling feeder
  */
 vertigo.createPollingFeeder = function() {
-  return new vertigo.feeder.PollingFeeder();
+  return new vertigo.feeder.PollingFeeder(vertigo.context);
 }
 
 /**
- * Creates a new stream feeder.
+ * Creates a stream feeder.
+ *
+ * @returns {module:vertigo/feeder.StreamFeeder} A stream feeder
  */
 vertigo.createStreamFeeder = function() {
-  return new vertigo.feeder.StreamFeeder();
+  return new vertigo.feeder.StreamFeeder(vertigo.context);
 }
 
-vertigo.executor = require('vertigo/executor');
+vertigo.rpc = require('vertigo/rpc');
 
 /**
- * Creates a new basic executor.
+ * Creates a basic executor.
+ *
+ * @returns {module:vertigo/rpc.BasicExecutor} A basic executor
  */
 vertigo.createBasicExecutor = function() {
-  return new vertigo.executor.BasicExecutor();
+  return new vertigo.rpc.BasicExecutor(vertigo.context);
 }
 
 vertigo.createExecutor = vertigo.createBasicExecutor;
 
 /**
- * Creates a new polling executor.
+ * Creates a polling executor.
+ *
+ * @returns {module:vertigo/rpc.PollingExecutor} A polling executor
  */
 vertigo.createPollingExecutor = function() {
-  return new vertigo.executor.PollingExecutor();
+  return new vertigo.rpc.PollingExecutor(vertigo.context);
 }
 
 /**
- * Creates a new stream executor.
+ * Creates a stream executor.
+ *
+ * @returns {module:vertigo/rpc.StreamExecutor} A stream executor
  */
 vertigo.createStreamExecutor = function() {
-  return new vertigo.executor.StreamExecutor();
+  return new vertigo.rpc.StreamExecutor(vertigo.context);
 }
 
 vertigo.worker = require('vertigo/worker');
 
 /**
- * Creates a new worker.
+ * Creates a worker.
+ *
+ * @returns {module:vertigo/worker.BasicWorker} A basic worker
  */
 vertigo.createWorker = function() {
-  return new vertigo.worker.Worker();
+  return new vertigo.worker.BasicWorker(vertigo.context);
 }
 
 vertigo.cluster = require('vertigo/cluster');
 
 /**
- * Creates a new local cluster.
+ * Creates a local cluster.
  */
 vertigo.createLocalCluster = function() {
   return new vertigo.cluster.LocalCluster();
 }
 
 /**
- * Creates a new Via cluster.
+ * Creates a Via cluster.
  *
  * @param {string} address The Via cluster address
  * @returns {module:vertigo/cluster.ViaCluster} A new Via cluster instance

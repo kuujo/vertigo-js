@@ -15,43 +15,23 @@
  */
 load('vertx/helpers.js');
 
-var executor = {};
+var vertigo = require('vertigo');
+var message = require('vertigo/message');
 
-/**
- * Wraps a Java JsonMessage.
- */
-function wrap_message(jmessage) {
-  var message = {};
-  message.__jmessage = jmessage;
-  message.id = jmessage.id();
-  message.body = JSON.parse(jmessage.body().encode());
-  message.tag = jmessage.tag();
-  message.parent = jmessage.parent();
-  message.ancestor = jmessage.ancestor();
-  message.source = jmessage.source();
-  message.auditor = jmessage.auditor();
-  message.copy = function() {
-    return wrap_message(jmessage.copy());
-  }
-  return message;
-}
+var executor = {};
 
 /**
  * A basic executor.
  */
-executor.BasicExecutor = function() {
+executor.BasicExecutor = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jexecutor = new net.kuujo.vertigo.executor.DefaultBasicExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jexecutor.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jexecutor = new net.kuujo.vertigo.executor.DefaultBasicExecutor(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets or gets the maximum execute queue size.
@@ -100,7 +80,7 @@ executor.BasicExecutor = function() {
 
     if (handler) {
       handler = adaptAsyncResultHandler(handler, function(jmessage) {
-        return wrap_message(jmessage);
+        return new message.Message(jmessage);
       });
     }
     else {
@@ -124,19 +104,15 @@ executor.BasicExecutor = function() {
 /**
  * A polling executor.
  */
-executor.PollingExecutor = function() {
+executor.PollingExecutor = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jexecutor = new net.kuujo.vertigo.executor.DefaultPollingExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jexecutor.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jexecutor = new net.kuujo.vertigo.executor.DefaultPollingExecutor(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets or gets the maximum execute queue size.
@@ -208,7 +184,7 @@ executor.PollingExecutor = function() {
 
     if (handler) {
       handler = adaptAsyncResultHandler(handler, function(jmessage) {
-        return wrap_message(jmessage);
+        return new message.Message(jmessage);
       });
     }
     else {
@@ -232,19 +208,15 @@ executor.PollingExecutor = function() {
 /**
  * A ReadStream integration executor.
  */
-executor.StreamExecutor = function() {
+executor.StreamExecutor = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jexecutor = new net.kuujo.vertigo.executor.DefaultStreamExecutor(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jexecutor.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jexecutor = new net.kuujo.vertigo.executor.DefaultStreamExecutor(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets or gets the maximum executor queue size.
@@ -309,7 +281,7 @@ executor.StreamExecutor = function() {
 
     if (handler) {
       handler = adaptAsyncResultHandler(handler, function(jmessage) {
-        return wrap_message(jmessage);
+        return new message.Message(jmessage);
       });
     }
     else {

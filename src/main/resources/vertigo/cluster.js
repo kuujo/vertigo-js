@@ -35,10 +35,9 @@ cluster.LocalCluster = function() {
    */
   this.deploy = function(network, handler) {
     if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(jcontext) {
+      jcluster.deploy(network.__jnetwork, adaptAsyncResultHandler(handler, function(jcontext) {
         return new context.NetworkContext(jcontext);
-      });
-      jcluster.deploy(network.__jnetwork, handler);
+      }));
     }
     else {
       jcluster.deploy(network.__jnetwork);
@@ -53,8 +52,7 @@ cluster.LocalCluster = function() {
    */
   this.shutdown = function(context, handler) {
     if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-      jcluster.shutdown(context.__jcontext, handler);
+      jcluster.shutdown(context.__jcontext, adaptAsyncResultHandler(handler));
     }
     else {
       jcluster.shutdown(context.__jcontext);
@@ -80,10 +78,9 @@ cluster.ViaCluster = function(address) {
    */
   this.deploy = function(network, handler) {
     if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(jcontext) {
+      jcluster.deploy(network.__jnetwork, adaptAsyncResultHandler(handler, function(jcontext) {
         return new context.NetworkContext(jcontext);
-      });
-      jcluster.deploy(network.__jnetwork, handler);
+      }));
     }
     else {
       jcluster.deploy(network.__jnetwork);
@@ -98,8 +95,7 @@ cluster.ViaCluster = function(address) {
    */
   this.shutdown = function(context, handler) {
     if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-      jcluster.shutdown(context.__jcontext, handler);
+      jcluster.shutdown(context.__jcontext, adaptAsyncResultHandler(handler));
     }
     else {
       jcluster.shutdown(context.__jcontext);

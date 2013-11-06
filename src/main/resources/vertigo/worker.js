@@ -15,43 +15,23 @@
  */
 load('vertx/helpers.js');
 
-var worker = {};
+var vertigo = require('vertigo');
+var message = require('vertigo/message');
 
-/**
- * Wraps a Java JsonMessage.
- */
-function wrap_message(jmessage) {
-  var message = {};
-  message.__jmessage = jmessage;
-  message.id = jmessage.id();
-  message.body = JSON.parse(jmessage.body().encode());
-  message.tag = jmessage.tag();
-  message.parent = jmessage.parent();
-  message.ancestor = jmessage.ancestor();
-  message.source = jmessage.source();
-  message.auditor = jmessage.auditor();
-  message.copy = function() {
-    return wrap_message(jmessage.copy());
-  }
-  return message;
-}
+var worker = {};
 
 /**
  * A basic worker.
  */
-worker.Worker = function() {
+worker.BasicWorker = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jworker = new net.kuujo.vertigo.worker.BasicWorker(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jworker.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jworker = new net.kuujo.vertigo.worker.BasicWorker(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Starts the worker.
@@ -74,7 +54,7 @@ worker.Worker = function() {
    */
   this.messageHandler = function(handler) {
     jworker.messageHandler(function(jmessage) {
-      handler(wrap_message(jmessage));
+      handler(new message.Message(jmessage));
     });
     return that;
   }
@@ -122,5 +102,7 @@ worker.Worker = function() {
   }
 
 }
+
+worker.Worker = worker.BasicWorker;
 
 module.exports = worker;

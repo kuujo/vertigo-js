@@ -15,24 +15,22 @@
  */
 load('vertx/helpers.js');
 
+var vertigo = require('vertigo');
+
 var feeder = {};
 
 /**
  * A basic feeder.
  */
-feeder.BasicFeeder = function() {
+feeder.BasicFeeder = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultBasicFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jfeeder.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jfeeder = new net.kuujo.vertigo.feeder.DefaultBasicFeeder(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets the maximum feed queue size.
@@ -121,19 +119,15 @@ feeder.BasicFeeder = function() {
 /**
  * A polling feeder.
  */
-feeder.PollingFeeder = function() {
+feeder.PollingFeeder = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultPollingFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jfeeder.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jfeeder = new net.kuujo.vertigo.feeder.DefaultPollingFeeder(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets the maximum feed queue size.
@@ -246,19 +240,15 @@ feeder.PollingFeeder = function() {
 /**
  * A ReadStream integration feeder.
  */
-feeder.StreamFeeder = function() {
+feeder.StreamFeeder = function(context) {
   var that = this;
-  var context = __jcontainer.config().getObject('__context__');
-  __jcontainer.config().removeField('__context__');
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultStreamFeeder(__jvertx, __jcontainer, net.kuujo.vertigo.context.InstanceContext.fromJson(context));
 
-  var config = jfeeder.config();
-  if (config != null) {
-    this.config = JSON.parse(config.encode());
+  if (context === undefined) {
+    context = vertigo.context;
   }
-  else {
-    this.config = {};
-  }
+
+  this.context = context;
+  var jfeeder = new net.kuujo.vertigo.feeder.DefaultStreamFeeder(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
    * Sets the maximum feed queue size.
