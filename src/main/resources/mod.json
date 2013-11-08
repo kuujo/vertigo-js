@@ -1,5 +1,5 @@
 {
   "author": "Jordan Halterman",
   "website": "https://github.com/kuujo/vertigo-js",
-  "includes": "net.kuujo~vertigo~0.1.0-SNAPSHOT"
+  "includes": "net.kuujo~vertigo~0.5.0"
 }
