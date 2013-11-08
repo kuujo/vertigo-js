@@ -36,12 +36,27 @@ var vertigo = {};
 
 var context = require('vertigo/context');
 
-var config = __jcontainer.config();
-if (config !== null && config.getFieldNames().contains('__context__')) {
-  vertigo.context = new context.InstanceContext(net.kuujo.vertigo.context.InstanceContext.fromJson(config.getObject('__context__')));
+/**
+ * A Vertigo instance.
+ */
+vertigo.vertigo = new net.kuujo.vertigo.Vertigo(__jvertx, __jcontainer);
+
+/**
+ * A Vertigo context.
+ * @see module:vertigo/context.InstanceContext
+ */
+if (vertigo.vertigo.isComponent()) {
+  vertigo.context = new context.InstanceContext(vertigo.vertigo.getContext());
 }
 else {
   vertigo.context = null;
+}
+
+/**
+ * Indicates whether the current verticle is a Vertigo component.
+ */
+vertigo.isComponent = function() {
+  return vertigo.vertigo.isComponent();
 }
 
 /**
