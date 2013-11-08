@@ -101,9 +101,9 @@ feeder.BasicFeeder = function(context) {
   }
 
   /**
-   * Feeds data to the network.
+   * Emits data from the feeder.
    */
-  this.feed = function(data) {
+  this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     var handler = getArgValue('function', args);
@@ -112,10 +112,10 @@ feeder.BasicFeeder = function(context) {
       handler = adaptAsyncResultHandler(handler);
     }
     if (typeof(data) != 'object') {
-      throw 'Invalid data type for feed()';
+      throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.feed(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
     }
     return that;
   }
@@ -222,9 +222,9 @@ feeder.PollingFeeder = function(context) {
   }
 
   /**
-   * Feeds data to the network.
+   * Emits data from the feeder.
    */
-  this.feed = function() {
+  this.emit = function() {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     var handler = getArgValue('function', args);
@@ -234,10 +234,10 @@ feeder.PollingFeeder = function(context) {
       handler = adaptAsyncResultHandler(handler);
     }
     if (typeof(data) != 'object') {
-      throw 'Invalid data type for feed()';
+      throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.feed(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
     }
     return that;
   }
@@ -337,9 +337,9 @@ feeder.StreamFeeder = function(context) {
   }
 
   /**
-   * Feeds data to the network.
+   * Emits data from the feeder.
    */
-  this.feed = function(data) {
+  this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     var handler = getArgValue('function', args);
@@ -348,10 +348,10 @@ feeder.StreamFeeder = function(context) {
       handler = adaptAsyncResultHandler(handler);
     }
     if (typeof(data) != 'object') {
-      throw 'Invalid data type for feed()';
+      throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.feed(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
     }
     return that;
   }
