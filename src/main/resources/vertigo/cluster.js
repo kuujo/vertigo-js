@@ -39,7 +39,7 @@ cluster.LocalCluster = function() {
    * @param handler An asynchronous result handler
    */
   this.deploy = function(network, handler) {
-    if (handler) {
+    if (handler !== undefined) {
       jcluster.deploy(network.__jnetwork, adaptAsyncResultHandler(handler, function(jcontext) {
         return new context.NetworkContext(jcontext);
       }));
@@ -56,7 +56,7 @@ cluster.LocalCluster = function() {
    * @param handler An asynchronous result handler
    */
   this.shutdown = function(context, handler) {
-    if (handler) {
+    if (handler !== undefined) {
       jcluster.shutdown(context.__jcontext, adaptAsyncResultHandler(handler));
     }
     else {
@@ -82,7 +82,7 @@ cluster.ViaCluster = function(address) {
    * @param handler An asynchronous result handler
    */
   this.deploy = function(network, handler) {
-    if (handler) {
+    if (handler !== undefined) {
       jcluster.deploy(network.__jnetwork, adaptAsyncResultHandler(handler, function(jcontext) {
         return new context.NetworkContext(jcontext);
       }));
@@ -99,7 +99,7 @@ cluster.ViaCluster = function(address) {
    * @param handler An asynchronous result handler
    */
   this.shutdown = function(context, handler) {
-    if (handler) {
+    if (handler !== undefined) {
       jcluster.shutdown(context.__jcontext, adaptAsyncResultHandler(handler));
     }
     else {

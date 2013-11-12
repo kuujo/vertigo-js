@@ -131,16 +131,6 @@ vertigo.createStreamFeeder = function() {
 vertigo.rpc = require('vertigo/rpc');
 
 /**
- * Creates a basic executor.
- * @returns {module:vertigo/rpc.BasicExecutor} A basic executor
- */
-vertigo.createBasicExecutor = function() {
-  return new vertigo.rpc.BasicExecutor(vertigo.context);
-}
-
-vertigo.createExecutor = vertigo.createBasicExecutor;
-
-/**
  * Creates a polling executor.
  * @returns {module:vertigo/rpc.PollingExecutor} A polling executor
  */

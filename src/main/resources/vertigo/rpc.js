@@ -26,88 +26,6 @@ var message = require('vertigo/message');
 var rpc = {};
 
 /**
- * A basic executor.
- * @constructor
- */
-rpc.BasicExecutor = function(context) {
-  var that = this;
-
-  if (context === undefined) {
-    context = vertigo.context;
-  }
-
-  this.context = context;
-  var jexecutor = new net.kuujo.vertigo.rpc.DefaultBasicExecutor(__jvertx, __jcontainer, this.context.__jcontext);
-
-  /**
-   * Sets or gets the maximum execute queue size.
-   */
-  this.maxQueueSize = function(size) {
-    if (size === undefined) {
-      return jexecutor.getMaxQueueSize();
-    }
-    else {
-      jexecutor.setMaxQueueSize(size);
-      return that;
-    }
-  }
-
-  /**
-   * Indicates whether the execute queue is full.
-   */
-  this.queueFull = function() {
-    return jexecutor.queueFull();
-  }
-
-  /**
-   * Starts the executor.
-   */
-  this.start = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(result) {
-        return that;
-      });
-      jexecutor.start(handler);
-    }
-    else {
-      jexecutor.start();
-    }
-    return that;
-  }
-
-  /**
-   * Executes a remote procedure call.
-   */
-  this.execute = function(data) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var handler = getArgValue('function', args);
-    var tag = getArgValue('string', args);
-
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(jmessage) {
-        return new message.Message(jmessage);
-      });
-    }
-    else {
-      throw 'Invalid execute() handler.';
-    }
-
-    if (typeof(data) != 'object') {
-      throw 'Invalid data type for execute()';
-    }
-    else if (tag != null) {
-      jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
-    }
-    else {
-      jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), handler);
-    }
-    return that;
-  }
-
-}
-
-/**
  * A polling executor.
  * @constructor
  */
@@ -174,9 +92,31 @@ rpc.PollingExecutor = function(context) {
    * Sets an execute handler on the executor.
    */
   this.executeHandler = function(handler) {
-    jexecutor.executeHandler(function(executor) {
-      handler(that);
-    });
+    jexecutor.executeHandler(new org.vertx.java.core.Handler({
+      handle: function(jexecutor) {
+        handler(that);
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Sets a result handler on the executor.
+   */
+  this.resultHandler = function(handler) {
+    jexecutor.resultHandler(new org.vertx.java.core.Handler({
+      handle: function(jmessage) {
+        handler(new message.Message(jmessage));
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Sets a fail handler on the executor.
+   */
+  this.failHandler = function(handler) {
+    jexecutor.failHandler(new org.vertx.java.core.Handler({handle: handler}));
     return that;
   }
 
@@ -263,18 +203,10 @@ rpc.StreamExecutor = function(context) {
   }
 
   /**
-   * Sets a full handler on the executor.
-   */
-  this.fullHandler = function(handler) {
-    jexecutor.fullHandler(handler);
-    return that;
-  }
-
-  /**
    * Sets a drain handler on the executor.
    */
   this.drainHandler = function(handler) {
-    jexecutor.drainHandler(handler);
+    jexecutor.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
     return that;
   }
 

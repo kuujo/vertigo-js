@@ -85,7 +85,7 @@
     <dependency>
       <groupId>net.kuujo</groupId>
       <artifactId>vertigo</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>0.5.3-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

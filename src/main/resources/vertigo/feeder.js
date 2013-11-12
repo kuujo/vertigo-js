@@ -106,16 +106,12 @@ feeder.BasicFeeder = function(context) {
   this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
-    var handler = getArgValue('function', args);
     var tag = getArgValue('string', args);
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-    }
     if (typeof(data) != 'object') {
       throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
     }
     return that;
   }
@@ -215,10 +211,26 @@ feeder.PollingFeeder = function(context) {
    * Sets a feed handler.
    */
   this.feedHandler = function(handler) {
-    jfeeder.feedHandler(function(feeder) {
-      handler(that);
-    });
+    jfeeder.feedHandler(new org.vertx.java.core.Handler({
+      handle: function(jfeeder) {
+        handler(that);
+      }
+    }));
     return that;
+  }
+
+  /**
+   * Sets an ack handler.
+   */
+  this.ackHandler = function(handler) {
+    jfeeder.ackHandler(new org.vertx.java.core.Handler({handle: handler}));
+  }
+
+  /**
+   * Sets a fail handler.
+   */
+  this.failHandler = function(handler) {
+    jfeeder.failHandler(new org.vertx.java.core.Handler({handle: handler}));
   }
 
   /**
@@ -227,12 +239,8 @@ feeder.PollingFeeder = function(context) {
   this.emit = function() {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
-    var handler = getArgValue('function', args);
     var tag = getArgValue('string', args);
     var data = getArgValue('object', args);
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-    }
     if (typeof(data) != 'object') {
       throw 'Invalid data type for emit()';
     }
@@ -321,18 +329,10 @@ feeder.StreamFeeder = function(context) {
   }
 
   /**
-   * Sets a full handler on the feeder.
-   */
-  this.fullHandler = function(handler) {
-    jfeeder.fullHandler(handler);
-    return that;
-  }
-
-  /**
    * Sets a drain handler on the feeder.
    */
   this.drainHandler = function(handler) {
-    jfeeder.drainHandler(handler);
+    jfeeder.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
     return that;
   }
 
