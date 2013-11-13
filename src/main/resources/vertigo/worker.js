@@ -67,6 +67,12 @@ worker.BasicWorker = function(context) {
 
   /**
    * Emits a message.
+   *
+   * @param {object} data the data to emit
+   * @param {string} [tag] a tag to apply to the message
+   * @param {module:vertigo/message.Message} [parent] an optional message parent
+   *
+   * @returns {string} the unique emitted message identifier
    */
   this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
@@ -77,18 +83,17 @@ worker.BasicWorker = function(context) {
       throw 'Invalid data type for emit()';
     }
     else if (parent != null && tag != null) {
-      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, parent.__jmessage);
+      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, parent.__jmessage);
     }
     else if (parent != null) {
-      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), parent.__jmessage)
+      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), parent.__jmessage)
     }
     else if (tag != null) {
-      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
+      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
     }
     else {
-      jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)));
+      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)));
     }
-    return that;
   }
 
   /**

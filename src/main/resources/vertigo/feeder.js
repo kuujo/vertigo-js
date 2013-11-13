@@ -102,6 +102,11 @@ feeder.BasicFeeder = function(context) {
 
   /**
    * Emits data from the feeder.
+   *
+   * @param {object} data The data to emit
+   * @param {string} [tag] A tag to apply to the output message
+   *
+   * @returns {string} a unique message identifier
    */
   this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
@@ -111,9 +116,8 @@ feeder.BasicFeeder = function(context) {
       throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
+      return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
     }
-    return that;
   }
 
 }
@@ -235,19 +239,22 @@ feeder.PollingFeeder = function(context) {
 
   /**
    * Emits data from the feeder.
+   *
+   * @param {object} data The data to emit
+   * @param {string} [tag] A tag to apply to the output message
+   *
+   * @returns {string} a unique message identifier
    */
-  this.emit = function() {
+  this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
     var tag = getArgValue('string', args);
-    var data = getArgValue('object', args);
     if (typeof(data) != 'object') {
       throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
     }
-    return that;
   }
 
 }
@@ -314,6 +321,11 @@ feeder.StreamFeeder = function(context) {
 
   /**
    * Starts the feeder.
+   *
+   * @param {Handler} [handler] An asynchronous handler to be called
+   * once the feeder is started.
+   *
+   * @returns {module:vertigo/feeder/StreamFeeder} this
    */
   this.start = function(handler) {
     if (handler) {
@@ -330,6 +342,11 @@ feeder.StreamFeeder = function(context) {
 
   /**
    * Sets a drain handler on the feeder.
+   *
+   * @param {Handler} [handler] A handler to be called when a full feeder
+   * is prepared to accept new messages
+   *
+   * @returns {module:vertigo/feeder/StreamFeeder} this
    */
   this.drainHandler = function(handler) {
     jfeeder.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
@@ -338,6 +355,12 @@ feeder.StreamFeeder = function(context) {
 
   /**
    * Emits data from the feeder.
+   *
+   * @param {object} data The data to emit
+   * @param {string} [tag] A tag to apply to the output message
+   * @param {AckHandler} handler A handler to be called once the message is acked
+   *
+   * @returns {string} a unique message identifier
    */
   this.emit = function(data) {
     var args = Array.prototype.slice.call(arguments);
@@ -351,9 +374,8 @@ feeder.StreamFeeder = function(context) {
       throw 'Invalid data type for emit()';
     }
     else {
-      jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
     }
-    return that;
   }
 
 }

@@ -122,32 +122,26 @@ rpc.PollingExecutor = function(context) {
 
   /**
    * Executes a remote procedure call.
+   *
+   * @param {object} data The data to emit
+   * @param {string} [tag] A tag to apply to the output message
+   *
+   * @returns {string} a unique message identifier
    */
   this.execute = function(data) {
     var args = Array.prototype.slice.call(arguments);
     args.shift();
-    var handler = getArgValue('function', args);
     var tag = getArgValue('string', args);
-
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(jmessage) {
-        return new message.Message(jmessage);
-      });
-    }
-    else {
-      throw 'Invalid execute() handler.';
-    }
 
     if (typeof(data) != 'object') {
       throw 'Invalid data type for execute()';
     }
     else if (tag != null) {
-      jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      return jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
     }
     else {
-      jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), handler);
+      return jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)));
     }
-    return that;
   }
 
 }
@@ -212,6 +206,12 @@ rpc.StreamExecutor = function(context) {
 
   /**
    * Executes a remote procedure call.
+   *
+   * @param {object} data The data to emit
+   * @param {string} [tag] A tag to apply to the output message
+   * @param {ResultHandler} handler A handler to be called with the execution result
+   *
+   * @returns {string} a unique message identifier
    */
   this.execute = function(data) {
     var args = Array.prototype.slice.call(arguments);
@@ -232,10 +232,10 @@ rpc.StreamExecutor = function(context) {
       throw 'Invalid data type for execute()';
     }
     else if (tag != null) {
-      jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
+      return jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
     }
     else {
-      jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), handler);
+      return jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), handler);
     }
     return that;
   }
