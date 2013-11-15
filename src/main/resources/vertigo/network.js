@@ -17,6 +17,7 @@
 load("vertx/helpers.js");
 
 var input = require('vertigo/input');
+var context = require('vertigo/context');
 
 /**
  * The <code>vertigo/network</code> module provides classes for creating
@@ -45,6 +46,8 @@ network.Network = function(obj) {
 
   /**
    * Gets or sets the network broadcast address.
+   *
+   * @param {String} [address] The network broadcast address.
    */
   this.broadcastAddress = function(address) {
     if (address === undefined) {
@@ -79,7 +82,7 @@ network.Network = function(obj) {
   /**
    * Indicates whether acking is enabled on the network.
    *
-   * @returns {boolean} indicates whether acking is enabled.
+   * @returns {Boolean} indicates whether acking is enabled.
    */
   this.ackingEnabled = function() {
     return jnetwork.isAckingEnabled();
@@ -87,6 +90,8 @@ network.Network = function(obj) {
 
   /**
    * Sets or gets the number of network auditors.
+   *
+   * @param {Integer} [num] The number of network auditors.
    */
   this.numAuditors = function(num) {
     if (num === undefined) {
@@ -99,20 +104,24 @@ network.Network = function(obj) {
   }
 
   /**
-   * Sets or gets the network ack expiration.
+   * Sets or gets the network ack timeout.
+   *
+   * @param {Integer} [timeout] The network ack timeout.
    */
-  this.ackExpire = function(expire) {
-    if (expire === undefined) {
-      return jnetwork.getAckExpire();
+  this.ackTimeout = function(timeout) {
+    if (timeout === undefined) {
+      return jnetwork.getAckTimeout();
     }
     else {
-      jnetwork.setAckExpire(expire);
+      jnetwork.setAckTimeout(timeout);
       return that;
     }
   }
 
   /**
    * Sets or gets the network ack delay.
+   *
+   * @param {Integer} [delay] The network ack delay.
    */
   this.ackDelay = function(delay) {
     if (delay === undefined) {
@@ -126,6 +135,9 @@ network.Network = function(obj) {
 
   /**
    * Adds a component to the network.
+   *
+   * @param {module:vertigo/network.Verticle|module:vertigo/network.Module} the component to add
+   * @returns {module:vertigo/network.Network} this
    */
   this.addComponent = function(component) {
     jnetwork.addComponent(component.__jcomponent);
@@ -203,11 +215,55 @@ network.Network = function(obj) {
 }
 
 /**
+ * Adds an event handler to an event bus hook listener.
+ */
+var add_hook = function(listener, event, handler) {
+  switch (event) {
+    case 'start':
+      listener.startHandler(new org.vertx.java.core.Handler({
+        handle: function(jcontext) {
+          handler(new context.InstanceContext(jcontext));
+        }
+      }));
+      break;
+    case 'receive':
+      listener.receiveHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'ack':
+      listener.ackHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'fail':
+      listener.failHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'emit':
+      listener.emitHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'acked':
+      listener.ackedHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'failed':
+      listener.failedHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'timeout':
+      listener.timeoutHandler(new org.vertx.java.core.Handler({handle: handler}));
+      break;
+    case 'stop':
+      listener.stopHandler(new org.vertx.java.core.Handler({
+        handle: function(jcontext) {
+          handler(new context.InstanceContext(jcontext));
+        }
+      }));
+      break;
+  }
+}
+
+/**
  * A verticle component.
  * @constructor
  */
 network.Verticle = function(obj) {
   var that = this;
+  var hook = null;
 
   if (typeof(obj) == 'string') {
     var jcomponent = new net.kuujo.vertigo.network.Verticle(obj);
@@ -223,6 +279,8 @@ network.Verticle = function(obj) {
 
   /**
    * Sets or gets the verticle main.
+   *
+   * @param {String} [main] The verticle main.
    */
   this.main = function(main) {
     if (main === undefined) {
@@ -236,6 +294,8 @@ network.Verticle = function(obj) {
 
   /**
    * Sets or gets the verticle configuration.
+   *
+   * @param {Object} [config] The JSON component configuration.
    */
   this.config = function(config) {
     if (config === undefined) {
@@ -249,6 +309,8 @@ network.Verticle = function(obj) {
 
   /**
    * Sets or gets the number of component instances.
+   *
+   * @param {Integer} [instances] The number of component instances.
    */
   this.instances = function(instances) {
     if (instances === undefined) {
@@ -258,6 +320,22 @@ network.Verticle = function(obj) {
       jcomponent.setInstances(instances);
       return that;
     }
+  }
+
+  /**
+   * Adds a hook handler for a specific component event.
+   *
+   * @param {String} event The hook event.
+   * @param {Handler} handler A hook handler.
+   * @returns {module:vertigo/network.Component} this
+   */
+  this.addHook = function(event, handler) {
+    jcomponent.addHook(new net.kuujo.vertigo.hooks.EventBusHook());
+    if (hook == null) {
+      hook = new net.kuujo.vertigo.hooks.EventBusHookListener(jcomponent.getAddress(), __jvertx.eventBus());
+    }
+    add_hook(hook, event, handler);
+    return that;
   }
 
   /**
@@ -293,6 +371,8 @@ network.Module = function(obj) {
 
   /**
    * Sets or gets the module name.
+   *
+   * @param {String} [module] The module name.
    */
   this.module = function(module) {
     if (module === undefined) {
@@ -306,6 +386,8 @@ network.Module = function(obj) {
 
   /**
    * Sets or gets the module configuration.
+   *
+   * @param {Object} [config] The JSON component configuration.
    */
   this.config = function(config) {
     if (config === undefined) {
@@ -319,6 +401,8 @@ network.Module = function(obj) {
 
   /**
    * Sets or gets the number of component instances.
+   *
+   * @param {Integer} [instances] The number of component instances.
    */
   this.instances = function(instances) {
     if (instances === undefined) {
@@ -328,6 +412,22 @@ network.Module = function(obj) {
       jcomponent.setInstances(instances);
       return that;
     }
+  }
+
+  /**
+   * Adds a hook handler for a specific component event.
+   *
+   * @param {String} event The hook event.
+   * @param {Handler} handler A hook handler.
+   * @returns {module:vertigo/network.Component} this
+   */
+  this.addHook = function(event, handler) {
+    jcomponent.addHook(new net.kuujo.vertigo.hooks.EventBusHook());
+    if (hook == null) {
+      hook = new net.kuujo.vertigo.hooks.EventBusHookListener(jcomponent.getAddress(), __jvertx.eventBus());
+    }
+    add_hook(hook, event, handler);
+    return that;
   }
 
   /**

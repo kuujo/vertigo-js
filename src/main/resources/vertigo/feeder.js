@@ -137,7 +137,7 @@ feeder.PollingFeeder = function(context) {
   var jfeeder = new net.kuujo.vertigo.feeder.DefaultPollingFeeder(__jvertx, __jcontainer, this.context.__jcontext);
 
   /**
-   * Sets the maximum feed queue size.
+   * Sets or gets the maximum feed queue size.
    */
   this.maxQueueSize = function(size) {
     if (size === undefined) {
@@ -157,7 +157,7 @@ feeder.PollingFeeder = function(context) {
   }
 
   /**
-   * Indicates whether to automatically retry failed feeds.
+   * Sets or gets whether to automatically retry failed feeds.
    */
   this.autoRetry = function(retry) {
     if (retry === undefined) {
@@ -170,7 +170,7 @@ feeder.PollingFeeder = function(context) {
   }
 
   /**
-   * Sets the number of automatic retry attempts.
+   * Sets or gets the number of automatic retry attempts.
    */
   this.retryAttempts = function(attempts) {
     if (attempts === undefined) {
@@ -183,7 +183,7 @@ feeder.PollingFeeder = function(context) {
   }
 
   /**
-   * Sets the feed delay.
+   * Sets or gets the feed delay.
    */
   this.feedDelay = function(delay) {
     if (delay === undefined) {
@@ -213,6 +213,12 @@ feeder.PollingFeeder = function(context) {
 
   /**
    * Sets a feed handler.
+   *
+   * This handler will be called with the feeder as the only argument whenever the
+   * feeder is prepared to accept new messages (i.e. the feed queue is not full).
+   *
+   * @param {Handler} handler A handler to be called to emit the next message.
+   * @returns {module:vertigo/feeder.PollingFeeder} this
    */
   this.feedHandler = function(handler) {
     jfeeder.feedHandler(new org.vertx.java.core.Handler({
@@ -225,16 +231,41 @@ feeder.PollingFeeder = function(context) {
 
   /**
    * Sets an ack handler.
+   *
+   * When a message completes processing, this handler will be called with the unique message ID.
+   *
+   * @param {Handler} handler A handler to be called when a message is completed.
+   * @returns {module:vertigo/feeder.PollingFeeder} this
    */
   this.ackHandler = function(handler) {
     jfeeder.ackHandler(new org.vertx.java.core.Handler({handle: handler}));
+    return that;
   }
 
   /**
    * Sets a fail handler.
+   *
+   * If a message is failed by a component, this handler will be called with the unique message ID.
+   *
+   * @param {Handler} handler A handler to be called when a message is failed.
+   * @returns {module:vertigo/feeder.PollingFeeder} this
    */
   this.failHandler = function(handler) {
     jfeeder.failHandler(new org.vertx.java.core.Handler({handle: handler}));
+    return that;
+  }
+
+  /**
+   * Sets a timeout handler.
+   *
+   * If a message times out, the timeout handler will be called with the unique message ID.
+   *
+   * @param {Handler} handler A handler to be called when a message times out.
+   * @returns {module:vertigo/feeder.PollingFeeder} this
+   */
+  this.timeoutHandler = function(handler) {
+    jfeeder.timeoutHandler(new org.vertx.java.core.Handler({handle: handler}));
+    return that;
   }
 
   /**
@@ -242,7 +273,6 @@ feeder.PollingFeeder = function(context) {
    *
    * @param {object} data The data to emit
    * @param {string} [tag] A tag to apply to the output message
-   *
    * @returns {string} a unique message identifier
    */
   this.emit = function(data) {

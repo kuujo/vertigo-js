@@ -37,6 +37,7 @@ cluster.LocalCluster = function() {
    *
    * @param {module:vertigo/network.Network} network The network to deploy
    * @param handler An asynchronous result handler
+   * @returns {module:vertigo/cluster.LocalCluster} this
    */
   this.deploy = function(network, handler) {
     if (handler !== undefined) {
@@ -47,6 +48,7 @@ cluster.LocalCluster = function() {
     else {
       jcluster.deploy(network.__jnetwork);
     }
+    return that;
   }
 
   /**
@@ -54,6 +56,7 @@ cluster.LocalCluster = function() {
    *
    * @param {module:vertigo/context.NetworkContext} network A network context
    * @param handler An asynchronous result handler
+   * @returns {module:vertigo/cluster.LocalCluster} this
    */
   this.shutdown = function(context, handler) {
     if (handler !== undefined) {
@@ -62,6 +65,7 @@ cluster.LocalCluster = function() {
     else {
       jcluster.shutdown(context.__jcontext);
     }
+    return that;
   }
 }
 
@@ -80,6 +84,7 @@ cluster.ViaCluster = function(address) {
    *
    * @param {module:vertigo/network.Network} network The network to deploy
    * @param handler An asynchronous result handler
+   * @returns {module:vertigo/cluster.LocalCluster} this
    */
   this.deploy = function(network, handler) {
     if (handler !== undefined) {
@@ -90,6 +95,7 @@ cluster.ViaCluster = function(address) {
     else {
       jcluster.deploy(network.__jnetwork);
     }
+    return that;
   }
 
   /**
@@ -97,6 +103,7 @@ cluster.ViaCluster = function(address) {
    *
    * @param {module:vertigo/context.NetworkContext} network A network context
    * @param handler An asynchronous result handler
+   * @returns {module:vertigo/cluster.LocalCluster} this
    */
   this.shutdown = function(context, handler) {
     if (handler !== undefined) {
@@ -105,6 +112,7 @@ cluster.ViaCluster = function(address) {
     else {
       jcluster.shutdown(context.__jcontext);
     }
+    return that;
   }
 }
 

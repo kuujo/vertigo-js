@@ -34,7 +34,7 @@ message.Message = function(jmessage) {
   this.body = JSON.parse(jmessage.body().encode());
   this.tag = jmessage.tag();
   this.parent = jmessage.parent();
-  this.ancestor = jmessage.ancestor();
+  this.root = jmessage.root();
   this.source = jmessage.source();
   this.auditor = jmessage.auditor();
 

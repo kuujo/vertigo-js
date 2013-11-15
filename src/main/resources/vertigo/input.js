@@ -43,7 +43,7 @@ input.Input = function(obj) {
   /**
    * Get the input address.
    *
-   * @returns {string} The input address
+   * @returns {string} The input address.
    */
   this.address = function() {
     return jinput.getAddress();
@@ -52,7 +52,7 @@ input.Input = function(obj) {
   /**
    * Adds an input grouping.
    *
-   * @param {Grouping} An input grouping
+   * @param {module:vertigo/grouping.Grouping} An input grouping.
    * @returns {module:vertigo/input.Input} this
    */
   this.groupBy = function(grouping) {
@@ -63,7 +63,7 @@ input.Input = function(obj) {
   /**
    * Adds an input filter.
    *
-   * @param {Filter} An input filter
+   * @param {module:vertigo/filter.Filter} An input filter.
    * @returns {module:vertigo/input.Input} this
    */
   this.filterBy = function(filter) {
@@ -92,7 +92,7 @@ input.Listener = function(obj) {
   /**
    * Sets or gets auto acking setting for the listener.
    *
-   * @param {boolean} autoAck Indicates whether to auto-ack received messages
+   * @param {boolean} [autoAck] Indicates whether to auto-ack received messages
    * @returns {module:vertigo/input.Listener} this
    */
   this.autoAck = function(autoAck) {
@@ -107,6 +107,10 @@ input.Listener = function(obj) {
 
   /**
    * Starts the listener.
+   *
+   * @param {Handler} [handler] An optional asynchronous handler to be called once the
+   * listener has been started.
+   * @returns {module:vertigo/input.Listener} this
    */
   this.start = function(handler) {
     if (handler) {
@@ -121,6 +125,9 @@ input.Listener = function(obj) {
 
   /**
    * Sets a message handler on the listener.
+   *
+   * @param {Handler} handler A handler to be called when each message is received.
+   * @returns {module:vertigo/input.Listener} this
    */
   this.messageHandler = function(handler) {
     jlistener.messageHandler(function(jmessage) {
@@ -131,6 +138,9 @@ input.Listener = function(obj) {
 
   /**
    * Acks a message.
+   *
+   * @param {module:vertigo/message.Message} The message to ack.
+   * @returns {module:vertigo/input.Listener} this
    */
   this.ack = function(message) {
     jlistener.ack(message.__jmessage);
@@ -139,6 +149,9 @@ input.Listener = function(obj) {
 
   /**
    * Fails a message.
+   *
+   * @param {module:vertigo/message.Message} The message to fail.
+   * @returns {module:vertigo/input.Listener} this
    */
   this.fail = function(message) {
     jlistener.fail(message.__jmessage);
@@ -147,6 +160,9 @@ input.Listener = function(obj) {
 
   /**
    * Stops the listener.
+   *
+   * @param {Handler} [handler] An optional asynchronous handler to be called once the
+   * listener has been started.
    */
   this.stop = function(handler) {
     if (handler) {
