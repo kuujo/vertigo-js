@@ -45,21 +45,6 @@ network.Network = function(obj) {
   this.address = jnetwork.getAddress();
 
   /**
-   * Gets or sets the network broadcast address.
-   *
-   * @param {String} [address] The network broadcast address.
-   */
-  this.broadcastAddress = function(address) {
-    if (address === undefined) {
-      return jnetwork.getBroadcastAddress();
-    }
-    else {
-      jnetwork.setBroadcastAddress(address);
-      return that;
-    }
-  }
-
-  /**
    * Enables acking on the network.
    *
    * @returns {module:vertigo/network.Network} this

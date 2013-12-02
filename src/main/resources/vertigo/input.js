@@ -60,17 +60,6 @@ input.Input = function(obj) {
     return that;
   }
 
-  /**
-   * Adds an input filter.
-   *
-   * @param {module:vertigo/filter.Filter} An input filter.
-   * @returns {module:vertigo/input.Input} this
-   */
-  this.filterBy = function(filter) {
-    jinput.filterBy(filter.__jfilter);
-    return that;
-  }
-
 }
 
 /**

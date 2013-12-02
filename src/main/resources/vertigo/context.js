@@ -143,15 +143,6 @@ context.NetworkContext = function(jcontext) {
   this.address = jcontext.getAddress();
 
   /**
-   * Returns the network broadcast address.
-   *
-   * @returns {string} The network broadcast address
-   */
-  this.broadcastAddress = function() {
-    return jcontext.getBroadcastAddress();
-  }
-
-  /**
    * Returns an array of network auditor addresses.
    */
   this.auditors = function() {
