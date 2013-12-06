@@ -29,23 +29,47 @@ message.Message = function(jmessage) {
   var that = this;
 
   this.__jmessage = jmessage;
-  this.__jmessage = jmessage;
-  this.id = jmessage.id();
-  this.body = JSON.parse(jmessage.body().encode());
-  this.tag = jmessage.tag();
-  this.parent = jmessage.parent();
-  this.root = jmessage.root();
-  this.source = jmessage.source();
-  this.auditor = jmessage.auditor();
 
   /**
-   * Copies the message.
-   *
-   * @returns {module:vertigo/message.Message} A copy of the message
+   * The message correlation ID.
    */
-  this.copy = function() {
-    return new message.Message(jmessage.copy());
-  }
+  this.id = jmessage.id().correlationId();
+
+  /**
+   * The message body.
+   */
+  this.body = JSON.parse(jmessage.body().encode());
+
+  /**
+   * The stream on which the message arrived.
+   */
+  this.stream = jmessage.stream();
+
+  /**
+   * Indicates whether the message has a parent.
+   */
+  this.hasParent = function() { return jmessage.id().hasParent(); }
+
+  /**
+   * The parent message correlation ID.
+   */
+  this.parent = jmessage.id().parent();
+
+  /**
+   * Indicates whether the message has a root.
+   */
+  this.hasRoot = function() { return jmessage.id().hasRoot(); }
+
+  /**
+   * The root message correlation ID.
+   */
+  this.root = jmessage.id().root();
+
+  /**
+   * The message source address.
+   */
+  this.source = jmessage.source();
+
 }
 
 module.exports = message;

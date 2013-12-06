@@ -15,6 +15,7 @@
  */
 var vertx = require('vertx');
 var container = require('vertx/container');
+load('vertx/helpers.js');
 
 /**
  * The 'vertigo' module provides all of the Vertigo API namespaced
@@ -33,24 +34,111 @@ var container = require('vertx/container');
  * @exports vertigo
  */
 var vertigo = {};
+this.__jvertigo = undefined;
+this.__jcontext = undefined;
+this.__jcomponent = undefined;
+
+vertigo.logger = __jcontainer.logger();
+
+// Attempt to create a component context from the verticle configuration.
+var __jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
+
+// Create a Vertigo factory.
+var vertigoFactory = new net.kuujo.vertigo.DefaultVertigoFactory(__jvertx, __jcontainer);
+
+// If the context was successfully created then this is a component instance.
+// For component instances, create the component and then instantiate a Vertigo instance.
+if (__jcontext !== null) {
+  this.__jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
+  var componentFactory = new net.kuujo.vertigo.component.DefaultComponentFactory(__jvertx, __jcontainer);
+  var __componentType = net.kuujo.vertigo.util.Component.serializeType(__jcontext.getComponent().getType());
+  this.__jcomponent = componentFactory.createComponent(__jcontext);
+}
+// For non-component verticles, instantiate an empty Vertigo instance.
+else {
+  this.__jvertigo = vertigoFactory.createVertigo();
+}
 
 var context = require('vertigo/context');
 
 /**
- * A Vertigo instance.
+ * The component instance context.
+ *
+ * @see module:vertigo/context.InstanceContext
  */
-vertigo.vertigo = new net.kuujo.vertigo.Vertigo(__jvertx, __jcontainer);
+vertigo.context = undefined;
+
+/**
+ * The vertigo feeder module.
+ *
+ * @see module:vertigo/feeder
+ */
+vertigo.feeder = undefined;
+
+/**
+ * The vertigo executor module.
+ *
+ * @see module:vertigo/executor
+ */
+vertigo.executor = undefined;
+
+/**
+ * The vertigo worker module.
+ *
+ * @see module:vertigo/worker
+ */
+vertigo.worker = undefined;
+
+/**
+ * The vertigo filter module.
+ *
+ * @see module:vertigo/filter
+ */
+vertigo.filter = undefined;
+
+/**
+ * The vertigo splitter module.
+ *
+ * @see module:vertigo/splitter
+ */
+vertigo.splitter = undefined;
+
+/**
+ * The vertigo aggregator module.
+ *
+ * @see module:vertigo/aggregator
+ */
+vertigo.aggregator = undefined;
 
 /**
  * A Vertigo context.
  *
  * @see module:vertigo/context.InstanceContext
  */
-if (vertigo.vertigo.isComponent()) {
-  vertigo.context = new context.InstanceContext(vertigo.vertigo.getContext());
-}
-else {
-  vertigo.context = null;
+if (__jvertigo.isComponent()) {
+  vertigo.context = new context.InstanceContext(__jvertigo.context());
+
+  var componentType = net.kuujo.vertigo.util.Component.serializeType(__jvertigo.context().getComponent().getType());
+  switch (componentType) {
+    case "feeder":
+      vertigo.feeder = require('vertigo/feeder');
+      break;
+    case "executor":
+      vertigo.executor = require('vertigo/executor');
+      break;
+    case "worker":
+      vertigo.worker = require('vertigo/worker');
+      break;
+    case "filter":
+      vertigo.filter = require('vertigo/filter');
+      break;
+    case "splitter":
+      vertigo.splitter = require('vertigo/splitter');
+      break;
+    case "aggregator":
+      vertigo.aggregator = require('vertigo/aggregator');
+      break;
+  }
 }
 
 /**
@@ -59,7 +147,7 @@ else {
  * @returns {Boolean} Indicates whether this verticle is a Vertigo component.
  */
 vertigo.isComponent = function() {
-  return vertigo.vertigo.isComponent();
+  return __jvertigo.isComponent();
 }
 
 /**
@@ -84,13 +172,6 @@ vertigo.input = require('vertigo/input');
 vertigo.grouping = require('vertigo/grouping');
 
 /**
- * The vertigo filter module.
- *
- * @see module:vertigo/filter
- */
-vertigo.filter = require('vertigo/filter');
-
-/**
  * Creates a new Vertigo network.
  *
  * @param {string} address The network address
@@ -101,89 +182,51 @@ vertigo.createNetwork = function(address) {
 }
 
 /**
- * The vertigo feeder module.
- *
- * @see module:vertigo/feeder
+ * Deploys a local network.
  */
-vertigo.feeder = require('vertigo/feeder');
-
-/**
- * Creates a basic feeder.
- *
- * @returns {module:vertigo/feeder.BasicFeeder} A basic feeder
- */
-vertigo.createBasicFeeder = function() {
-  return new vertigo.feeder.BasicFeeder(vertigo.context);
-}
-
-vertigo.createFeeder = vertigo.createBasicFeeder;
-
-/**
- * Creates a polling feeder.
- *
- * @returns {module:vertigo/feeder.PollingFeeder} A polling feeder
- */
-vertigo.createPollingFeeder = function() {
-  return new vertigo.feeder.PollingFeeder(vertigo.context);
+vertigo.deployLocalNetwork = function(network, doneHandler) {
+  if (doneHandler !== undefined) {
+    doneHandler = adaptAsyncResultHandler(doneHandler, function(result) {
+      return context.NetworkContext(result);
+    });
+  }
+  __jvertigo.deployLocalNetwork(network.__jnetwork, doneHandler);
+  return vertigo;
 }
 
 /**
- * Creates a stream feeder.
- *
- * @returns {module:vertigo/feeder.StreamFeeder} A stream feeder
+ * Shuts down a local network.
  */
-vertigo.createStreamFeeder = function() {
-  return new vertigo.feeder.StreamFeeder(vertigo.context);
+vertigo.shutdownLocalNetwork = function(context, doneHandler) {
+  if (doneHandler !== undefined) {
+    doneHandler = adaptAsyncResultHandler(doneHandler);
+  }
+  __jvertigo.shutdownLocalNetwork(context.__jcontext, doneHandler);
+  return vertigo;
 }
 
 /**
- * The vertigo RPC module.
- *
- * @see module:vertigo/rpc
+ * Deploys a remote network.
  */
-vertigo.rpc = require('vertigo/rpc');
-
-/**
- * Creates a polling executor.
- *
- * @returns {module:vertigo/rpc.PollingExecutor} A polling executor
- */
-vertigo.createPollingExecutor = function() {
-  return new vertigo.rpc.PollingExecutor(vertigo.context);
+vertigo.deployRemoteNetwork = function(address, network, doneHandler) {
+  if (doneHandler) {
+    doneHandler = adaptAsyncResultHandler(doneHandler, function(result) {
+      return context.NetworkContext(result);
+    });
+  }
+  __jvertigo.deployRemoteNetwork(address, network, doneHandler);
+  return vertigo;
 }
 
 /**
- * Creates a stream executor.
- *
- * @returns {module:vertigo/rpc.StreamExecutor} A stream executor
+ * Shuts down a remote network.
  */
-vertigo.createStreamExecutor = function() {
-  return new vertigo.rpc.StreamExecutor(vertigo.context);
-}
-
-/**
- * The vertigo worker module.
- *
- * @see module:vertigo/worker
- */
-vertigo.worker = require('vertigo/worker');
-
-/**
- * Creates a basic worker.
- *
- * @returns {module:vertigo/worker.BasicWorker} A basic worker
- */
-vertigo.createWorker = function() {
-  return new vertigo.worker.BasicWorker(vertigo.context);
-}
-
-/**
- * Creates a basic worker.
- *
- * @returns {module:vertigo/worker.BasicWorker} A basic worker
- */
-vertigo.createBasicWorker = function() {
-  return new vertigo.worker.BasicWorker(vertigo.context);
+vertigo.shutdownRemoteNetwork = function(address, context, doneHandler) {
+  if (doneHandler !== undefined) {
+    doneHandler = adaptAsyncResultHandler(doneHandler);
+  }
+  __jvertigo.shutdownRemoteNetwork(address, context.__jcontext, doneHandler);
+  return vertigo;
 }
 
 /**

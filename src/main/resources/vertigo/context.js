@@ -26,9 +26,17 @@ var context = {};
  * @constructor
  */
 context.InstanceContext = function(jcontext) {
+  var that = this;
   this.__jcontext = jcontext;
 
   this.id = jcontext.id();
+
+  /**
+   * Returns the instance type.
+   */
+  this.type = function() {
+    return that.component().type();
+  }
 
   /**
    * Returns the parent component context.
@@ -54,7 +62,7 @@ context.ComponentContext = function(jcontext) {
    * Returns the component type.
    */
   this.type = function() {
-    return jcontext.getType();
+    return net.kuujo.vertigo.util.Component.serializeType(jcontext.getType());
   }
 
   /**

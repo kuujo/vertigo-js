@@ -50,6 +50,22 @@ input.Input = function(obj) {
   }
 
   /**
+   * Gets or sets the input stream.
+   *
+   * @param {string} stream The input stream name.
+   * @returns {string} The input stream name.
+   */
+  this.stream = function(stream) {
+    if (stream === undefined) {
+      return jinput.getStream();
+    }
+    else {
+      jinput.setStream(stream);
+      return that;
+    }
+  }
+
+  /**
    * Adds an input grouping.
    *
    * @param {module:vertigo/grouping.Grouping} An input grouping.
@@ -57,6 +73,38 @@ input.Input = function(obj) {
    */
   this.groupBy = function(grouping) {
     jinput.groupBy(grouping.__jgrouping);
+    return that;
+  }
+
+  /**
+   * Sets a random grouping on the input.
+   */
+  this.randomGrouping = function() {
+    jinput.randomGrouping();
+    return that;
+  }
+
+  /**
+   * Sets a round-robin grouping on the input.
+   */
+  this.roundGrouping = function() {
+    jinput.roundGrouping();
+    return that;
+  }
+
+  /**
+   * Sets a fields grouping on the input.
+   */
+  this.fieldsGrouping = function(fields) {
+    jinput.fieldsGrouping(fields);
+    return that;
+  }
+
+  /**
+   * Sets an all grouping on the input.
+   */
+  this.allGrouping = function() {
+    jinput.allGrouping();
     return that;
   }
 
