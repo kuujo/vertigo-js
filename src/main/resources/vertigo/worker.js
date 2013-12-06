@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-load('vertx/helpers.js');
-
-var vertigo = require('vertigo');
 var message = require('vertigo/message');
 
 /**
@@ -26,98 +23,52 @@ var message = require('vertigo/message');
 var worker = {};
 
 /**
- * A basic worker.
- * @constructor
+ * Sets a message handler on the worker.
+ *
+ * @param {Handler} handler The message handler.
+ * @returns {module:vertigo/worker} The worker instance.
  */
-worker.BasicWorker = function(context) {
-  var that = this;
-
-  if (context === undefined) {
-    context = vertigo.context;
-  }
-
-  this.context = context;
-  var jworker = new net.kuujo.vertigo.worker.BasicWorker(__jvertx, __jcontainer, this.context.__jcontext);
-
-  /**
-   * Starts the worker.
-   */
-  this.start = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(result) {
-        return that;
-      });
-      jworker.start(handler);
-    }
-    else {
-      jworker.start();
-    }
-    return that;
-  }
-
-  /**
-   * Sets a message handler on the worker.
-   */
-  this.messageHandler = function(handler) {
-    jworker.messageHandler(function(jmessage) {
+worker.messageHandler = function(handler) {
+  __jcomponent.messageHandler(new org.vertx.java.core.Handler({
+    handle: function(jmessage) {
       handler(new message.Message(jmessage));
-    });
-    return that;
-  }
-
-  /**
-   * Emits a message.
-   *
-   * @param {object} data the data to emit
-   * @param {string} [tag] a tag to apply to the message
-   * @param {module:vertigo/message.Message} [parent] an optional message parent
-   *
-   * @returns {string} the unique emitted message identifier
-   */
-  this.emit = function(data) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var parent = getArgValue('object', args);
-    var tag = getArgValue('string', args);
-    if (typeof(data) != 'object') {
-      throw 'Invalid data type for emit()';
     }
-    else if (parent != null && tag != null) {
-      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, parent.__jmessage);
-    }
-    else if (parent != null) {
-      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), parent.__jmessage)
-    }
-    else if (tag != null) {
-      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
-    }
-    else {
-      return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)));
-    }
-  }
-
-  /**
-   * Acks a message.
-   */
-  this.ack = function(message) {
-    jworker.ack(message.__jmessage);
-    return that;
-  }
-
-  /**
-   * Fails a message.
-   */
-  this.fail = function(message) {
-    jworker.fail(message.__jmessage);
-    return that;
-  }
-
+  }));
+  return worker;
 }
 
 /**
- * A basic worker.
- * @constructor
+ * Emits data from the worker.
+ *
+ * @param {object} data The data to emit.
+ * @param {string} [stream] The stream to which to emit the message.
+ * @param {module:vertigo/message.Message} The parent message.
+ *
+ * @returns {string} a unique message identifier.
  */
-worker.Worker = worker.BasicWorker;
+worker.emit = function() {
+  var args = Array.prototype.slice.call(arguments);
+
+  var obj2 = getArgValue('object', args);
+  var obj1 = getArgValue('object', args);
+  var stream = getArgValue('string', args);
+
+  if (obj1 != null && obj2 != null) {
+    if (stream != null) {
+      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(obj1)), obj2.__jmessage).correlationId();
+    }
+    else {
+      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(obj1)), obj2.__jmessage).correlationId();
+    }
+  }
+  else if (obj2 != null) {
+    if (stream != null) {
+      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(obj2))).correlationId();
+    }
+    else {
+      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(obj2))).correlationId();
+    }
+  }
+}
 
 module.exports = worker;

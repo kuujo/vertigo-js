@@ -15,8 +15,6 @@
  */
 load('vertx/helpers.js');
 
-var vertigo = require('vertigo');
-
 /**
  * The <code>vertigo/feeder</code> module provides Vertigo feeder
  * component classes.
@@ -25,389 +23,143 @@ var vertigo = require('vertigo');
 var feeder = {};
 
 /**
- * A basic feeder.
- * @constructor
+ * Sets or gets the maximum feed queue size.
+ *
+ * @param {Integer} [size] The maximum feed queue size.
+ * @returns {module:vertigo/feeder} The feeder instance.
  */
-feeder.BasicFeeder = function(context) {
-  var that = this;
-
-  if (context === undefined) {
-    context = vertigo.context;
+feeder.feedQueueMaxSize = function(size) {
+  if (size === undefined) {
+    return __jcomponent.getFeedQueueMaxSize();
   }
-
-  this.context = context;
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultBasicFeeder(__jvertx, __jcontainer, this.context.__jcontext);
-
-  /**
-   * Sets the maximum feed queue size.
-   */
-  this.maxQueueSize = function(size) {
-    if (size === undefined) {
-      return jfeeder.getMaxQueueSize();
-    }
-    else {
-      jfeeder.setMaxQueueSize(size);
-      return that;
-    }
+  else {
+    __jcomponent.setFeedQueueMaxSize(size);
+    return feeder;
   }
-
-  /**
-   * Indicates whether the feed queue is full.
-   */
-  this.queueFull = function() {
-    return jfeeder.queueFull();
-  }
-
-  /**
-   * Indicates whether to automatically retry failed feeds.
-   */
-  this.autoRetry = function(retry) {
-    if (retry === undefined) {
-      return jfeeder.isAutoRetry();
-    }
-    else {
-      jfeeder.setAutoRetry(retry);
-      return that;
-    }
-  }
-
-  /**
-   * Sets the number of automatic retry attempts.
-   */
-  this.retryAttempts = function(attempts) {
-    if (attempts === undefined) {
-      return jfeeder.getRetryAttempts();
-    }
-    else {
-      jfeeder.setRetryAttempts(attempts);
-      return that;
-    }
-  }
-
-  /**
-   * Starts the feeder.
-   */
-  this.start = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(result) {
-        return that;
-      });
-      jfeeder.start(handler);
-    }
-    else {
-      jfeeder.start();
-    }
-    return that;
-  }
-
-  /**
-   * Emits data from the feeder.
-   *
-   * @param {object} data The data to emit
-   * @param {string} [tag] A tag to apply to the output message
-   *
-   * @returns {string} a unique message identifier
-   */
-  this.emit = function(data) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var tag = getArgValue('string', args);
-    if (typeof(data) != 'object') {
-      throw 'Invalid data type for emit()';
-    }
-    else {
-      return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag);
-    }
-  }
-
 }
 
 /**
- * A polling feeder.
- * @constructor
+ * Indicates whether the feed queue is full.
+ *
+ * @returns {Boolean} Indicates whether the queue is full.
  */
-feeder.PollingFeeder = function(context) {
-  var that = this;
-
-  if (context === undefined) {
-    context = vertigo.context;
-  }
-
-  this.context = context;
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultPollingFeeder(__jvertx, __jcontainer, this.context.__jcontext);
-
-  /**
-   * Sets or gets the maximum feed queue size.
-   */
-  this.maxQueueSize = function(size) {
-    if (size === undefined) {
-      return jfeeder.getMaxQueueSize();
-    }
-    else {
-      jfeeder.setMaxQueueSize(size);
-      return that;
-    }
-  }
-
-  /**
-   * Indicates whether the feed queue is full.
-   */
-  this.queueFull = function() {
-    return jfeeder.queueFull();
-  }
-
-  /**
-   * Sets or gets whether to automatically retry failed feeds.
-   */
-  this.autoRetry = function(retry) {
-    if (retry === undefined) {
-      return jfeeder.isAutoRetry();
-    }
-    else {
-      jfeeder.setAutoRetry(retry);
-      return that;
-    }
-  }
-
-  /**
-   * Sets or gets the number of automatic retry attempts.
-   */
-  this.retryAttempts = function(attempts) {
-    if (attempts === undefined) {
-      return jfeeder.getRetryAttempts();
-    }
-    else {
-      jfeeder.setRetryAttempts(attempts);
-      return that;
-    }
-  }
-
-  /**
-   * Sets or gets the feed delay.
-   */
-  this.feedDelay = function(delay) {
-    if (delay === undefined) {
-      return jfeeder.getFeedDelay();
-    }
-    else {
-      jfeeder.setFeedDelay(delay);
-      return that;
-    }
-  }
-
-  /**
-   * Starts the feeder.
-   */
-  this.start = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(result) {
-        return that;
-      });
-      jfeeder.start(handler);
-    }
-    else {
-      jfeeder.start();
-    }
-    return that;
-  }
-
-  /**
-   * Sets a feed handler.
-   *
-   * This handler will be called with the feeder as the only argument whenever the
-   * feeder is prepared to accept new messages (i.e. the feed queue is not full).
-   *
-   * @param {Handler} handler A handler to be called to emit the next message.
-   * @returns {module:vertigo/feeder.PollingFeeder} this
-   */
-  this.feedHandler = function(handler) {
-    jfeeder.feedHandler(new org.vertx.java.core.Handler({
-      handle: function(jfeeder) {
-        handler(that);
-      }
-    }));
-    return that;
-  }
-
-  /**
-   * Sets an ack handler.
-   *
-   * When a message completes processing, this handler will be called with the unique message ID.
-   *
-   * @param {Handler} handler A handler to be called when a message is completed.
-   * @returns {module:vertigo/feeder.PollingFeeder} this
-   */
-  this.ackHandler = function(handler) {
-    jfeeder.ackHandler(new org.vertx.java.core.Handler({handle: handler}));
-    return that;
-  }
-
-  /**
-   * Sets a fail handler.
-   *
-   * If a message is failed by a component, this handler will be called with the unique message ID.
-   *
-   * @param {Handler} handler A handler to be called when a message is failed.
-   * @returns {module:vertigo/feeder.PollingFeeder} this
-   */
-  this.failHandler = function(handler) {
-    jfeeder.failHandler(new org.vertx.java.core.Handler({handle: handler}));
-    return that;
-  }
-
-  /**
-   * Sets a timeout handler.
-   *
-   * If a message times out, the timeout handler will be called with the unique message ID.
-   *
-   * @param {Handler} handler A handler to be called when a message times out.
-   * @returns {module:vertigo/feeder.PollingFeeder} this
-   */
-  this.timeoutHandler = function(handler) {
-    jfeeder.timeoutHandler(new org.vertx.java.core.Handler({handle: handler}));
-    return that;
-  }
-
-  /**
-   * Emits data from the feeder.
-   *
-   * @param {object} data The data to emit
-   * @param {string} [tag] A tag to apply to the output message
-   * @returns {string} a unique message identifier
-   */
-  this.emit = function(data) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var tag = getArgValue('string', args);
-    if (typeof(data) != 'object') {
-      throw 'Invalid data type for emit()';
-    }
-    else {
-      return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
-    }
-  }
-
+feeder.feedQueueFull = function() {
+  return __jcomponent.feedQueueFull();
 }
 
 /**
- * A ReadStream integration feeder.
- * @constructor
+ * Sets or gets the auto retry option for the feeder.
+ *
+ * @param {Boolean} [retry] Whether auto retry is enabled.
+ * @returns {module:vertigo/feeder} The feeder instance.
  */
-feeder.StreamFeeder = function(context) {
-  var that = this;
-
-  if (context === undefined) {
-    context = vertigo.context;
+feeder.autoRetry = function(retry) {
+  if (retry === undefined) {
+    return __jcomponent.isAutoRetry();
   }
+  else {
+    __jcomponent.setAutoRetry(retry);
+    return feeder;
+  }
+}
 
-  this.context = context;
-  var jfeeder = new net.kuujo.vertigo.feeder.DefaultStreamFeeder(__jvertx, __jcontainer, this.context.__jcontext);
+/**
+ * Sets or gets the number of auto retry attempts.
+ *
+ * @param {Integer} [attempts] The number of auto retry attempts before
+ * the feeder will consider a message to be timed out.
+ * @returns {module:vertigo/feeder} The feeder instance.
+ */
+feeder.autoRetryAttempts = function(attempts) {
+  if (attempts === undefined) {
+    return __jcomponent.getAutoRetryAttempts();
+  }
+  else {
+    __jcomponent.setAutoRetryAttempts(attempts);
+    return feeder;
+  }
+}
 
-  /**
-   * Sets the maximum feed queue size.
-   */
-  this.maxQueueSize = function(size) {
-    if (size === undefined) {
-      return jfeeder.getMaxQueueSize();
+/**
+ * Sets or gets the feed handler interval.
+ *
+ * @param {Integer} [attempts] The interval at which the feeder will
+ * poll the feed handler for new messages.
+ * @returns {module:vertigo/feeder} The feeder instance.
+ */
+feeder.feedInterval = function(interval) {
+  if (interval === undefined) {
+    return __jcomponent.getFeedInterval();
+  }
+  else {
+    __jcomponent.setFeedInterval(interval);
+    return feeder;
+  }
+}
+
+/**
+ * Sets a feed handler on the feeder.
+ *
+ * @param {Handler} handler A handler to be called whenever the feeder
+ * is prepared to accept new messages. This handler will be called with
+ * the feeder as its only argument.
+ * @returns {module:vertigo/feeder} The feeder instance.
+ */
+feeder.feedHandler = function(handler) {
+  __jcomponent.feedHandler(new org.vertx.java.core.Handler({
+    handle: function(jfeeder) {
+      handler(feeder);
+    }
+  }));
+  return feeder;
+}
+
+/**
+ * Sets a drain handler on the feeder.
+ *
+ * @param {Handler} handler A handler to be called when a full feeder
+ * is prepared to accept new messages.
+ */
+feeder.drainHandler = function(handler) {
+  __jcomponent.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
+  return feeder;
+}
+
+/**
+ * Emits data from the feeder.
+ *
+ * @param {object} data The data to emit.
+ * @param {string} [stream] The stream to which to emit the message.
+ * @param {AckHandler} handler A handler to be called once the message is acked.
+ *
+ * @returns {string} a unique message identifier.
+ */
+feeder.emit = function() {
+  var args = Array.prototype.slice.call(arguments);
+  var ackHandler = getArgValue('function', args);
+  var body = getArgValue('object', args);
+  var stream = getArgValue('string', args);
+
+  if (stream) {
+    if (ackHandler) {
+      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(ackHandler, function(result) {
+        return result.correlationId();
+      })).correlationId();
     }
     else {
-      jfeeder.setMaxQueueSize(size);
-      return that;
+      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
     }
   }
-
-  /**
-   * Indicates whether the feed queue is full.
-   */
-  this.queueFull = function() {
-    return jfeeder.queueFull();
-  }
-
-  /**
-   * Indicates whether to automatically retry failed feeds.
-   */
-  this.autoRetry = function(retry) {
-    if (retry === undefined) {
-      return jfeeder.isAutoRetry();
+  else {
+    if (ackHandler) {
+      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(ackHandler, function(result) {
+        return result.correlationId();
+      })).correlationId();
     }
     else {
-      jfeeder.setAutoRetry(retry);
-      return that;
+      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
     }
   }
-
-  /**
-   * Sets the number of automatic retry attempts.
-   */
-  this.retryAttempts = function(attempts) {
-    if (attempts === undefined) {
-      return jfeeder.getRetryAttempts();
-    }
-    else {
-      jfeeder.setRetryAttempts(attempts);
-      return that;
-    }
-  }
-
-  /**
-   * Starts the feeder.
-   *
-   * @param {Handler} [handler] An asynchronous handler to be called
-   * once the feeder is started.
-   *
-   * @returns {module:vertigo/feeder/StreamFeeder} this
-   */
-  this.start = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler, function(result) {
-        return that;
-      });
-      jfeeder.start(handler);
-    }
-    else {
-      jfeeder.start();
-    }
-    return that;
-  }
-
-  /**
-   * Sets a drain handler on the feeder.
-   *
-   * @param {Handler} [handler] A handler to be called when a full feeder
-   * is prepared to accept new messages
-   *
-   * @returns {module:vertigo/feeder/StreamFeeder} this
-   */
-  this.drainHandler = function(handler) {
-    jfeeder.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
-    return that;
-  }
-
-  /**
-   * Emits data from the feeder.
-   *
-   * @param {object} data The data to emit
-   * @param {string} [tag] A tag to apply to the output message
-   * @param {AckHandler} handler A handler to be called once the message is acked
-   *
-   * @returns {string} a unique message identifier
-   */
-  this.emit = function(data) {
-    var args = Array.prototype.slice.call(arguments);
-    args.shift();
-    var handler = getArgValue('function', args);
-    var tag = getArgValue('string', args);
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-    }
-    if (typeof(data) != 'object') {
-      throw 'Invalid data type for emit()';
-    }
-    else {
-      return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(data)), tag, handler);
-    }
-  }
-
 }
 
 module.exports = feeder;
