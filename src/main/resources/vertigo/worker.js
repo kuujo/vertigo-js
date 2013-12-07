@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+load('vertigo/helpers.js');
+validate_component_type('worker');
+
 var message = require('vertigo/message');
 
 /**
@@ -21,6 +24,43 @@ var message = require('vertigo/message');
  * @exports vertigo/worker
  */
 var worker = {};
+
+var _startHandler = null;
+var _started = false;
+var _error = null;
+
+function check_start() {
+  if (_started && _startHandler != null) {
+    _startHandler(_error, worker);
+  }
+}
+
+/**
+ * Sets a start handler on the worker.
+ *
+ * @param {Handler} handler A handler to be called when the worker is started.
+ * @returns {module:vertigo/worker} The worker instance.
+ */
+worker.startHandler = function(handler) {
+  _startHandler = handler;
+  check_start();
+  return worker;
+}
+
+/**
+ * Starts the worker.
+ *
+ * @returns {module:vertigo/worker} The worker instance.
+ */
+worker.start = function() {
+  handler = adaptAsyncResultHandler(function(error, jworker) {
+    _started = true;
+    _error = error;
+    check_start();
+  });
+  __jcomponent.start(handler);
+  return worker;
+}
 
 /**
  * Sets a message handler on the worker.

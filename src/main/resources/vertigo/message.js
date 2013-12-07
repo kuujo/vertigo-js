@@ -33,7 +33,7 @@ message.Message = function(jmessage) {
   /**
    * The message correlation ID.
    */
-  this.id = jmessage.id().correlationId();
+  this.id = jmessage.messageId().correlationId();
 
   /**
    * The message body.
@@ -48,22 +48,22 @@ message.Message = function(jmessage) {
   /**
    * Indicates whether the message has a parent.
    */
-  this.hasParent = function() { return jmessage.id().hasParent(); }
+  this.hasParent = function() { return jmessage.messageId().hasParent(); }
 
   /**
    * The parent message correlation ID.
    */
-  this.parent = jmessage.id().parent();
+  this.parent = jmessage.messageId().parent();
 
   /**
    * Indicates whether the message has a root.
    */
-  this.hasRoot = function() { return jmessage.id().hasRoot(); }
+  this.hasRoot = function() { return jmessage.messageId().hasRoot(); }
 
   /**
    * The root message correlation ID.
    */
-  this.root = jmessage.id().root();
+  this.root = jmessage.messageId().root();
 
   /**
    * The message source address.

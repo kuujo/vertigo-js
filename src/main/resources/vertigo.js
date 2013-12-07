@@ -121,22 +121,22 @@ if (__jvertigo.isComponent()) {
   var componentType = net.kuujo.vertigo.util.Component.serializeType(__jvertigo.context().getComponent().getType());
   switch (componentType) {
     case "feeder":
-      vertigo.feeder = require('vertigo/feeder');
+      vertigo.feeder = require('vertigo/feeder').start();
       break;
     case "executor":
-      vertigo.executor = require('vertigo/executor');
+      vertigo.executor = require('vertigo/executor').start();
       break;
     case "worker":
-      vertigo.worker = require('vertigo/worker');
+      vertigo.worker = require('vertigo/worker').start();
       break;
     case "filter":
-      vertigo.filter = require('vertigo/filter');
+      vertigo.filter = require('vertigo/filter').start();
       break;
     case "splitter":
-      vertigo.splitter = require('vertigo/splitter');
+      vertigo.splitter = require('vertigo/splitter').start();
       break;
     case "aggregator":
-      vertigo.aggregator = require('vertigo/aggregator');
+      vertigo.aggregator = require('vertigo/aggregator').start();
       break;
   }
 }

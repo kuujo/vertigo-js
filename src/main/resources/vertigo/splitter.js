@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+load('vertigo/helpers.js');
+validate_component_type('splitter');
 
 var message = require('vertigo/message');
 
@@ -22,6 +24,43 @@ var message = require('vertigo/message');
  * @exports vertigo/splitter
  */
 var splitter = {};
+
+var _startHandler = null;
+var _started = false;
+var _error = null;
+
+function check_start() {
+  if (_started && _startHandler != null) {
+    _startHandler(_error, splitter);
+  }
+}
+
+/**
+ * Sets a start handler on the splitter.
+ *
+ * @param {Handler} handler A handler to be called when the splitter is started.
+ * @returns {module:vertigo/splitter} The splitter instance.
+ */
+splitter.startHandler = function(handler) {
+  _startHandler = handler;
+  check_start();
+  return splitter;
+}
+
+/**
+ * Starts the splitter.
+ *
+ * @returns {module:vertigo/splitter} The splitter instance.
+ */
+splitter.start = function() {
+  handler = adaptAsyncResultHandler(function(error, jsplitter) {
+    _started = true;
+    _error = error;
+    check_start();
+  });
+  __jcomponent.start(handler);
+  return splitter;
+}
 
 /**
  * Sets a split function on the splitter.

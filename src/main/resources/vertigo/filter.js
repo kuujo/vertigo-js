@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+load('vertigo/helpers.js');
+validate_component_type('filter');
 
 var message = require('vertigo/message');
 
@@ -22,6 +24,43 @@ var message = require('vertigo/message');
  * @exports vertigo/filter
  */
 var filter = {};
+
+var _startHandler = null;
+var _started = false;
+var _error = null;
+
+function check_start() {
+  if (_started && _startHandler != null) {
+    _startHandler(_error, filter);
+  }
+}
+
+/**
+ * Sets a start handler on the filter.
+ *
+ * @param {Handler} handler A handler to be called when the filter is started.
+ * @returns {module:vertigo/filter} The filter instance.
+ */
+filter.startHandler = function(handler) {
+  _startHandler = handler;
+  check_start();
+  return filter;
+}
+
+/**
+ * Starts the filter.
+ *
+ * @returns {module:vertigo/filter} The filter instance.
+ */
+filter.start = function() {
+  handler = adaptAsyncResultHandler(function(error, jfilter) {
+    _started = true;
+    _error = error;
+    check_start();
+  });
+  __jcomponent.start(handler);
+  return filter;
+}
 
 /**
  * Sets a filter function on the filter.

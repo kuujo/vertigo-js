@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 load('vertx/helpers.js');
+load('vertigo/helpers.js');
+validate_component_type('executor');
 
 var message = require('vertigo/message');
 
@@ -23,6 +25,16 @@ var message = require('vertigo/message');
  * @exports vertigo/executor
  */
 var executor = {};
+
+var _startHandler = null;
+var _started = false;
+var _error = null;
+
+function check_start() {
+  if (_started && _startHandler != null) {
+    _startHandler(_error, executor);
+  }
+}
 
 /**
  * Sets or gets the maximum execute queue size.
@@ -124,6 +136,33 @@ executor.executeHandler = function(handler) {
  */
 executor.drainHandler = function(handler) {
   __jcomponent.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
+  return executor;
+}
+
+/**
+ * Sets a start handler on the executor.
+ *
+ * @param {Handler} handler A handler to be called when the executor is started.
+ * @returns {module:vertigo/executor} The executor instance.
+ */
+executor.startHandler = function(handler) {
+  _startHandler = handler;
+  check_start();
+  return executor;
+}
+
+/**
+ * Starts the executor.
+ *
+ * @returns {module:vertigo/executor} The executor instance.
+ */
+executor.start = function() {
+  handler = adaptAsyncResultHandler(function(error, jexecutor) {
+    _started = true;
+    _error = error;
+    check_start();
+  });
+  __jcomponent.start(handler);
   return executor;
 }
 

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+load('vertigo/helpers.js');
+validate_component_type('aggregator');
 
 var message = require('vertigo/message');
 
@@ -22,6 +24,43 @@ var message = require('vertigo/message');
  * @exports vertigo/aggregator
  */
 var aggregator = {};
+
+var _startHandler = null;
+var _started = false;
+var _error = null;
+
+function check_start() {
+  if (_started && _startHandler != null) {
+    _startHandler(_error, aggregator);
+  }
+}
+
+/**
+ * Sets a start handler on the aggregator.
+ *
+ * @param {Handler} handler A handler to be called when the aggregator is started.
+ * @returns {module:vertigo/aggregator} The aggregator instance.
+ */
+aggregator.startHandler = function(handler) {
+  _startHandler = handler;
+  check_start();
+  return aggregator;
+}
+
+/**
+ * Starts the aggregator.
+ *
+ * @returns {module:vertigo/aggregator} The aggregator instance.
+ */
+aggregator.start = function() {
+  handler = adaptAsyncResultHandler(function(error, jaggregator) {
+    _started = true;
+    _error = error;
+    check_start();
+  });
+  __jcomponent.start(handler);
+  return aggregator;
+}
 
 /**
  * Sets an initializer function on the aggregator.

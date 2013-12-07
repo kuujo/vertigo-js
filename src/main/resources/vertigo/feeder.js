@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 load('vertx/helpers.js');
+load('vertigo/helpers.js');
+validate_component_type('feeder');
 
 /**
  * The <code>vertigo/feeder</code> module provides Vertigo feeder
@@ -21,6 +23,17 @@ load('vertx/helpers.js');
  * @exports vertigo/feeder
  */
 var feeder = {};
+
+var _startHandler = null;
+var _started = false;
+var _error = null;
+var _ackHandler = null;
+
+function check_start() {
+  if (_started && _startHandler != null) {
+    _startHandler(_error, feeder);
+  }
+}
 
 /**
  * Sets or gets the maximum feed queue size.
@@ -98,6 +111,33 @@ feeder.feedInterval = function(interval) {
 }
 
 /**
+ * Sets a start handler on the feeder.
+ *
+ * @param {Handler} handler A handler to be called when the feeder is started.
+ * @returns {module:vertigo/feeder} The feeder instance.
+ */
+feeder.startHandler = function(handler) {
+  _startHandler = handler;
+  check_start();
+  return feeder;
+}
+
+/**
+ * Starts the feeder.
+ *
+ * @returns {module:vertigo/feeder} The feeder instance.
+ */
+feeder.start = function() {
+  handler = adaptAsyncResultHandler(function(error, jfeeder) {
+    _started = true;
+    _error = error;
+    check_start();
+  });
+  __jcomponent.start(handler);
+  return feeder;
+}
+
+/**
  * Sets a feed handler on the feeder.
  *
  * @param {Handler} handler A handler to be called whenever the feeder
@@ -126,6 +166,15 @@ feeder.drainHandler = function(handler) {
 }
 
 /**
+ * Sets a default ack handler on the feeder.
+ *
+ */
+feeder.ackHandler = function(handler) {
+  _ackHandler = handler;
+  return feeder;
+}
+
+/**
  * Emits data from the feeder.
  *
  * @param {object} data The data to emit.
@@ -139,6 +188,10 @@ feeder.emit = function() {
   var ackHandler = getArgValue('function', args);
   var body = getArgValue('object', args);
   var stream = getArgValue('string', args);
+
+  if (ackHandler == null && _ackHandler != null) {
+    ackHandler = _ackHandler;
+  }
 
   if (stream) {
     if (ackHandler) {
