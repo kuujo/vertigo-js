@@ -15,31 +15,30 @@
  */
 var test = require('testtools');
 var vertigo = require('vertigo');
-var grouping = require('vertigo/grouping');
 
 var grouping_tests = {
   testRandomGrouping: function() {
     var network = vertigo.createNetwork('test');
-    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
-    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.RandomGrouping());
+    network.addFeeder('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addWorker('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').randomGrouping();
     test.testComplete();
   },
   testRoundGrouping: function() {
     var network = vertigo.createNetwork('test');
-    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
-    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.RoundGrouping());
+    network.addFeeder('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addWorker('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').roundGrouping();
     test.testComplete();
   },
   testFieldsGrouping: function() {
     var network = vertigo.createNetwork('test');
-    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
-    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.FieldsGrouping('bar'));
+    network.addFeeder('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addWorker('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').fieldsGrouping('bar');
     test.testComplete();
   },
   testAllGrouping: function() {
 	var network = vertigo.createNetwork('test');
-    network.addVerticle('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
-    network.addVerticle('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').groupBy(new grouping.AllGrouping());
+    network.addFeeder('test_verticle1', 'test_verticle1.js', {'foo': 'bar'}, 2);
+    network.addWorker('test_verticle2', 'test_verticle2.js', {'bar': 'baz'}).addInput('test_verticle1').allGrouping();
     test.testComplete();
   }
 }

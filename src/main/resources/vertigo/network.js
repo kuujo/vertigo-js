@@ -119,32 +119,29 @@ network.Network = function(obj) {
    *
    * @param {string} address The feeder address
    * @param {string} main The feeder main or module name
-   * @param {object} config The feeder configuration
-   * @param {number} instances The number of feeder component instances
+   * @param {object} [config] The feeder configuration
+   * @param {number} [instances] The number of feeder component instances
    */
-  this.addFeeder = function(address) {
+  this.addFeeder = function(address, main) {
     var args = Array.prototype.slice.call(arguments);
+    args.shift();
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    if (main != null && config != null && instances != null) {
+    if (config != null && instances != null) {
       return new network.Component(jnetwork.addFeeder(address, main, config, instances));
     }
-    else if (main != null && config != null) {
+    else if (config != null) {
       return new network.Component(jnetwork.addFeeder(address, main, config));
     }
-    else if (main != null && config != null) {
+    else if (instances != null) {
       return new network.Component(jnetwork.addFeeder(address, main, instances));
     }
-    else if (main != null) {
-      return new network.Component(jnetwork.addFeeder(address, main));
-    }
     else {
-      return new network.Component(jnetwork.addFeeder(address));
+      return new network.Component(jnetwork.addFeeder(address, main));
     }
   }
 
@@ -153,32 +150,29 @@ network.Network = function(obj) {
    *
    * @param {string} address The executor address
    * @param {string} main The executor main or module name
-   * @param {object} config The executor configuration
-   * @param {number} instances The number of executor component instances
+   * @param {object} [config] The executor configuration
+   * @param {number} [instances] The number of executor component instances
    */
-  this.addExecutor = function(address) {
+  this.addExecutor = function(address, main) {
     var args = Array.prototype.slice.call(arguments);
+    args.shift();
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    if (main != null && config != null && instances != null) {
+    if (config != null && instances != null) {
       return new network.Component(jnetwork.addExecutor(address, main, config, instances));
     }
-    else if (main != null && config != null) {
+    else if (config != null) {
       return new network.Component(jnetwork.addExecutor(address, main, config));
     }
-    else if (main != null && config != null) {
+    else if (instances != null) {
       return new network.Component(jnetwork.addExecutor(address, main, instances));
     }
-    else if (main != null) {
-      return new network.Component(jnetwork.addExecutor(address, main));
-    }
     else {
-      return new network.Component(jnetwork.addExecutor(address));
+      return new network.Component(jnetwork.addExecutor(address, main));
     }
   }
 
@@ -187,32 +181,29 @@ network.Network = function(obj) {
    *
    * @param {string} address The worker address
    * @param {string} main The worker main or module name
-   * @param {object} config The worker configuration
-   * @param {number} instances The number of worker component instances
+   * @param {object} [config] The worker configuration
+   * @param {number} [instances] The number of worker component instances
    */
-  this.addWorker = function(address) {
+  this.addWorker = function(address, main) {
     var args = Array.prototype.slice.call(arguments);
+    args.shift();
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    if (main != null && config != null && instances != null) {
+    if (config != null && instances != null) {
       return new network.Component(jnetwork.addWorker(address, main, config, instances));
     }
-    else if (main != null && config != null) {
+    else if (config != null) {
       return new network.Component(jnetwork.addWorker(address, main, config));
     }
-    else if (main != null && config != null) {
+    else if (instances != null) {
       return new network.Component(jnetwork.addWorker(address, main, instances));
     }
-    else if (main != null) {
-      return new network.Component(jnetwork.addWorker(address, main));
-    }
     else {
-      return new network.Component(jnetwork.addWorker(address));
+      return new network.Component(jnetwork.addWorker(address, main));
     }
   }
 
@@ -221,32 +212,29 @@ network.Network = function(obj) {
    *
    * @param {string} address The filter address
    * @param {string} main The filter main or module name
-   * @param {object} config The filter configuration
-   * @param {number} instances The number of filter component instances
+   * @param {object} [config] The filter configuration
+   * @param {number} [instances] The number of filter component instances
    */
-  this.addFilter = function(address) {
+  this.addFilter = function(address, main) {
     var args = Array.prototype.slice.call(arguments);
+    args.shift();
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    if (main != null && config != null && instances != null) {
+    if (config != null && instances != null) {
       return new network.Component(jnetwork.addFilter(address, main, config, instances));
     }
-    else if (main != null && config != null) {
+    else if (config != null) {
       return new network.Component(jnetwork.addFilter(address, main, config));
     }
-    else if (main != null && config != null) {
+    else if (instances != null) {
       return new network.Component(jnetwork.addFilter(address, main, instances));
     }
-    else if (main != null) {
-      return new network.Component(jnetwork.addFilter(address, main));
-    }
     else {
-      return new network.Component(jnetwork.addFilter(address));
+      return new network.Component(jnetwork.addFilter(address, main));
     }
   }
 
@@ -255,32 +243,29 @@ network.Network = function(obj) {
    *
    * @param {string} address The splitter address
    * @param {string} main The splitter main or module name
-   * @param {object} config The splitter configuration
-   * @param {number} instances The number of splitter component instances
+   * @param {object} [config] The splitter configuration
+   * @param {number} [instances] The number of splitter component instances
    */
-  this.addSplitter = function(address) {
+  this.addSplitter = function(address, main) {
     var args = Array.prototype.slice.call(arguments);
+    args.shift();
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    if (main != null && config != null && instances != null) {
+    if (config != null && instances != null) {
       return new network.Component(jnetwork.addSplitter(address, main, config, instances));
     }
-    else if (main != null && config != null) {
+    else if (config != null) {
       return new network.Component(jnetwork.addSplitter(address, main, config));
     }
-    else if (main != null && config != null) {
+    else if (instances != null) {
       return new network.Component(jnetwork.addSplitter(address, main, instances));
     }
-    else if (main != null) {
-      return new network.Component(jnetwork.addSplitter(address, main));
-    }
     else {
-      return new network.Component(jnetwork.addSplitter(address));
+      return new network.Component(jnetwork.addSplitter(address, main));
     }
   }
 
@@ -289,32 +274,29 @@ network.Network = function(obj) {
    *
    * @param {string} address The aggregator address
    * @param {string} main The aggregator main or module name
-   * @param {object} config The aggregator configuration
-   * @param {number} instances The number of aggregator component instances
+   * @param {object} [config] The aggregator configuration
+   * @param {number} [instances] The number of aggregator component instances
    */
-  this.addAggregator = function(address) {
+  this.addAggregator = function(address, main) {
     var args = Array.prototype.slice.call(arguments);
+    args.shift();
     args.shift();
     var instances = getArgValue('number', args);
     var config = getArgValue('object', args);
-    var main = getArgValue('string', args);
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
-    if (main != null && config != null && instances != null) {
+    if (config != null && instances != null) {
       return new network.Component(jnetwork.addAggregator(address, main, config, instances));
     }
-    else if (main != null && config != null) {
+    else if (config != null) {
       return new network.Component(jnetwork.addAggregator(address, main, config));
     }
-    else if (main != null && config != null) {
+    else if (instances != null) {
       return new network.Component(jnetwork.addAggregator(address, main, instances));
     }
-    else if (main != null) {
-      return new network.Component(jnetwork.addAggregator(address, main));
-    }
     else {
-      return new network.Component(jnetwork.addAggregator(address));
+      return new network.Component(jnetwork.addAggregator(address, main));
     }
   }
 
@@ -372,7 +354,7 @@ network.Component = function(obj) {
   var hook = null;
 
   if (typeof(obj) == 'string') {
-    var jcomponent = new net.kuujo.vertigo.network.Verticle(obj);
+    var jcomponent = new net.kuujo.vertigo.network.Component(obj);
   }
   else {
     var jcomponent = obj;
@@ -480,7 +462,12 @@ network.Component = function(obj) {
    * @returns {module:vertigo/input.Input} The added input instance
    */
   this.addInput = function(address, stream) {
-    return new input.Input(jcomponent.addInput(address, stream));
+    if (stream !== undefined) {
+      return new input.Input(jcomponent.addInput(address).setStream(stream));
+    }
+    else {
+      return new input.Input(jcomponent.addInput(address));
+    }
   }
 
 }

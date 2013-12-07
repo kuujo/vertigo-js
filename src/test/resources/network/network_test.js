@@ -15,8 +15,6 @@
  */
 var test = require('testtools');
 var vertigo = require('vertigo');
-var network = require('vertigo/network');
-var input = require('vertigo/input');
 
 var network_tests = {
   testCreateNetwork: function() {
@@ -27,50 +25,75 @@ var network_tests = {
     test.assertFalse(network.ackingEnabled());
     network.numAuditors(4);
     test.assertEquals(4, network.numAuditors());
-    network.ackExpire(10000);
-    test.assertEquals(10000, network.ackExpire());
+    network.ackTimeout(10000);
+    test.assertEquals(10000, network.ackTimeout());
     test.testComplete();
   },
-  testAddSourceVerticle: function() {
+  testAddSourceFeeder: function() {
     var network = vertigo.createNetwork('test');
-    var test_verticle1 = network.addVerticle('test_verticle1', 'test_verticle1.js');
-    var test_verticle2 = network.addVerticle('test_verticle2', 'test_verticle2.js', {'foo': 'bar'}, 2);
+    var test_verticle1 = network.addFeeder('test_feeder1', 'test_feeder1.js');
+    var test_verticle2 = network.addFeeder('test_feeder2', 'test_feeder2.js', {'foo': 'bar'}, 2);
     test.testComplete();
   },
-  testAddSourceModule: function() {
+  testAddSourceExecutor: function() {
     var network = vertigo.createNetwork('test');
-    var test_module1 = network.addModule('test_module1', 'net.kuujo~test_module1~1.0');
-    var test_module2 = network.addModule('test_module2', 'net.kuujo~test_module2~1.0', {'foo': 'bar'}, 2);
+    var test_verticle1 = network.addExecutor('test_executor1', 'test_executor1.js');
+    var test_verticle2 = network.addExecutor('test_executor2', 'test_executor2.js', {'foo': 'bar'}, 2);
     test.testComplete();
   },
-  testAddSource: function() {
+  testAddSourceWorker: function() {
     var network = vertigo.createNetwork('test');
-    var test_verticle1 = network.addVerticle('test_verticle1', 'test_verticle1.js');
-    network.addComponent(test_verticle1);
-    var test_module1 = network.addModule('test_module1', 'net.kuujo~test_module1~1.0');
-    network.addComponent(test_module1);
+    var test_verticle1 = network.addWorker('test_worker1', 'test_worker1.js');
+    var test_verticle2 = network.addWorker('test_worker2', 'test_worker2.js', {'foo': 'bar'}, 2);
     test.testComplete();
   },
-  testAddTargetVerticle: function() {
+  testAddSourceFilter: function() {
     var network = vertigo.createNetwork('test');
-    network.addVerticle('test_verticle1', 'test_verticle1.js');
-    network.addVerticle('test_verticle2', 'test_verticle2.js').addInput('test_verticle1');
+    var test_verticle1 = network.addFilter('test_filter1', 'test_filter1.js');
+    var test_verticle2 = network.addFilter('test_filter2', 'test_filter2.js', {'foo': 'bar'}, 2);
     test.testComplete();
   },
-  testAddTargetModule: function() {
+  testAddSourceSplitter: function() {
     var network = vertigo.createNetwork('test');
-    network.addModule('test_module1', 'net.kuujo~test_module1~1.0');
-    network.addModule('test_module2', 'net.kuujo~test_module2~1.0').addInput('test_module1');
+    var test_verticle1 = network.addSplitter('test_splitter1', 'test_splitter1.js');
+    var test_verticle2 = network.addSplitter('test_splitter2', 'test_splitter2.js', {'foo': 'bar'}, 2);
     test.testComplete();
   },
-  testCreateComponent: function() {
+  testAddSourceAggregator: function() {
     var network = vertigo.createNetwork('test');
-    var test_verticle = network.addVerticle('test_verticle', 'test_verticle.js', {'foo': 'bar'}, 2);
-    test.assertEquals('verticle', test_verticle.type);
-    test.assertEquals('test_verticle.js', test_verticle.main());
-    test.assertEquals('bar', test_verticle.config()['foo']);
-    test.assertEquals(2, test_verticle.instances());
+    var test_verticle1 = network.addAggregator('test_aggregator1', 'test_aggregator1.js');
+    var test_verticle2 = network.addAggregator('test_aggregator2', 'test_aggregator2.js', {'foo': 'bar'}, 2);
     test.testComplete();
+  },
+  testAddInputVerticle: function() {
+    var network = vertigo.createNetwork('test');
+    var verticle = network.addFeeder('test_feeder', 'test_feeder.js');
+    network.addWorker('test_worker', 'test_worker.js').addInput('test_feeder');
+    test.assertTrue(verticle.isVerticle());
+    test.testComplete();
+  },
+  testAddInputModule: function() {
+    var network = vertigo.createNetwork('test');
+    var module = network.addFeeder('test_feeder', 'net.kuujo~test_feeder~1.0');
+    network.addWorker('test_worker', 'net.kuujo~test_worker~1.0').addInput('test_feeder');
+    test.assertTrue(module.isModule());
+    test.testComplete();
+  },
+  testAckingFeeder: function() {
+    var network = vertigo.createNetwork('test');
+    network.addFeeder('test_feeder', 'test_acking_feeder.js', {'foo': 'bar'});
+    network.addWorker('test_worker', 'test_acking_worker.js').addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
+  },
+  testFailingFeeder: function() {
+    var network = vertigo.createNetwork('test');
+    network.addFeeder('test_feeder', 'test_failing_feeder.js', {'foo': 'bar'});
+    network.addWorker('test_worker', 'test_failing_worker.js').addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
   }
 }
 

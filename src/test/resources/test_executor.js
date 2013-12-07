@@ -16,11 +16,10 @@
 var vertigo = require('vertigo');
 var test = require('testtools');
 
-vertigo.worker.messageHandler(function(message) {
-  var config = vertigo.worker.config;
-  if (config['validate'] !== undefined) {
-    test.assertEquals(config['validate'], message.body);
-  }
-  vertigo.worker.emit(message.body, message);
-  vertigo.worker.ack(message);
+vertigo.createBasicExecutor().start(function(error, executor) {
+  test.assertNull(error);
+  executor.execute(executor.config['input'], function(error, result) {
+    test.assertNull(error);
+    test.assertEquals(executor.config['output'], result.body);
+  });
 });

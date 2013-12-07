@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-load('vertigo/helpers.js');
-validate_component_type('worker');
+load('vertx/helpers.js');
 
 var message = require('vertigo/message');
+var context = require('vertigo/context');
 
 /**
  * The <code>vertigo/worker</code> module provides Vertigo worker
@@ -25,90 +25,125 @@ var message = require('vertigo/message');
  */
 var worker = {};
 
-var _startHandler = null;
-var _started = false;
-var _error = null;
+/**
+ * A worker object.
+ * @constructor
+ */
+worker.Worker = function(jworker) {
+  var that = this;
 
-function check_start() {
-  if (_started && _startHandler != null) {
-    _startHandler(_error, worker);
+  this.__jworker = jworker;
+  this.context = new context.InstanceContext(jworker.getContext());
+  this.config = this.context.component().config();
+
+  var _startHandler = null;
+  var _started = false;
+  var _error = null;
+  
+  function check_start() {
+    if (_started && _startHandler != null) {
+      _startHandler(_error, that);
+    }
   }
-}
-
-/**
- * Sets a start handler on the worker.
- *
- * @param {Handler} handler A handler to be called when the worker is started.
- * @returns {module:vertigo/worker} The worker instance.
- */
-worker.startHandler = function(handler) {
-  _startHandler = handler;
-  check_start();
-  return worker;
-}
-
-/**
- * Starts the worker.
- *
- * @returns {module:vertigo/worker} The worker instance.
- */
-worker.start = function() {
-  handler = adaptAsyncResultHandler(function(error, jworker) {
-    _started = true;
-    _error = error;
+  
+  /**
+   * Sets a start handler on the worker.
+   *
+   * @param {Handler} handler A handler to be called when the worker is started.
+   * @returns {module:vertigo/worker.Worker} The worker instance.
+   */
+  this.startHandler = function(handler) {
+    _startHandler = handler;
     check_start();
-  });
-  __jcomponent.start(handler);
-  return worker;
-}
-
-/**
- * Sets a message handler on the worker.
- *
- * @param {Handler} handler The message handler.
- * @returns {module:vertigo/worker} The worker instance.
- */
-worker.messageHandler = function(handler) {
-  __jcomponent.messageHandler(new org.vertx.java.core.Handler({
-    handle: function(jmessage) {
-      handler(new message.Message(jmessage));
+    return that;
+  }
+  
+  /**
+   * Starts the worker.
+   *
+   * @returns {module:vertigo/worker.Worker} The worker instance.
+   */
+  this.start = function() {
+    handler = adaptAsyncResultHandler(function(error, jworker) {
+      _started = true;
+      _error = error;
+      check_start();
+    });
+    jworker.start(handler);
+    return that;
+  }
+  
+  /**
+   * Sets a message handler on the worker.
+   *
+   * @param {Handler} handler The message handler.
+   * @returns {module:vertigo/worker.Worker} The worker instance.
+   */
+  this.messageHandler = function(handler) {
+    jworker.messageHandler(new org.vertx.java.core.Handler({
+      handle: function(jmessage) {
+        handler(new message.Message(jmessage));
+      }
+    }));
+    return that;
+  }
+  
+  /**
+   * Emits data from the worker.
+   *
+   * @param {object} data The data to emit.
+   * @param {string} [stream] The stream to which to emit the message.
+   * @param {module:vertigo/message.Message} The parent message.
+   *
+   * @returns {string} a unique message identifier.
+   */
+  this.emit = function() {
+    var args = Array.prototype.slice.call(arguments);
+  
+    var obj2 = getArgValue('object', args);
+    var obj1 = getArgValue('object', args);
+    var stream = getArgValue('string', args);
+  
+    if (obj1 != null && obj2 != null) {
+      if (stream != null) {
+        return jworker.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(obj1)), obj2.__jmessage).correlationId();
+      }
+      else {
+        return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(obj1)), obj2.__jmessage).correlationId();
+      }
     }
-  }));
-  return worker;
-}
-
-/**
- * Emits data from the worker.
- *
- * @param {object} data The data to emit.
- * @param {string} [stream] The stream to which to emit the message.
- * @param {module:vertigo/message.Message} The parent message.
- *
- * @returns {string} a unique message identifier.
- */
-worker.emit = function() {
-  var args = Array.prototype.slice.call(arguments);
-
-  var obj2 = getArgValue('object', args);
-  var obj1 = getArgValue('object', args);
-  var stream = getArgValue('string', args);
-
-  if (obj1 != null && obj2 != null) {
-    if (stream != null) {
-      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(obj1)), obj2.__jmessage).correlationId();
-    }
-    else {
-      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(obj1)), obj2.__jmessage).correlationId();
+    else if (obj2 != null) {
+      if (stream != null) {
+        return jworker.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(obj2))).correlationId();
+      }
+      else {
+        return jworker.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(obj2))).correlationId();
+      }
     }
   }
-  else if (obj2 != null) {
-    if (stream != null) {
-      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(obj2))).correlationId();
-    }
-    else {
-      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(obj2))).correlationId();
-    }
+
+  /**
+   * Acks a message.
+   *
+   * @param {module:vertigo/message.Message} The message to ack.
+   * @returns {module:vertigo/worker.Worker} The worker instance.
+   */
+  this.ack = function(message) {
+    jworker.ack(message.__jmessage);
+    return that;
   }
+
+  /**
+   * Fails a message.
+   *
+   * @param {module:vertigo/message.Message} The message to fail.
+   * @returns {module:vertigo/worker.Worker} The worker instance.
+   */
+  this.fail = function(message) {
+    jworker.fail(message.__jmessage);
+    return that;
+  }
+
 }
 
 module.exports = worker;

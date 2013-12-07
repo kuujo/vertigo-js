@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var vertx = require('vertx');
-var container = require('vertx/container');
 load('vertx/helpers.js');
 
 /**
@@ -34,14 +32,16 @@ load('vertx/helpers.js');
  * @exports vertigo
  */
 var vertigo = {};
+
 this.__jvertigo = undefined;
 this.__jcontext = undefined;
 this.__jcomponent = undefined;
+this.__componentType = undefined;
 
 vertigo.logger = __jcontainer.logger();
 
 // Attempt to create a component context from the verticle configuration.
-var __jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
+this.__jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
 
 // Create a Vertigo factory.
 var vertigoFactory = new net.kuujo.vertigo.DefaultVertigoFactory(__jvertx, __jcontainer);
@@ -49,10 +49,9 @@ var vertigoFactory = new net.kuujo.vertigo.DefaultVertigoFactory(__jvertx, __jco
 // If the context was successfully created then this is a component instance.
 // For component instances, create the component and then instantiate a Vertigo instance.
 if (__jcontext !== null) {
-  this.__jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
   var componentFactory = new net.kuujo.vertigo.component.DefaultComponentFactory(__jvertx, __jcontainer);
-  var __componentType = net.kuujo.vertigo.util.Component.serializeType(__jcontext.getComponent().getType());
   this.__jcomponent = componentFactory.createComponent(__jcontext);
+  this.__jvertigo = vertigoFactory.createVertigo(__jcomponent);
 }
 // For non-component verticles, instantiate an empty Vertigo instance.
 else {
@@ -115,28 +114,34 @@ vertigo.aggregator = undefined;
  *
  * @see module:vertigo/context.InstanceContext
  */
-if (__jvertigo.isComponent()) {
-  vertigo.context = new context.InstanceContext(__jvertigo.context());
+if (__jcomponent !== undefined) {
+  vertigo.context = new context.InstanceContext(__jcomponent.getContext());
 
-  var componentType = net.kuujo.vertigo.util.Component.serializeType(__jvertigo.context().getComponent().getType());
+  var componentType = net.kuujo.vertigo.util.Component.serializeType(__jcomponent.getContext().getComponent().getType());
   switch (componentType) {
     case "feeder":
-      vertigo.feeder = require('vertigo/feeder').start();
+      var feeder = require('vertigo/feeder');
+      vertigo.feeder = new feeder.Feeder(__jcomponent).start();
       break;
     case "executor":
-      vertigo.executor = require('vertigo/executor').start();
+      var executor = require('vertigo/executor');
+      vertigo.executor = new executor.Executor(__jcomponent).start();
       break;
     case "worker":
-      vertigo.worker = require('vertigo/worker').start();
+      var worker = require('vertigo/worker');
+      vertigo.worker = new worker.Worker(__jcomponent).start();
       break;
     case "filter":
-      vertigo.filter = require('vertigo/filter').start();
+      var filter = require('vertigo/filter');
+      vertigo.filter = new filter.Filter(__jcomponent).start();
       break;
     case "splitter":
-      vertigo.splitter = require('vertigo/splitter').start();
+      var splitter = require('vertigo/splitter');
+      vertigo.splitter = new splitter.Splitter(__jcomponent).start();
       break;
     case "aggregator":
-      vertigo.aggregator = require('vertigo/aggregator').start();
+      var aggregator = require('vertigo/aggregator');
+      vertigo.aggregator = new aggregator.Aggregator(__jcomponent).start();
       break;
   }
 }
@@ -187,7 +192,7 @@ vertigo.createNetwork = function(address) {
 vertigo.deployLocalNetwork = function(network, doneHandler) {
   if (doneHandler !== undefined) {
     doneHandler = adaptAsyncResultHandler(doneHandler, function(result) {
-      return context.NetworkContext(result);
+      return new context.NetworkContext(result);
     });
   }
   __jvertigo.deployLocalNetwork(network.__jnetwork, doneHandler);
@@ -211,7 +216,7 @@ vertigo.shutdownLocalNetwork = function(context, doneHandler) {
 vertigo.deployRemoteNetwork = function(address, network, doneHandler) {
   if (doneHandler) {
     doneHandler = adaptAsyncResultHandler(doneHandler, function(result) {
-      return context.NetworkContext(result);
+      return new context.NetworkContext(result);
     });
   }
   __jvertigo.deployRemoteNetwork(address, network, doneHandler);

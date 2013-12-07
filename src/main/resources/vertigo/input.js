@@ -72,7 +72,12 @@ input.Input = function(obj) {
    * @returns {module:vertigo/input.Input} this
    */
   this.groupBy = function(grouping) {
-    jinput.groupBy(grouping.__jgrouping);
+    if (typeof(grouping) == 'string') {
+      jinput.groupBy(grouping);
+    }
+    else {
+      jinput.groupBy(grouping.__jgrouping);
+    }
     return that;
   }
 

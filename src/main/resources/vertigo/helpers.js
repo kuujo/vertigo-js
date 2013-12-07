@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-require('vertigo');
-
-/**
- * Validates that the current component is of a given type.
- */
-function validate_component_type(type) {
-  if (__componentType != type) {
-    throw "Not a Vertigo " + type + " instance.";
-  }
-}
-
 /**
  * Converts a Javascript value to a Java object.
  */

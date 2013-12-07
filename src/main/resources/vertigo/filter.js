@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-load('vertigo/helpers.js');
-validate_component_type('filter');
+load('vertx/helpers.js');
 
 var message = require('vertigo/message');
+var context = require('vertigo/context');
 
 /**
  * The <code>vertigo/filter</code> module provides Vertigo filter
@@ -25,58 +25,67 @@ var message = require('vertigo/message');
  */
 var filter = {};
 
-var _startHandler = null;
-var _started = false;
-var _error = null;
+filter.Filter = function(jfilter) {
+  var that = this;
 
-function check_start() {
-  if (_started && _startHandler != null) {
-    _startHandler(_error, filter);
-  }
-}
+  this.__jfilter = jfilter;
+  this.context = new context.InstanceContext(jfilter.getContext());
+  this.config = this.context.component().config();
 
-/**
- * Sets a start handler on the filter.
- *
- * @param {Handler} handler A handler to be called when the filter is started.
- * @returns {module:vertigo/filter} The filter instance.
- */
-filter.startHandler = function(handler) {
-  _startHandler = handler;
-  check_start();
-  return filter;
-}
-
-/**
- * Starts the filter.
- *
- * @returns {module:vertigo/filter} The filter instance.
- */
-filter.start = function() {
-  handler = adaptAsyncResultHandler(function(error, jfilter) {
-    _started = true;
-    _error = error;
-    check_start();
-  });
-  __jcomponent.start(handler);
-  return filter;
-}
-
-/**
- * Sets a filter function on the filter.
- *
- * @param {function} filterFunc The filter function. This function accepts
- * a {module:vertigo/message.Message} instance as its only argument and
- * must return a boolean value indicating whether to keep the message.
- * @return {module:vertigo/filter} The filter instance.
- */
-filter.filter = function(filterFunc) {
-  __jcomponent.filterFunction(new net.kuujo.vertigo.function.Function({
-    call: function(jmessage) {
-      return filterFunc(new message.Message(jmessage));
+  var _startHandler = null;
+  var _started = false;
+  var _error = null;
+  
+  function check_start() {
+    if (_started && _startHandler != null) {
+      _startHandler(_error, that);
     }
-  }));
-  return filter;
+  }
+  
+  /**
+   * Sets a start handler on the filter.
+   *
+   * @param {Handler} handler A handler to be called when the filter is started.
+   * @returns {module:vertigo/filter.Filter} The filter instance.
+   */
+  this.startHandler = function(handler) {
+    _startHandler = handler;
+    check_start();
+    return that;
+  }
+  
+  /**
+   * Starts the filter.
+   *
+   * @returns {module:vertigo/filter.Filter} The filter instance.
+   */
+  this.start = function() {
+    handler = adaptAsyncResultHandler(function(error, jfilter) {
+      _started = true;
+      _error = error;
+      check_start();
+    });
+    jfilter.start(handler);
+    return that;
+  }
+  
+  /**
+   * Sets a filter function on the filter.
+   *
+   * @param {function} filterFunc The filter function. This function accepts
+   * a {module:vertigo/message.Message} instance as its only argument and
+   * must return a boolean value indicating whether to keep the message.
+   * @return {module:vertigo/filter.Filter} The filter instance.
+   */
+  this.filter = function(filterFunc) {
+    jfilter.filterFunction(new net.kuujo.vertigo.function.Function({
+      call: function(jmessage) {
+        return filterFunc(new message.Message(jmessage));
+      }
+    }));
+    return that;
+  }
+
 }
 
 module.exports = filter;

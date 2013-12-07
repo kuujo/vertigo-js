@@ -38,7 +38,13 @@ message.Message = function(jmessage) {
   /**
    * The message body.
    */
-  this.body = JSON.parse(jmessage.body().encode());
+  var body = jmessage.body();
+  if (body != null) {
+    this.body = JSON.parse(jmessage.body().encode());
+  }
+  else {
+    this.body = {};
+  }
 
   /**
    * The stream on which the message arrived.

@@ -13,32 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var vertx = require('vertx');
 var test = require('testtools');
 var vertigo = require('vertigo');
 
 var cluster_tests = {
   testLocalDeploy: function() {
-    var cluster = vertigo.createLocalCluster();
     var network = vertigo.createNetwork('test');
-    network.addVerticle('test_feeder', 'test_basic_feeder.js');
-    network.addVerticle('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
-    cluster.deploy(network, function(error, context) {
+    network.addFeeder('test_feeder', 'test_acking_feeder.js');
+    network.addWorker('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error, context) {
       test.assertNull(error);
       test.assertNotNull(context);
       test.testComplete();
     });
   },
   testLocalShutdown: function() {
-    var cluster = vertigo.createLocalCluster();
     var network = vertigo.createNetwork('test');
-    network.addVerticle('test_feeder', 'test_basic_feeder.js');
-    network.addVerticle('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
-    cluster.deploy(network, function(error, context) {
+    network.addFeeder('test_feeder', 'test_acking_feeder.js');
+    network.addWorker('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error, context) {
       test.assertNull(error);
       test.assertNotNull(context);
-      cluster.shutdown(context, function(error) {
-        test.assertNull(error);
-        test.testComplete();
+      vertx.setTimer(1000, function() {
+        vertigo.shutdownLocalNetwork(context, function(error) {
+          test.assertNull(error);
+          test.testComplete();
+        });
       });
     });
   }

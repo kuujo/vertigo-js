@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 load('vertx/helpers.js');
-load('vertigo/helpers.js');
-validate_component_type('executor');
 
 var message = require('vertigo/message');
+var context = require('vertigo/context');
 
 /**
  * The <code>vertigo/rpc</code> module provides Vertigo executor
@@ -26,181 +25,190 @@ var message = require('vertigo/message');
  */
 var executor = {};
 
-var _startHandler = null;
-var _started = false;
-var _error = null;
+executor.Executor = function(jexecutor) {
+  var that = this;
 
-function check_start() {
-  if (_started && _startHandler != null) {
-    _startHandler(_error, executor);
-  }
-}
+  this.__jexecutor = jexecutor;
+  this.context = new context.InstanceContext(jexecutor.getContext());
+  this.config = this.context.component().config();
 
-/**
- * Sets or gets the maximum execute queue size.
- *
- * @param {Integer} [size] The maximum execute queue size.
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.executeQueueMaxSize = function(size) {
-  if (size === undefined) {
-    return __jcomponent.getExecuteQueueMaxSize();
-  }
-  else {
-    __jcomponent.setExecuteQueueMaxSize(size);
-    return executor;
-  }
-}
-
-/**
- * Indicates whether the execute queue is full.
- *
- * @returns {Boolean} Indicates whether the queue is full.
- */
-executor.executeQueueFull = function() {
-  return __jcomponent.executeQueueFull();
-}
-
-/**
- * Sets or gets the auto retry option for the executor.
- *
- * @param {Boolean} [retry] Whether auto retry is enabled.
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.autoRetry = function(retry) {
-  if (retry === undefined) {
-    return __jcomponent.isAutoRetry();
-  }
-  else {
-    __jcomponent.setAutoRetry(retry);
-    return executor;
-  }
-}
-
-/**
- * Sets or gets the number of auto retry attempts.
- *
- * @param {Integer} [attempts] The number of auto retry attempts before
- * the executor will consider a message to be timed out.
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.autoRetryAttempts = function(attempts) {
-  if (attempts === undefined) {
-    return __jcomponent.getAutoRetryAttempts();
-  }
-  else {
-    __jcomponent.setAutoRetryAttempts(attempts);
-    return executor;
-  }
-}
-
-/**
- * Sets or gets the execute handler interval.
- *
- * @param {Integer} [attempts] The interval at which the executor will
- * poll the execute handler for new messages.
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.executeInterval = function(interval) {
-  if (interval === undefined) {
-    return __jcomponent.getExecuteInterval();
-  }
-  else {
-    __jcomponent.setExecuteInterval(interval);
-    return executor;
-  }
-}
-
-/**
- * Sets an execute handler on the executor.
- *
- * @param {Handler} handler A handler to be called whenever the executor
- * is prepared to accept new messages. This handler will be called with
- * the executor as its only argument.
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.executeHandler = function(handler) {
-  __jcomponent.executeHandler(new org.vertx.java.core.Handler({
-    handle: function(jexecutor) {
-      handler(executor);
+  var _startHandler = null;
+  var _started = false;
+  var _error = null;
+  
+  function check_start() {
+    if (_started && _startHandler != null) {
+      _startHandler(_error, that);
     }
-  }));
-  return executor;
-}
-
-/**
- * Sets a drain handler on the executor.
- *
- * @param {Handler} handler A handler to be called when a full executor
- * is prepared to accept new messages.
- */
-executor.drainHandler = function(handler) {
-  __jcomponent.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
-  return executor;
-}
-
-/**
- * Sets a start handler on the executor.
- *
- * @param {Handler} handler A handler to be called when the executor is started.
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.startHandler = function(handler) {
-  _startHandler = handler;
-  check_start();
-  return executor;
-}
-
-/**
- * Starts the executor.
- *
- * @returns {module:vertigo/executor} The executor instance.
- */
-executor.start = function() {
-  handler = adaptAsyncResultHandler(function(error, jexecutor) {
-    _started = true;
-    _error = error;
+  }
+  
+  /**
+   * Sets or gets the maximum execute queue size.
+   *
+   * @param {Integer} [size] The maximum execute queue size.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.executeQueueMaxSize = function(size) {
+    if (size === undefined) {
+      return jexecutor.getExecuteQueueMaxSize();
+    }
+    else {
+      jexecutor.setExecuteQueueMaxSize(size);
+      return that;
+    }
+  }
+  
+  /**
+   * Indicates whether the execute queue is full.
+   *
+   * @returns {Boolean} Indicates whether the queue is full.
+   */
+  this.executeQueueFull = function() {
+    return jexecutor.executeQueueFull();
+  }
+  
+  /**
+   * Sets or gets the auto retry option for the executor.
+   *
+   * @param {Boolean} [retry] Whether auto retry is enabled.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.autoRetry = function(retry) {
+    if (retry === undefined) {
+      return jexecutor.isAutoRetry();
+    }
+    else {
+      jexecutor.setAutoRetry(retry);
+      return that;
+    }
+  }
+  
+  /**
+   * Sets or gets the number of auto retry attempts.
+   *
+   * @param {Integer} [attempts] The number of auto retry attempts before
+   * the executor will consider a message to be timed out.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.autoRetryAttempts = function(attempts) {
+    if (attempts === undefined) {
+      return jexecutor.getAutoRetryAttempts();
+    }
+    else {
+      jexecutor.setAutoRetryAttempts(attempts);
+      return that;
+    }
+  }
+  
+  /**
+   * Sets or gets the execute handler interval.
+   *
+   * @param {Integer} [attempts] The interval at which the executor will
+   * poll the execute handler for new messages.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.executeInterval = function(interval) {
+    if (interval === undefined) {
+      return jexecutor.getExecuteInterval();
+    }
+    else {
+      jexecutor.setExecuteInterval(interval);
+      return that;
+    }
+  }
+  
+  /**
+   * Sets an execute handler on the executor.
+   *
+   * @param {Handler} handler A handler to be called whenever the executor
+   * is prepared to accept new messages. This handler will be called with
+   * the executor as its only argument.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.executeHandler = function(handler) {
+    jexecutor.executeHandler(new org.vertx.java.core.Handler({
+      handle: function(jexecutor) {
+        handler(that);
+      }
+    }));
+    return that;
+  }
+  
+  /**
+   * Sets a drain handler on the executor.
+   *
+   * @param {Handler} handler A handler to be called when a full executor
+   * is prepared to accept new messages.
+   */
+  this.drainHandler = function(handler) {
+    jexecutor.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
+    return that;
+  }
+  
+  /**
+   * Sets a start handler on the executor.
+   *
+   * @param {Handler} handler A handler to be called when the executor is started.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.startHandler = function(handler) {
+    _startHandler = handler;
     check_start();
-  });
-  __jcomponent.start(handler);
-  return executor;
-}
-
-/**
- * Executes a remote procedure call.
- *
- * @param {object} data The data to emit.
- * @param {string} [stream] The stream to which to emit the message.
- * @param {ResultHandler} handler A handler to be called with the execution result.
- *
- * @returns {string} a unique message identifier
- */
-executor.execute = function() {
-  var args = Array.prototype.slice.call(arguments);
-  var resultHandler = getArgValue('function', args);
-  var body = getArgValue('object', args);
-  var stream = getArgValue('string', args);
-
-  if (stream) {
-    if (resultHandler) {
-      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(resultHandler, function(jmessage) {
-        return new message.Message(jmessage);
-      })).correlationId();
+    return that;
+  }
+  
+  /**
+   * Starts the executor.
+   *
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.start = function() {
+    handler = adaptAsyncResultHandler(function(error, jexecutor) {
+      _started = true;
+      _error = error;
+      check_start();
+    });
+    jexecutor.start(handler);
+    return that;
+  }
+  
+  /**
+   * Executes a remote procedure call.
+   *
+   * @param {object} data The data to emit.
+   * @param {string} [stream] The stream to which to emit the message.
+   * @param {ResultHandler} handler A handler to be called with the execution result.
+   *
+   * @returns {string} a unique message identifier
+   */
+  this.execute = function() {
+    var args = Array.prototype.slice.call(arguments);
+    var resultHandler = getArgValue('function', args);
+    var body = getArgValue('object', args);
+    var stream = getArgValue('string', args);
+  
+    if (stream) {
+      if (resultHandler) {
+        return jexecutor.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(resultHandler, function(jmessage) {
+          return new message.Message(jmessage);
+        })).correlationId();
+      }
+      else {
+        return jexecutor.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
+      }
     }
     else {
-      return __jcomponent.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
+      if (resultHandler) {
+        return jexecutor.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(resultHandler, function(jmessage) {
+          return new message.Message(jmessage);
+        })).correlationId();
+      }
+      else {
+        return jexecutor.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
+      }
     }
   }
-  else {
-    if (resultHandler) {
-      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(resultHandler, function(jmessage) {
-        return new message.Message(jmessage);
-      })).correlationId();
-    }
-    else {
-      return __jcomponent.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
-    }
-  }
+
 }
 
 module.exports = executor;

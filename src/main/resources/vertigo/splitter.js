@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-load('vertigo/helpers.js');
-validate_component_type('splitter');
+load('vertx/helpers.js');
 
 var message = require('vertigo/message');
+var context = require('vertigo/context');
 
 /**
  * The <code>vertigo/splitter</code> module provides Vertigo splitter
@@ -25,58 +25,71 @@ var message = require('vertigo/message');
  */
 var splitter = {};
 
-var _startHandler = null;
-var _started = false;
-var _error = null;
-
-function check_start() {
-  if (_started && _startHandler != null) {
-    _startHandler(_error, splitter);
-  }
-}
-
 /**
- * Sets a start handler on the splitter.
- *
- * @param {Handler} handler A handler to be called when the splitter is started.
- * @returns {module:vertigo/splitter} The splitter instance.
+ * A message splitter.
+ * @constructor
  */
-splitter.startHandler = function(handler) {
-  _startHandler = handler;
-  check_start();
-  return splitter;
-}
+splitter.Splitter = function(jsplitter) {
+  var that = this;
 
-/**
- * Starts the splitter.
- *
- * @returns {module:vertigo/splitter} The splitter instance.
- */
-splitter.start = function() {
-  handler = adaptAsyncResultHandler(function(error, jsplitter) {
-    _started = true;
-    _error = error;
-    check_start();
-  });
-  __jcomponent.start(handler);
-  return splitter;
-}
+  this.__jsplitter = jsplitter;
+  this.context = new context.InstanceContext(jsplitter.getContext());
+  this.config = this.context.component().config();
 
-/**
- * Sets a split function on the splitter.
- *
- * @param {function} splitFunc The split function. This function accepts
- * a {module:vertigo/message.Message} instance as its only argument and
- * must return a list of objects, the split form of the message body.
- * @return {module:vertigo/splitter} The splitter instance.
- */
-splitter.split = function(splitFunc) {
-  __jcomponent.splitFunction(new net.kuujo.vertigo.function.Function({
-    call: function(jmessage) {
-      return splitFunc(new message.Message(jmessage));
+  var _startHandler = null;
+  var _started = false;
+  var _error = null;
+  
+  function check_start() {
+    if (_started && _startHandler != null) {
+      _startHandler(_error, that);
     }
-  }));
-  return splitter;
+  }
+  
+  /**
+   * Sets a start handler on the splitter.
+   *
+   * @param {Handler} handler A handler to be called when the splitter is started.
+   * @returns {module:vertigo/splitter.Splitter} The splitter instance.
+   */
+  this.startHandler = function(handler) {
+    _startHandler = handler;
+    check_start();
+    return that;
+  }
+  
+  /**
+   * Starts the splitter.
+   *
+   * @returns {module:vertigo/splitter.Splitter} The splitter instance.
+   */
+  this.start = function() {
+    handler = adaptAsyncResultHandler(function(error, jsplitter) {
+      _started = true;
+      _error = error;
+      check_start();
+    });
+    jsplitter.start(handler);
+    return that;
+  }
+  
+  /**
+   * Sets a split function on the splitter.
+   *
+   * @param {function} splitFunc The split function. This function accepts
+   * a {module:vertigo/message.Message} instance as its only argument and
+   * must return a list of objects, the split form of the message body.
+   * @return {module:vertigo/splitter.Splitter} The splitter instance.
+   */
+  this.split = function(splitFunc) {
+    jsplitter.splitFunction(new net.kuujo.vertigo.function.Function({
+      call: function(jmessage) {
+        return splitFunc(new message.Message(jmessage));
+      }
+    }));
+    return that;
+  }
+
 }
 
 module.exports = splitter;
