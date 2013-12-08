@@ -89,27 +89,6 @@ vertigo.executor = undefined;
 vertigo.worker = undefined;
 
 /**
- * The vertigo filter module.
- *
- * @see module:vertigo/filter
- */
-vertigo.filter = undefined;
-
-/**
- * The vertigo splitter module.
- *
- * @see module:vertigo/splitter
- */
-vertigo.splitter = undefined;
-
-/**
- * The vertigo aggregator module.
- *
- * @see module:vertigo/aggregator
- */
-vertigo.aggregator = undefined;
-
-/**
  * A Vertigo context.
  *
  * @see module:vertigo/context.InstanceContext
@@ -131,18 +110,8 @@ if (__jcomponent !== undefined) {
       var worker = require('vertigo/worker');
       vertigo.worker = new worker.Worker(__jcomponent).start();
       break;
-    case "filter":
-      var filter = require('vertigo/filter');
-      vertigo.filter = new filter.Filter(__jcomponent).start();
-      break;
-    case "splitter":
-      var splitter = require('vertigo/splitter');
-      vertigo.splitter = new splitter.Splitter(__jcomponent).start();
-      break;
-    case "aggregator":
-      var aggregator = require('vertigo/aggregator');
-      vertigo.aggregator = new aggregator.Aggregator(__jcomponent).start();
-      break;
+    default:
+      throw "Unknown Vertigo component type " + componentType;
   }
 }
 
