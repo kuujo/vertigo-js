@@ -210,49 +210,6 @@ network.Network = function(obj) {
 }
 
 /**
- * Adds an event handler to an event bus hook listener.
- */
-var add_hook = function(listener, event, handler) {
-  switch (event) {
-    case 'start':
-      listener.startHandler(new org.vertx.java.core.Handler({
-        handle: function(jcontext) {
-          handler(new context.InstanceContext(jcontext));
-        }
-      }));
-      break;
-    case 'receive':
-      listener.receiveHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'ack':
-      listener.ackHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'fail':
-      listener.failHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'emit':
-      listener.emitHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'acked':
-      listener.ackedHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'failed':
-      listener.failedHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'timeout':
-      listener.timeoutHandler(new org.vertx.java.core.Handler({handle: handler}));
-      break;
-    case 'stop':
-      listener.stopHandler(new org.vertx.java.core.Handler({
-        handle: function(jcontext) {
-          handler(new context.InstanceContext(jcontext));
-        }
-      }));
-      break;
-  }
-}
-
-/**
  * A network component.
  * @constructor
  */
@@ -353,11 +310,76 @@ network.Component = function(obj) {
    * @returns {module:vertigo/network.Component} this
    */
   this.addHook = function(event, handler) {
-    jcomponent.addHook(new net.kuujo.vertigo.hooks.EventBusHook());
     if (hook == null) {
       hook = new net.kuujo.vertigo.hooks.EventBusHookListener(jcomponent.getAddress(), __jvertx.eventBus());
+      jcomponent.addHook(new net.kuujo.vertigo.hooks.EventBusHook());
     }
-    add_hook(hook, event, handler);
+
+    switch (event) {
+      case 'start':
+        hook.startHandler(new org.vertx.java.core.Handler({
+          handle: function(jcontext) {
+            handler(new context.InstanceContext(jcontext));
+          }
+        }));
+        break;
+      case 'receive':
+        hook.receiveHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'ack':
+        hook.ackHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'fail':
+        hook.failHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'emit':
+        hook.emitHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'acked':
+        hook.ackedHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'failed':
+        hook.failedHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'timeout':
+        hook.timeoutHandler(new org.vertx.java.core.Handler({
+          handle: function(messageId) {
+            handler(messageId.correlationId());
+          }
+        }));
+        break;
+      case 'stop':
+        hook.stopHandler(new org.vertx.java.core.Handler({
+          handle: function(jcontext) {
+            handler(new context.InstanceContext(jcontext));
+          }
+        }));
+        break;
+    }
     return that;
   }
 
