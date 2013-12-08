@@ -123,7 +123,7 @@ input.Listener = function(obj) {
   var that = this;
 
   if (typeof(obj) == 'string' || obj.__jinput !== undefined) {
-    var jlistener = new net.kuujo.vertigo.input.DefaultListener(obj, __jvertx, __jcontainer.logger());
+    var jlistener = new net.kuujo.vertigo.input.impl.DefaultListener(obj, __jvertx, __jcontainer.logger());
   }
   else {
     var jlistener = obj;

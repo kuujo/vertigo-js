@@ -44,12 +44,12 @@ vertigo.logger = __jcontainer.logger();
 this.__jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
 
 // Create a Vertigo factory.
-var vertigoFactory = new net.kuujo.vertigo.DefaultVertigoFactory(__jvertx, __jcontainer);
+var vertigoFactory = new net.kuujo.vertigo.impl.DefaultVertigoFactory(__jvertx, __jcontainer);
 
 // If the context was successfully created then this is a component instance.
 // For component instances, create the component and then instantiate a Vertigo instance.
 if (__jcontext !== null) {
-  var componentFactory = new net.kuujo.vertigo.component.DefaultComponentFactory(__jvertx, __jcontainer);
+  var componentFactory = new net.kuujo.vertigo.component.impl.DefaultComponentFactory(__jvertx, __jcontainer);
   this.__jcomponent = componentFactory.createComponent(__jcontext);
   this.__jvertigo = vertigoFactory.createVertigo(__jcomponent);
 }

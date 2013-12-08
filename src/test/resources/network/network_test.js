@@ -47,24 +47,6 @@ var network_tests = {
     var test_verticle2 = network.addWorker('test_worker2', 'test_worker2.js', {'foo': 'bar'}, 2);
     test.testComplete();
   },
-  testAddSourceFilter: function() {
-    var network = vertigo.createNetwork('test');
-    var test_verticle1 = network.addFilter('test_filter1', 'test_filter1.js');
-    var test_verticle2 = network.addFilter('test_filter2', 'test_filter2.js', {'foo': 'bar'}, 2);
-    test.testComplete();
-  },
-  testAddSourceSplitter: function() {
-    var network = vertigo.createNetwork('test');
-    var test_verticle1 = network.addSplitter('test_splitter1', 'test_splitter1.js');
-    var test_verticle2 = network.addSplitter('test_splitter2', 'test_splitter2.js', {'foo': 'bar'}, 2);
-    test.testComplete();
-  },
-  testAddSourceAggregator: function() {
-    var network = vertigo.createNetwork('test');
-    var test_verticle1 = network.addAggregator('test_aggregator1', 'test_aggregator1.js');
-    var test_verticle2 = network.addAggregator('test_aggregator2', 'test_aggregator2.js', {'foo': 'bar'}, 2);
-    test.testComplete();
-  },
   testAddInputVerticle: function() {
     var network = vertigo.createNetwork('test');
     var verticle = network.addFeeder('test_feeder', 'test_feeder.js');
