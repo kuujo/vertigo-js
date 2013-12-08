@@ -16,11 +16,11 @@
 var vertigo = require('vertigo');
 var test = require('testtools');
 
-vertigo.feeder.startHandler(function(error, feeder) {
+vertigo.executor.startHandler(function(error, executor) {
   test.assertNull(error);
-  feeder.emit(feeder.config, function(error) {
+  executor.execute(executor.config, function(error, result) {
     test.assertNotNull(error);
-    test.assertEquals('failure', error.type);
+    test.assertEquals('timeout', error.type);
     test.testComplete();
   });
 });

@@ -16,6 +16,7 @@
 load('vertx/helpers.js');
 
 var context = require('vertigo/context');
+var error = require('vertigo/error');
 
 /**
  * The <code>vertigo/feeder</code> module provides Vertigo feeder
@@ -139,7 +140,7 @@ feeder.Feeder = function(jfeeder) {
    * @returns {module:vertigo/feeder.Feeder} The feeder instance.
    */
   this.start = function() {
-    handler = adaptAsyncResultHandler(function(error, jfeeder) {
+    var handler = adaptAsyncResultHandler(function(error, jfeeder) {
       _started = true;
       _error = error;
       check_start();
@@ -203,10 +204,14 @@ feeder.Feeder = function(jfeeder) {
     if (ackHandler == null && _ackHandler != null) {
       ackHandler = _ackHandler;
     }
+
+    var handler = function(err, result) {
+      ackHandler(error.createError(err), result);
+    }
   
     if (stream) {
       if (ackHandler) {
-        return jfeeder.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(ackHandler, function(result) {
+        return jfeeder.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(result) {
           return result.correlationId();
         })).correlationId();
       }
@@ -216,7 +221,7 @@ feeder.Feeder = function(jfeeder) {
     }
     else {
       if (ackHandler) {
-        return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(ackHandler, function(result) {
+        return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(result) {
           return result.correlationId();
         })).correlationId();
       }

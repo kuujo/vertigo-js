@@ -17,6 +17,7 @@ load('vertx/helpers.js');
 
 var message = require('vertigo/message');
 var context = require('vertigo/context');
+var error = require('vertigo/error');
 
 /**
  * The <code>vertigo/rpc</code> module provides Vertigo executor
@@ -25,6 +26,10 @@ var context = require('vertigo/context');
  */
 var executor = {};
 
+/**
+ * A network executor.
+ * @constructor
+ */
 executor.Executor = function(jexecutor) {
   var that = this;
 
@@ -163,12 +168,12 @@ executor.Executor = function(jexecutor) {
    * @returns {module:vertigo/executor.Executor} The executor instance.
    */
   this.start = function() {
-    handler = adaptAsyncResultHandler(function(error, jexecutor) {
+    var handler = function(error, jexecutor) {
       _started = true;
       _error = error;
       check_start();
-    });
-    jexecutor.start(handler);
+    };
+    jexecutor.start(adaptAsyncResultHandler(handler));
     return that;
   }
   
@@ -186,10 +191,14 @@ executor.Executor = function(jexecutor) {
     var resultHandler = getArgValue('function', args);
     var body = getArgValue('object', args);
     var stream = getArgValue('string', args);
-  
+
+    var handler = function(err, result) {
+      resultHandler(error.createError(err), result);
+    }
+
     if (stream) {
       if (resultHandler) {
-        return jexecutor.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(resultHandler, function(jmessage) {
+        return jexecutor.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(jmessage) {
           return new message.Message(jmessage);
         })).correlationId();
       }
@@ -199,7 +208,7 @@ executor.Executor = function(jexecutor) {
     }
     else {
       if (resultHandler) {
-        return jexecutor.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(resultHandler, function(jmessage) {
+        return jexecutor.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(jmessage) {
           return new message.Message(jmessage);
         })).correlationId();
       }

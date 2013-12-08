@@ -20,7 +20,7 @@ vertigo.feeder.startHandler(function(error, feeder) {
   test.assertNull(error);
   feeder.emit(feeder.config, function(error) {
     test.assertNotNull(error);
-    test.assertEquals('failure', error.type);
+    test.assertEquals('timeout', error.type);
     test.testComplete();
   });
 });

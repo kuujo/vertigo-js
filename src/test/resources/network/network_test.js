@@ -76,6 +76,49 @@ var network_tests = {
     vertigo.deployLocalNetwork(network, function(error) {
       test.assertNull(error);
     });
+  },
+  testTimeoutFeeder: function() {
+    var network = vertigo.createNetwork('test');
+    network.ackTimeout(500);
+    network.addFeeder('test_feeder', 'test_timeout_feeder.js', {'foo': 'bar'});
+    network.addWorker('test_worker', 'test_timeout_worker.js').addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
+  },
+  testAckingExecutor: function() {
+    var network = vertigo.createNetwork('test');
+    network.addExecutor('test_executor', 'test_acking_executor.js', {'foo': 'bar'});
+    network.addWorker('test_worker', 'test_acking_worker.js').addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
+  },
+  testFailingExecutor: function() {
+    var network = vertigo.createNetwork('test');
+    network.addExecutor('test_executor', 'test_failing_executor.js', {'foo': 'bar'});
+    network.addWorker('test_worker', 'test_failing_worker.js').addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
+  },
+  testTimeoutExecutor: function() {
+    var network = vertigo.createNetwork('test');
+    network.ackTimeout(500);
+    network.addExecutor('test_executor', 'test_timeout_executor.js', {'foo': 'bar'});
+    network.addWorker('test_worker', 'test_timeout_worker.js').addInput('test_feeder');
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
+  },
+  testSimpleHook: function() {
+    var network = vertigo.createNetwork('test');
+    network.addWorker('test_worker', 'test_acking_worker.js').addHook('start', function(messageid) {
+      test.testComplete()
+    });
+    vertigo.deployLocalNetwork(network, function(error) {
+      test.assertNull(error);
+    });
   }
 }
 
