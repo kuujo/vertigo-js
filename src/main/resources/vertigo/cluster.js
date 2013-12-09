@@ -70,12 +70,12 @@ cluster.LocalCluster = function() {
 }
 
 /**
- * A remote (Via) cluster.
+ * A remote cluster.
  * @constructor
  */
-cluster.ViaCluster = function(address) {
+cluster.RemoteCluster = function(address) {
   var that = this;
-  var jcluster = new net.kuujo.vertigo.cluster.ViaCluster(__jvertx, __jcontainer, address);
+  var jcluster = new net.kuujo.vertigo.cluster.RemoteCluster(__jvertx, __jcontainer, address);
 
   this.address = address;
 
