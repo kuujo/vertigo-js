@@ -198,22 +198,22 @@ executor.Executor = function(jexecutor) {
 
     if (stream) {
       if (resultHandler) {
-        return jexecutor.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(jmessage) {
+        return jexecutor.execute(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(jmessage) {
           return new message.Message(jmessage);
         })).correlationId();
       }
       else {
-        return jexecutor.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
+        return jexecutor.execute(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
       }
     }
     else {
       if (resultHandler) {
-        return jexecutor.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(jmessage) {
+        return jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(jmessage) {
           return new message.Message(jmessage);
         })).correlationId();
       }
       else {
-        return jexecutor.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
+        return jexecutor.execute(new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
       }
     }
   }

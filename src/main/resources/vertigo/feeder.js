@@ -41,6 +41,19 @@ feeder.Feeder = function(jfeeder) {
   var _error = null;
   var _ackHandler = null;
 
+  //The feed handler *always* receives a MessageId instance whether the message
+  //was successfully processed or not. Thus, we need to implement a custom wrapper.
+  var adaptFeedResultHandler = function(handler) {
+   return function(result) {
+     if (result.failed()) {
+       handler(error.createError(result.cause()), result.result().correlationId());
+     }
+     else {
+       handler(null, result.result().correlationId());
+     }
+   }
+  }
+
   function check_start() {
     if (_started && _startHandler != null) {
       _startHandler(_error, that);
@@ -204,16 +217,10 @@ feeder.Feeder = function(jfeeder) {
     if (ackHandler == null && _ackHandler != null) {
       ackHandler = _ackHandler;
     }
-
-    var handler = function(err, result) {
-      ackHandler(error.createError(err), result);
-    }
   
     if (stream) {
       if (ackHandler) {
-        return jfeeder.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(result) {
-          return result.correlationId();
-        })).correlationId();
+        return jfeeder.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptFeedResultHandler(ackHandler)).correlationId();
       }
       else {
         return jfeeder.emit(stream, new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
@@ -221,9 +228,7 @@ feeder.Feeder = function(jfeeder) {
     }
     else {
       if (ackHandler) {
-        return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptAsyncResultHandler(handler, function(result) {
-          return result.correlationId();
-        })).correlationId();
+        return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body)), adaptFeedResultHandler(ackHandler)).correlationId();
       }
       else {
         return jfeeder.emit(new org.vertx.java.core.json.JsonObject(JSON.stringify(body))).correlationId();
