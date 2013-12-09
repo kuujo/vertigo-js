@@ -47,7 +47,9 @@ else {
   this.__jvertigo = vertigoFactory.createVertigo();
 }
 
+var network = require('vertigo/network');
 var context = require('vertigo/context');
+var cluster = require('vertigo/cluster');
 
 /**
  * The component instance context.
@@ -171,7 +173,7 @@ vertigo.isComponent = function() {
  * @returns {module:vertigo/network.Network} A new network definition
  */
 vertigo.createNetwork = function(address) {
-  return new vertigo.network.Network(address);
+  return new network.Network(address);
 }
 
 /**
@@ -296,7 +298,7 @@ vertigo.shutdownRemoteNetwork = function(address, context, doneHandler) {
  * @returns {module:vertigo/cluster.LocalCluster} A new local cluster instance
  */
 vertigo.createLocalCluster = function() {
-  return new vertigo.cluster.LocalCluster();
+  return new cluster.LocalCluster();
 }
 
 /**
@@ -306,7 +308,7 @@ vertigo.createLocalCluster = function() {
  * @returns {module:vertigo/cluster.ViaCluster} A new remote cluster instance
  */
 vertigo.createRemoteCluster = function(address) {
-  return new vertigo.cluster.RemoteCluster(address);
+  return new cluster.RemoteCluster(address);
 }
 
 module.exports = vertigo;
