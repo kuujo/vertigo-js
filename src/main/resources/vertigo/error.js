@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * The <code>vertigo/error</code> module provides wrappers for
+ * Vertigo errors.
+ * @exports vertigo/error
+ */
 var error = {};
 
 error.FAILURE = 'failure';
