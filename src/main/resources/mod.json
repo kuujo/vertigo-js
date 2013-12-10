@@ -1,5 +1,5 @@
 {
-  "includes": "net.kuujo~vertigo~0.6.0",
+  "includes": "net.kuujo~vertigo~0.6.1",
   "description": "Javascript API for Vertigo.",
   "licenses": ["The Apache Software License Version 2.0"],
   "author": "Jordan Halterman",
