@@ -111,6 +111,18 @@ var network_tests = {
       test.assertNull(error);
     });
   },
+  testNestedNetwork: function() {
+    var network1 = vertigo.createNetwork('test1');
+    network1.addFeeder('test1.feeder', 'test_periodic_feeder.js');
+    vertigo.deployLocalNetwork(network1, function(error) {
+      test.assertNull(error);
+      var network2 = vertigo.createNetwork('test2');
+      network2.addWorker('test2.worker', 'test_completing_worker.js').addInput('test1.feeder');
+      vertigo.deployLocalNetwork(network2, function(error) {
+        test.assertNull(error);
+      });
+    });
+  },
   testSimpleHook: function() {
     var network = vertigo.createNetwork('test');
     network.addWorker('test_worker', 'test_acking_worker.js').addHook('start', function(messageid) {
