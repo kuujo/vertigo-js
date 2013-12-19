@@ -42,7 +42,14 @@ network.Network = function(obj) {
 
   this.__jnetwork = jnetwork;
 
-  this.address = jnetwork.getAddress();
+  /**
+   * Gets the network address.
+   *
+   * @returns {string} The network address.
+   */
+  this.address = function() {
+    return jnetwork.getAddress();
+  }
 
   /**
    * Enables acking on the network.
@@ -216,17 +223,27 @@ network.Network = function(obj) {
 network.Component = function(obj) {
   var that = this;
   var hook = null;
-
-  if (typeof(obj) == 'string') {
-    var jcomponent = new net.kuujo.vertigo.network.Component(obj);
-  }
-  else {
-    var jcomponent = obj;
-  }
+  var jcomponent = obj;
 
   this.__jcomponent = jcomponent;
-  this.type = net.kuujo.vertigo.util.Component.deserializeType(jcomponent.getType());
-  this.address = jcomponent.getAddress();
+
+  /**
+   * Gets the component address.
+   *
+   * @returns {string} The component address.
+   */
+  this.address = function() {
+    return jcomponent.getAddress();
+  }
+
+  /**
+   * Gets the component type.
+   *
+   * @returns {string} The component type.
+   */
+  this.type = function() {
+    return net.kuujo.vertigo.util.Component.serializeType(jcomponent.getType());
+  }
 
   /**
    * Returns a boolean indicating whether this component is a module.

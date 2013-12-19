@@ -29,7 +29,14 @@ context.InstanceContext = function(jcontext) {
   var that = this;
   this.__jcontext = jcontext;
 
-  this.id = jcontext.id();
+  /**
+   * Gets the instance ID.
+   *
+   * @returns {string} The unique instance ID.
+   */
+  this.id = function() {
+    return jcontext.id();
+  }
 
   /**
    * Returns the instance type.
@@ -54,9 +61,17 @@ context.InstanceContext = function(jcontext) {
  * @constructor
  */
 context.ComponentContext = function(jcontext) {
+  var that = this;
   this.__jcontext = jcontext;
 
-  var address = jcontext.getAddress();
+  /**
+   * Gets the component address.
+   *
+   * @returns {string} The component address.
+   */
+  this.address = function() {
+    return jcontext.getAddress();
+  }
 
   /**
    * Returns the component type.
@@ -135,7 +150,7 @@ context.ComponentContext = function(jcontext) {
    *
    * @returns {module:vertigo/context.NetworkContext} The parent context
    */
-  var network = function() {
+  this.network = function() {
     return new context.NetworkContext(jcontext.getNetwork());
   }
 
@@ -148,7 +163,14 @@ context.ComponentContext = function(jcontext) {
 context.NetworkContext = function(jcontext) {
   this.__jcontext = jcontext;
 
-  this.address = jcontext.getAddress();
+  /**
+   * Gets the network address.
+   *
+   * @returns {string} The network address.
+   */
+  this.address = function() {
+    return jcontext.getAddress();
+  }
 
   /**
    * Returns an array of network auditor addresses.
@@ -171,11 +193,11 @@ context.NetworkContext = function(jcontext) {
    */
   this.components = function() {
     var contexts = jcontext.getComponents().toArray();
-    var arr = new Array(contexts.length);
+    var components = {};
     for (var i = 0; i < contexts.length; i++) {
-      arr[i] = new context.ComponentContext(contexts[i]);
+      components[contexts[i].getAddress()] = new context.ComponentContext(contexts[i]);
     }
-    return arr;
+    return components;
   }
 
   /**
