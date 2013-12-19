@@ -22,30 +22,12 @@ load('vertx/helpers.js');
  */
 var vertigo = {};
 
-this.__jvertigo = undefined;
-this.__jcontext = undefined;
-this.__jcomponent = undefined;
-this.__componentType = undefined;
-
 vertigo.logger = __jcontainer.logger();
 
-// Attempt to create a component context from the verticle configuration.
-this.__jcontext = net.kuujo.vertigo.util.Context.parseContext(__jcontainer.config());
-
-// Create a Vertigo factory.
-var vertigoFactory = new net.kuujo.vertigo.impl.DefaultVertigoFactory(__jvertx, __jcontainer);
-
-// If the context was successfully created then this is a component instance.
-// For component instances, create the component and then instantiate a Vertigo instance.
-if (__jcontext !== null) {
-  var componentFactory = new net.kuujo.vertigo.component.impl.DefaultComponentFactory(__jvertx, __jcontainer);
-  this.__jcomponent = componentFactory.createComponent(__jcontext);
-  this.__jvertigo = vertigoFactory.createVertigo(__jcomponent);
-}
-// For non-component verticles, instantiate an empty Vertigo instance.
-else {
-  this.__jvertigo = vertigoFactory.createVertigo();
-}
+// Create a Java Vertigo instance. This instance is the basis of all Vertigo API
+// calls. If the current verticle instance is a Vertigo component instance, the
+// Java Vertigo instance will contain the Java component instance and its context.
+this.__jvertigo = net.kuujo.vertigo.util.Factory.createVertigo(__jvertx, __jcontainer);
 
 var network = require('vertigo/network');
 var context = require('vertigo/context');
@@ -126,10 +108,17 @@ vertigo.executor = undefined;
  */
 vertigo.worker = undefined;
 
-if (__jcomponent !== undefined) {
-  vertigo.context = new context.InstanceContext(__jcomponent.getContext());
+// If the current verticle instance is a Vertigo component instance, store
+// the Java component and its context in a global variable and set up
+// Javascript objects. We make the component's specific API available
+// based on the component type.
+if (__jvertigo.isComponent()) {
+  this.__jcomponent = __jvertigo.component();
+  this.__jcontext = __jvertigo.context();
 
-  var componentType = net.kuujo.vertigo.util.Component.serializeType(__jcomponent.getContext().getComponent().getType());
+  vertigo.context = new context.InstanceContext(__jcontext);
+
+  var componentType = net.kuujo.vertigo.util.Component.serializeType(__jcontext.getComponent().getType());
   switch (componentType) {
     case "feeder":
       var feeder = require('vertigo/feeder');
