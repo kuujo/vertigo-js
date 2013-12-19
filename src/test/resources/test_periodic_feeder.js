@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 var vertigo = require('vertigo');
+var test = require('testtools');
+
+vertigo.feeder.startHandler(function(error, feeder) {
+  test.assertNull(error);
+  feeder.feedQueueMaxSize(500);
+  test.assertEquals(500, feeder.feedQueueMaxSize());
+  test.assertFalse(feeder.feedQueueFull());
+  feeder.autoRetry(true);
+  test.assertTrue(feeder.autoRetry());
+  feeder.autoRetryAttempts(3);
+  test.assertEquals(3, feeder.autoRetryAttempts());
+  feeder.feedInterval(1000);
+  test.assertEquals(1000, feeder.feedInterval());
+  feeder.ackHandler(function(error) {});
+  feeder.drainHandler(function() {});
+});
 
 vertigo.feeder.feedInterval(1000);
 vertigo.feeder.feedHandler(function(feeder) {

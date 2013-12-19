@@ -46,7 +46,23 @@ executor.Executor = function(jexecutor) {
       _startHandler(_error, that);
     }
   }
-  
+
+  /**
+   * Sets or gets the execution result timeout.
+   *
+   * @param {Integer} [timeout] The execution result timeout.
+   * @returns {module:vertigo/executor.Executor} The executor instance.
+   */
+  this.resultTimeout = function(timeout) {
+    if (timeout === undefined) {
+      return jexecutor.getResultTimeout();
+    }
+    else {
+      jexecutor.setResultTimeout(timeout);
+      return that;
+    }
+  }
+
   /**
    * Sets or gets the maximum execute queue size.
    *

@@ -18,6 +18,18 @@ var test = require('testtools');
 
 vertigo.feeder.startHandler(function(error, feeder) {
   test.assertNull(error);
+  feeder.feedQueueMaxSize(500);
+  test.assertEquals(500, feeder.feedQueueMaxSize());
+  test.assertFalse(feeder.feedQueueFull());
+  feeder.autoRetry(true);
+  test.assertTrue(feeder.autoRetry());
+  feeder.autoRetryAttempts(3);
+  test.assertEquals(3, feeder.autoRetryAttempts());
+  feeder.feedInterval(500);
+  test.assertEquals(500, feeder.feedInterval());
+  feeder.feedHandler(function(feeder) {});
+  feeder.ackHandler(function(error) {});
+  feeder.drainHandler(function() {});
   feeder.emit(feeder.config, function(error) {
     test.assertNotNull(error);
     test.assertEquals('timeout', error.type);

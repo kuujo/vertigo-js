@@ -18,6 +18,19 @@ var test = require('testtools');
 
 vertigo.executor.startHandler(function(error, executor) {
   test.assertNull(error);
+  executor.resultTimeout(15000);
+  test.assertEquals(15000, executor.resultTimeout());
+  executor.executeQueueMaxSize(500);
+  test.assertEquals(500, executor.executeQueueMaxSize());
+  test.assertFalse(executor.executeQueueFull());
+  executor.autoRetry(true);
+  test.assertTrue(executor.autoRetry());
+  executor.autoRetryAttempts(3);
+  test.assertEquals(3, executor.autoRetryAttempts());
+  executor.executeInterval(500);
+  test.assertEquals(500, executor.executeInterval());
+  executor.executeHandler(function(executor) {});
+  executor.drainHandler(function() {});
   executor.execute(executor.config, function(error, result) {
     test.assertNull(error);
     test.testComplete();
