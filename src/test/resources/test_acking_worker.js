@@ -17,6 +17,25 @@ var vertigo = require('vertigo');
 var test = require('testtools');
 
 vertigo.worker.messageHandler(function(message) {
+  test.assertEquals('string', typeof(message.id));
+  test.assertEquals('object', typeof(message.body));
+  test.assertEquals('string', typeof(message.stream));
+  test.assertEquals('boolean', typeof(message.hasParent()));
+  if (message.hasParent()) {
+    test.assertEquals('string', typeof(message.parent));
+  }
+  else {
+    test.assertNull(message.parent);
+  }
+  test.assertEquals('boolean', typeof(message.hasRoot()));
+  if (message.hasRoot()) {
+    test.assertEquals('string', typeof(message.root));
+  }
+  else {
+    test.assertNull(message.root);
+  }
+  test.assertEquals('string', typeof(message.source));
+
   var config = vertigo.worker.config;
   if (config['validate'] !== undefined) {
     test.assertEquals(config['validate'], message.body);
