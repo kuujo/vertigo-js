@@ -20,8 +20,8 @@ var vertigo = require('vertigo');
 var cluster_tests = {
   testLocalDeploy: function() {
     var network = vertigo.createNetwork('test');
-    network.addFeeder('test_feeder', 'test_acking_feeder.js');
-    network.addWorker('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
+    network.addFeederVerticle('test_feeder', 'test_acking_feeder.js');
+    network.addWorkerVerticle('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
     vertigo.deployLocalNetwork(network, function(error, context) {
       test.assertNull(error);
       test.assertNotNull(context);
@@ -30,8 +30,8 @@ var cluster_tests = {
   },
   testLocalShutdown: function() {
     var network = vertigo.createNetwork('test');
-    network.addFeeder('test_feeder', 'test_acking_feeder.js');
-    network.addWorker('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
+    network.addFeederVerticle('test_feeder', 'test_acking_feeder.js');
+    network.addWorkerVerticle('test_worker', 'test_acking_worker.js', 2).addInput('test_feeder');
     vertigo.deployLocalNetwork(network, function(error, context) {
       test.assertNull(error);
       test.assertNotNull(context);

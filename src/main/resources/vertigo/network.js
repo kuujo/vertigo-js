@@ -138,17 +138,90 @@ network.Network = function(obj) {
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
+
+    var component = null;
     if (config != null && instances != null) {
-      return new network.Component(jnetwork.addFeeder(address, main, config, instances));
+      component = jnetwork.addFeeder(address, main, config, instances);
     }
     else if (config != null) {
-      return new network.Component(jnetwork.addFeeder(address, main, config));
+      component = jnetwork.addFeeder(address, main, config);
     }
     else if (instances != null) {
-      return new network.Component(jnetwork.addFeeder(address, main, instances));
+      component = jnetwork.addFeeder(address, main, instances);
     }
     else {
-      return new network.Component(jnetwork.addFeeder(address, main));
+      component = jnetwork.addFeeder(address, main);
+    }
+
+    if (component instanceof net.kuujo.vertigo.network.Module) {
+      return new network.Module(component);
+    }
+    else if (component instanceof net.kuujo.vertigo.network.Verticle) {
+      return new network.Verticle(component);
+    }
+  }
+
+  /**
+   * Adds a feeder module to the network.
+   *
+   * @param {string} address The feeder address
+   * @param {string} moduleName The feeder module name
+   * @param {object} [config] The feeder configuration
+   * @param {number} [instances] The number of feeder component instances
+   */
+  this.addFeederModule = function(address, moduleName) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    if (config != null) {
+      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
+    }
+
+    if (config != null && instances != null) {
+      return new network.Module(jnetwork.addFeederModule(address, moduleName, config, instances));
+    }
+    else if (config != null) {
+      return new network.Module(jnetwork.addFeederModule(address, moduleName, config));
+    }
+    else if (instances != null) {
+      return new network.Module(jnetwork.addFeederModule(address, moduleName, instances));
+    }
+    else {
+      return new network.Module(jnetwork.addFeederModule(address, moduleName));
+    }
+  }
+
+  /**
+   * Adds a feeder verticle to the network.
+   *
+   * @param {string} address The feeder address
+   * @param {string} main The feeder verticle main
+   * @param {object} [config] The feeder configuration
+   * @param {number} [instances] The number of feeder component instances
+   */
+  this.addFeederVerticle = function(address, main) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    if (config != null) {
+      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
+    }
+
+    if (config != null && instances != null) {
+      return new network.Verticle(jnetwork.addFeederVerticle(address, main, config, instances));
+    }
+    else if (config != null) {
+      return new network.Verticle(jnetwork.addFeederVerticle(address, main, config));
+    }
+    else if (instances != null) {
+      return new network.Verticle(jnetwork.addFeederVerticle(address, main, instances));
+    }
+    else {
+      return new network.Verticle(jnetwork.addFeederVerticle(address, main));
     }
   }
 
@@ -169,17 +242,90 @@ network.Network = function(obj) {
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
+
+    var component = null;
     if (config != null && instances != null) {
-      return new network.Component(jnetwork.addExecutor(address, main, config, instances));
+      component = jnetwork.addExecutor(address, main, config, instances);
     }
     else if (config != null) {
-      return new network.Component(jnetwork.addExecutor(address, main, config));
+      component = jnetwork.addExecutor(address, main, config);
     }
     else if (instances != null) {
-      return new network.Component(jnetwork.addExecutor(address, main, instances));
+      component = jnetwork.addExecutor(address, main, instances);
     }
     else {
-      return new network.Component(jnetwork.addExecutor(address, main));
+      component = jnetwork.addExecutor(address, main);
+    }
+
+    if (component instanceof net.kuujo.vertigo.network.Module) {
+      return new network.Module(component);
+    }
+    else if (component instanceof net.kuujo.vertigo.network.Verticle) {
+      return new network.Verticle(component);
+    }
+  }
+
+  /**
+   * Adds an executor module to the network.
+   *
+   * @param {string} address The executor address
+   * @param {string} moduleName The executor module name
+   * @param {object} [config] The executor configuration
+   * @param {number} [instances] The number of executor component instances
+   */
+  this.addExecutorModule = function(address, moduleName) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    if (config != null) {
+      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
+    }
+
+    if (config != null && instances != null) {
+      return new network.Module(jnetwork.addExecutorModule(address, moduleName, config, instances));
+    }
+    else if (config != null) {
+      return new network.Module(jnetwork.addExecutorModule(address, moduleName, config));
+    }
+    else if (instances != null) {
+      return new network.Module(jnetwork.addExecutorModule(address, moduleName, instances));
+    }
+    else {
+      return new network.Module(jnetwork.addExecutorModule(address, moduleName));
+    }
+  }
+
+  /**
+   * Adds an executor verticle to the network.
+   *
+   * @param {string} address The executor address
+   * @param {string} main The executor verticle main
+   * @param {object} [config] The executor configuration
+   * @param {number} [instances] The number of executor component instances
+   */
+  this.addExecutorVerticle = function(address, main) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    if (config != null) {
+      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
+    }
+
+    if (config != null && instances != null) {
+      return new network.Verticle(jnetwork.addExecutorVerticle(address, main, config, instances));
+    }
+    else if (config != null) {
+      return new network.Verticle(jnetwork.addExecutorVerticle(address, main, config));
+    }
+    else if (instances != null) {
+      return new network.Verticle(jnetwork.addExecutorVerticle(address, main, instances));
+    }
+    else {
+      return new network.Verticle(jnetwork.addExecutorVerticle(address, main));
     }
   }
 
@@ -200,17 +346,90 @@ network.Network = function(obj) {
     if (config != null) {
       config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
     }
+
+    var component = null;
     if (config != null && instances != null) {
-      return new network.Component(jnetwork.addWorker(address, main, config, instances));
+      component = jnetwork.addWorker(address, main, config, instances);
     }
     else if (config != null) {
-      return new network.Component(jnetwork.addWorker(address, main, config));
+      component = jnetwork.addWorker(address, main, config);
     }
     else if (instances != null) {
-      return new network.Component(jnetwork.addWorker(address, main, instances));
+      component = jnetwork.addWorker(address, main, instances);
     }
     else {
-      return new network.Component(jnetwork.addWorker(address, main));
+      component = jnetwork.addWorker(address, main);
+    }
+
+    if (component instanceof net.kuujo.vertigo.network.Module) {
+      return new network.Module(component);
+    }
+    else if (component instanceof net.kuujo.vertigo.network.Verticle) {
+      return new network.Verticle(component);
+    }
+  }
+
+  /**
+   * Adds a worker module to the network.
+   *
+   * @param {string} address The worker address
+   * @param {string} moduleName The worker module name
+   * @param {object} [config] The worker configuration
+   * @param {number} [instances] The number of worker component instances
+   */
+  this.addWorkerModule = function(address, moduleName) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    if (config != null) {
+      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
+    }
+
+    if (config != null && instances != null) {
+      return new network.Module(jnetwork.addWorkerModule(address, moduleName, config, instances));
+    }
+    else if (config != null) {
+      return new network.Module(jnetwork.addWorkerModule(address, moduleName, config));
+    }
+    else if (instances != null) {
+      return new network.Module(jnetwork.addWorkerModule(address, moduleName, instances));
+    }
+    else {
+      return new network.Module(jnetwork.addWorkerModule(address, moduleName));
+    }
+  }
+
+  /**
+   * Adds a worker verticle to the network.
+   *
+   * @param {string} address The worker address
+   * @param {string} main The worker verticle main
+   * @param {object} [config] The worker configuration
+   * @param {number} [instances] The number of worker component instances
+   */
+  this.addWorkerVerticle = function(address, main) {
+    var args = Array.prototype.slice.call(arguments);
+    args.shift();
+    args.shift();
+    var instances = getArgValue('number', args);
+    var config = getArgValue('object', args);
+    if (config != null) {
+      config = new org.vertx.java.core.json.JsonObject(JSON.stringify(config));
+    }
+
+    if (config != null && instances != null) {
+      return new network.Verticle(jnetwork.addWorkerVerticle(address, main, config, instances));
+    }
+    else if (config != null) {
+      return new network.Verticle(jnetwork.addWorkerVerticle(address, main, config));
+    }
+    else if (instances != null) {
+      return new network.Verticle(jnetwork.addWorkerVerticle(address, main, instances));
+    }
+    else {
+      return new network.Verticle(jnetwork.addWorkerVerticle(address, main));
     }
   }
 
@@ -257,36 +476,6 @@ network.Component = function(obj) {
    */
   this.isVerticle = function() {
     return jcomponent.isVerticle();
-  }
-
-  /**
-   * Sets or gets the component main.
-   *
-   * @param {String} [main] The component main.
-   */
-  this.main = function(main) {
-    if (main === undefined) {
-      return jcomponent.getMain();
-    }
-    else {
-      jcomponent.setMain(main);
-      return that;
-    }
-  }
-
-  /**
-   * Sets or gets the component module name.
-   *
-   * @param {String} [main] The component module name.
-   */
-  this.module = function(moduleName) {
-    if (moduleName === undefined) {
-      return jcomponent.getModule();
-    }
-    else {
-      jcomponent.setModule(moduleName);
-      return that;
-    }
   }
 
   /**
@@ -414,6 +603,238 @@ network.Component = function(obj) {
     else {
       return new input.Input(jcomponent.addInput(address));
     }
+  }
+
+}
+
+/**
+ * A network module component.
+ * @constructor
+ */
+network.Module = function(obj) {
+  var that = this;
+  var hook = null;
+  var component = new network.Component(obj);
+  var jcomponent = obj;
+
+  this.__jcomponent = jcomponent;
+
+  /**
+   * Gets the component address.
+   *
+   * @returns {string} The component address.
+   */
+  this.address = function() {
+    return component.address();
+  }
+
+  /**
+   * Gets the component type.
+   *
+   * @returns {string} The component type.
+   */
+  this.type = function() {
+    return component.type();
+  }
+
+  /**
+   * Returns a boolean indicating whether this component is a module.
+   */
+  this.isModule = function() {
+    return component.isModule();
+  }
+
+  /**
+   * Returns a boolean indicating whether this component is a verticle.
+   */
+  this.isVerticle = function() {
+    return component.isVerticle();
+  }
+
+  /**
+   * Sets or gets the component module name.
+   *
+   * @param {String} [main] The component module name.
+   */
+  this.module = function(moduleName) {
+    if (moduleName === undefined) {
+      return jcomponent.getModule();
+    }
+    else {
+      jcomponent.setModule(moduleName);
+      return that;
+    }
+  }
+
+  /**
+   * Sets or gets the component configuration.
+   *
+   * @param {Object} [config] The JSON component configuration.
+   */
+  this.config = function(config) {
+    return component.config(config);
+  }
+
+  /**
+   * Sets or gets the number of component instances.
+   *
+   * @param {Integer} [instances] The number of component instances.
+   */
+  this.instances = function(instances) {
+    return component.instances(instances);
+  }
+
+  /**
+   * Adds a hook handler for a specific component event.
+   *
+   * @param {String} event The hook event.
+   * @param {Handler} handler A hook handler.
+   * @returns {module:vertigo/network.Component} this
+   */
+  this.addHook = function(event, handler) {
+    return component.addHook(event, handler);
+  }
+
+  /**
+   * Adds an input to the component.
+   *
+   * @param {string} address The input address.
+   * @param {string} stream The stream to which to subscribe.
+   * @returns {module:vertigo/input.Input} The added input instance
+   */
+  this.addInput = function(address, stream) {
+    return component.addInput(address, stream);
+  }
+
+}
+
+/**
+ * A network verticle component.
+ * @constructor
+ */
+network.Verticle = function(obj) {
+  var that = this;
+  var hook = null;
+  var component = new network.Component(obj);
+  var jcomponent = obj;
+
+  this.__jcomponent = jcomponent;
+
+  /**
+   * Gets the component address.
+   *
+   * @returns {string} The component address.
+   */
+  this.address = function() {
+    return component.address();
+  }
+
+  /**
+   * Gets the component type.
+   *
+   * @returns {string} The component type.
+   */
+  this.type = function() {
+    return component.type();
+  }
+
+  /**
+   * Returns a boolean indicating whether this component is a module.
+   */
+  this.isModule = function() {
+    return component.isModule();
+  }
+
+  /**
+   * Returns a boolean indicating whether this component is a verticle.
+   */
+  this.isVerticle = function() {
+    return component.isVerticle();
+  }
+
+  /**
+   * Sets or gets the component main.
+   *
+   * @param {String} [main] The component main.
+   */
+  this.main = function(main) {
+    if (main === undefined) {
+      return jcomponent.getMain();
+    }
+    else {
+      jcomponent.setMain(main);
+      return that;
+    }
+  }
+
+  /**
+   * Sets or gets the component configuration.
+   *
+   * @param {Object} [config] The JSON component configuration.
+   */
+  this.config = function(config) {
+    return component.config();
+  }
+
+  /**
+   * Sets or gets the number of component instances.
+   *
+   * @param {Integer} [instances] The number of component instances.
+   */
+  this.instances = function(instances) {
+    return component.instances();
+  }
+
+  /**
+   * Sets or gets whether the verticle is a worker.
+   *
+   * @param {Boolean} [worker] Indicates whether the verticle is a worker.
+   */
+  this.worker = function(worker) {
+    if (worker === undefined) {
+      return jcomponent.isWorker();
+    }
+    else {
+      jcomponent.setWorker(worker);
+      return that;
+    }
+  }
+
+  /**
+   * Sets or gets whether the verticle is multi-threaded.
+   *
+   * @param {Boolean} [multiThreaded] Indicates whether the verticle is multi-threaded.
+   */
+  this.multiThreaded = function(multiThreaded) {
+    if (multiThreaded === undefined) {
+      return jcomponent.isMultiThreaded();
+    }
+    else {
+      jcomponent.setMultiThreaded(multiThreaded);
+      return that;
+    }
+  }
+
+  /**
+   * Adds a hook handler for a specific component event.
+   *
+   * @param {String} event The hook event.
+   * @param {Handler} handler A hook handler.
+   * @returns {module:vertigo/network.Component} this
+   */
+  this.addHook = function(event, handler) {
+    return component.addHook(event, handler);
+  }
+
+  /**
+   * Adds an input to the component.
+   *
+   * @param {string} address The input address.
+   * @param {string} stream The stream to which to subscribe.
+   * @returns {module:vertigo/input.Input} The added input instance
+   */
+  this.addInput = function(address, stream) {
+    return component.addInput(address, stream);
   }
 
 }

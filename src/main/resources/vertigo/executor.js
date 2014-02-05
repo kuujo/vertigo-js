@@ -34,8 +34,9 @@ executor.Executor = function(jexecutor) {
   var that = this;
 
   this.__jexecutor = jexecutor;
-  this.context = new context.InstanceContext(jexecutor.getContext());
-  this.config = this.context.component().config();
+  this.context = new context.InstanceContext(jexecutor.context());
+  this.config = this.context.componentContext().config();
+  this.logger = jexecutor.logger();
 
   var _startHandler = null;
   var _started = false;

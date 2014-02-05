@@ -42,7 +42,7 @@ context.InstanceContext = function(jcontext) {
    * Returns the instance type.
    */
   this.type = function() {
-    return that.component().type();
+    return that.componentContext().type();
   }
 
   /**
@@ -50,8 +50,18 @@ context.InstanceContext = function(jcontext) {
    *
    * @returns {module:vertigo/context.ComponentContext} The parent context
    */
+  this.componentContext = function() {
+    var component = jcontext.componentContext();
+    if (component instanceof net.kuujo.vertigo.context.ModuleContext) {
+      return new context.ModuleContext(component);
+    }
+    else if (component instanceof net.kuujo.vertigo.context.VerticleContext) {
+      return new context.VerticleContext(component);
+    }
+  }
+
   this.component = function() {
-    return new context.ComponentContext(jcontext.getComponent());
+    return that.componentContext();
   }
 
 }
@@ -70,14 +80,14 @@ context.ComponentContext = function(jcontext) {
    * @returns {string} The component address.
    */
   this.address = function() {
-    return jcontext.getAddress();
+    return jcontext.address();
   }
 
   /**
    * Returns the component type.
    */
   this.type = function() {
-    return net.kuujo.vertigo.util.Component.serializeType(jcontext.getType());
+    return net.kuujo.vertigo.util.Component.serializeType(jcontext.type());
   }
 
   /**
@@ -95,34 +105,12 @@ context.ComponentContext = function(jcontext) {
   }
 
   /**
-   * Returns the component main. If the component is not a verticle
-   * then null will be returned.
-   */
-  this.main = function() {
-    if (that.isVerticle()) {
-      return jcontext.getMain();
-    }
-    return null;
-  }
-
-  /**
-   * Returns the component module name. If the component is not a module
-   * then null will be returned.
-   */
-  this.module = function() {
-    if (that.isModule()) {
-      return jcontext.getModule();
-    }
-    return null;
-  }
-
-  /**
    * Returns the component configuration.
    *
    * @returns {object} The component configuration
    */
   this.config = function() {
-    var config = jcontext.getConfig();
+    var config = jcontext.config();
     if (config != null) {
       return JSON.parse(config.encode());
     }
@@ -136,8 +124,8 @@ context.ComponentContext = function(jcontext) {
    *
    * @returns {array} An array of instance contexts
    */
-  this.instances = function() {
-    var contexts = jcontext.getInstances().toArray();
+  this.instanceContexts = function() {
+    var contexts = jcontext.instanceContexts().toArray();
     var arr = new Array(contexts.length);
     for (var i = 0; i < contexts.length; i++) {
       arr[i] = new context.InstanceContext(contexts[i]);
@@ -145,15 +133,189 @@ context.ComponentContext = function(jcontext) {
     return arr;
   }
 
+  this.instances = function() {
+    return that.instanceContexts();
+  }
+
   /**
    * Returns the parent network context.
    *
    * @returns {module:vertigo/context.NetworkContext} The parent context
    */
+  this.networkContext = function() {
+    return new context.NetworkContext(jcontext.networkContext());
+  }
+
   this.network = function() {
+    return that.networkContext();
+  }
+
+}
+
+/**
+ * A module context.
+ * @constructor
+ */
+context.ModuleContext = function(jcontext) {
+  var that = this;
+  var component = new context.ComponentContext(jcontext);
+  this.__jcontext = jcontext;
+
+  /**
+   * Gets the component address.
+   *
+   * @returns {string} The component address.
+   */
+  this.address = function() {
+    return component.address();
+  }
+
+  /**
+   * Returns the component type.
+   */
+  this.type = function() {
+    return component.type();
+  }
+
+  /**
+   * Indicates whether the component is a verticle.
+   */
+  this.isVerticle = function() {
+    return component.isVerticle();
+  }
+
+  /**
+   * Indicates whether the component is a module.
+   */
+  this.isModule = function() {
+    return component.isModule();
+  }
+
+  /**
+   * Returns the component module name. If the component is not a module
+   * then null will be returned.
+   */
+  this.module = function() {
+    if (that.isModule()) {
+      return jcontext.module();
+    }
+    return null;
+  }
+
+  /**
+   * Returns the component configuration.
+   *
+   * @returns {object} The component configuration
+   */
+  this.config = function() {
+    return component.config();
+  }
+
+  /**
+   * Returns an array of instance contexts.
+   *
+   * @returns {array} An array of instance contexts
+   */
+  this.instances = function() {
+    return component.instances();
+  }
+
+  /**
+   * Returns the parent network context.
+   *
+   * @returns {module:vertigo/context.NetworkContext} The parent context
+   */
+  this.networkContext = function() {
     return new context.NetworkContext(jcontext.getNetwork());
   }
 
+  this.network = function() {
+    return that.networkContext();
+  }
+  
+}
+
+/**
+ * A verticle context.
+ * @constructor
+ */
+context.VerticleContext = function(jcontext) {
+  var that = this;
+  var component = new context.ComponentContext(jcontext);
+  this.__jcontext = jcontext;
+
+  /**
+   * Gets the component address.
+   *
+   * @returns {string} The component address.
+   */
+  this.address = function() {
+    return component.address();
+  }
+
+  /**
+   * Returns the component type.
+   */
+  this.type = function() {
+    return component.type();
+  }
+
+  /**
+   * Indicates whether the component is a verticle.
+   */
+  this.isVerticle = function() {
+    return component.isVerticle();
+  }
+
+  /**
+   * Indicates whether the component is a module.
+   */
+  this.isModule = function() {
+    return component.isModule();
+  }
+
+  /**
+   * Returns the component main. If the component is not a verticle
+   * then null will be returned.
+   */
+  this.main = function() {
+    if (that.isVerticle()) {
+      return jcontext.main();
+    }
+    return null;
+  }
+
+  /**
+   * Returns the component configuration.
+   *
+   * @returns {object} The component configuration
+   */
+  this.config = function() {
+    return component.config();
+  }
+
+  /**
+   * Returns an array of instance contexts.
+   *
+   * @returns {array} An array of instance contexts
+   */
+  this.instances = function() {
+    return component.instances();
+  }
+
+  /**
+   * Returns the parent network context.
+   *
+   * @returns {module:vertigo/context.NetworkContext} The parent context
+   */
+  this.networkContext = function() {
+    return new context.NetworkContext(jcontext.networkContext());
+  }
+
+  this.network = function() {
+    return that.networkContext();
+  }
+  
 }
 
 /**
@@ -161,6 +323,7 @@ context.ComponentContext = function(jcontext) {
  * @constructor
  */
 context.NetworkContext = function(jcontext) {
+  var that = this;
   this.__jcontext = jcontext;
 
   /**
@@ -169,14 +332,14 @@ context.NetworkContext = function(jcontext) {
    * @returns {string} The network address.
    */
   this.address = function() {
-    return jcontext.getAddress();
+    return jcontext.address();
   }
 
   /**
    * Returns an array of network auditor addresses.
    */
   this.auditors = function() {
-    return jcontext.getAuditors().toArray();
+    return jcontext.auditors().toArray();
   }
 
   /**
@@ -191,13 +354,23 @@ context.NetworkContext = function(jcontext) {
    *
    * @returns {array} An array of component contexts
    */
-  this.components = function() {
-    var contexts = jcontext.getComponents().toArray();
+  this.componentContexts = function() {
+    var contexts = jcontext.componentContexts().toArray();
     var components = {};
     for (var i = 0; i < contexts.length; i++) {
-      components[contexts[i].getAddress()] = new context.ComponentContext(contexts[i]);
+      var component = contexts[i];
+      if (component instanceof net.kuujo.vertigo.context.ModuleContext) {
+        components[component.address()] = new context.ModuleContext(component);
+      }
+      else if (component instanceof net.kuujo.vertigo.context.VerticleContext) {
+        components[component.address()] = new context.VerticleContext(component);
+      }
     }
     return components;
+  }
+
+  this.components = function() {
+    return that.componentContexts();
   }
 
   /**
@@ -206,12 +379,21 @@ context.NetworkContext = function(jcontext) {
    * @param {string} address The component address
    * @returns {module:vertigo/context.ComponentContext} The component context
    */
-  this.component = function(address) {
-    var component = jcontext.getComponent(address);
+  this.componentContext = function(address) {
+    var component = jcontext.componentContext(address);
     if (component != null) {
-      return new context.ComponentContext(component);
+      if (component instanceof net.kuujo.vertigo.context.ModuleContext) {
+        return new context.ModuleContext(component);
+      }
+      else if (component instanceof net.kuujo.vertigo.context.VerticleContext) {
+        return new context.VerticleContext(component);
+      }
     }
     return null;
+  }
+
+  this.component = function(address) {
+    return that.componentContext(address);
   }
 
 }

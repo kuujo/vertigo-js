@@ -39,7 +39,7 @@ cluster.LocalCluster = function() {
    * @param handler An asynchronous result handler
    * @returns {module:vertigo/cluster.LocalCluster} this
    */
-  this.deploy = function(network, handler) {
+  this.deployNetwork = function(network, handler) {
     if (handler !== undefined) {
       jcluster.deploy(network.__jnetwork, adaptAsyncResultHandler(handler, function(jcontext) {
         return new context.NetworkContext(jcontext);
@@ -51,6 +51,10 @@ cluster.LocalCluster = function() {
     return that;
   }
 
+  this.deploy = function(network, handler) {
+    return that.deployNetwork(network, handler);
+  }
+
   /**
    * Shuts down a network.
    *
@@ -58,7 +62,7 @@ cluster.LocalCluster = function() {
    * @param handler An asynchronous result handler
    * @returns {module:vertigo/cluster.LocalCluster} this
    */
-  this.shutdown = function(context, handler) {
+  this.shutdownNetwork = function(context, handler) {
     if (handler !== undefined) {
       jcluster.shutdown(context.__jcontext, adaptAsyncResultHandler(handler));
     }
@@ -66,6 +70,10 @@ cluster.LocalCluster = function() {
       jcluster.shutdown(context.__jcontext);
     }
     return that;
+  }
+
+  this.shutdown = function(context, handler) {
+    return that.shutdownNetwork(context, handler);
   }
 }
 
@@ -86,7 +94,7 @@ cluster.RemoteCluster = function(address) {
    * @param handler An asynchronous result handler
    * @returns {module:vertigo/cluster.LocalCluster} this
    */
-  this.deploy = function(network, handler) {
+  this.deployNetwork = function(network, handler) {
     if (handler !== undefined) {
       jcluster.deploy(network.__jnetwork, adaptAsyncResultHandler(handler, function(jcontext) {
         return new context.NetworkContext(jcontext);
@@ -98,6 +106,10 @@ cluster.RemoteCluster = function(address) {
     return that;
   }
 
+  this.deploy = function(network, handler) {
+    return that.deployNetwork(network, handler);
+  }
+
   /**
    * Shuts down a network.
    *
@@ -105,7 +117,7 @@ cluster.RemoteCluster = function(address) {
    * @param handler An asynchronous result handler
    * @returns {module:vertigo/cluster.LocalCluster} this
    */
-  this.shutdown = function(context, handler) {
+  this.shutdownNetwork = function(context, handler) {
     if (handler !== undefined) {
       jcluster.shutdown(context.__jcontext, adaptAsyncResultHandler(handler));
     }
@@ -113,6 +125,10 @@ cluster.RemoteCluster = function(address) {
       jcluster.shutdown(context.__jcontext);
     }
     return that;
+  }
+
+  this.shutdown = function(context, handler) {
+    return that.shutdownNetwork(context, handler);
   }
 }
 

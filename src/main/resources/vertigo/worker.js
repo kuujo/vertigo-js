@@ -33,8 +33,9 @@ worker.Worker = function(jworker) {
   var that = this;
 
   this.__jworker = jworker;
-  this.context = new context.InstanceContext(jworker.getContext());
-  this.config = this.context.component().config();
+  this.context = new context.InstanceContext(jworker.context());
+  this.config = this.context.componentContext().config();
+  this.logger = jworker.logger();
 
   var _startHandler = null;
   var _started = false;
