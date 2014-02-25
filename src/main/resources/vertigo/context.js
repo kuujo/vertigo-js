@@ -42,7 +42,7 @@ context.InstanceContext = function(jcontext) {
    * Returns the instance type.
    */
   this.type = function() {
-    return that.componentContext().type();
+    return that.component().type();
   }
 
   /**
@@ -50,18 +50,14 @@ context.InstanceContext = function(jcontext) {
    *
    * @returns {module:vertigo/context.ComponentContext} The parent context
    */
-  this.componentContext = function() {
-    var component = jcontext.componentContext();
+  this.component = function() {
+    var component = jcontext.component();
     if (component instanceof net.kuujo.vertigo.context.ModuleContext) {
       return new context.ModuleContext(component);
     }
     else if (component instanceof net.kuujo.vertigo.context.VerticleContext) {
       return new context.VerticleContext(component);
     }
-  }
-
-  this.component = function() {
-    return that.componentContext();
   }
 
 }
@@ -124,8 +120,8 @@ context.ComponentContext = function(jcontext) {
    *
    * @returns {array} An array of instance contexts
    */
-  this.instanceContexts = function() {
-    var contexts = jcontext.instanceContexts().toArray();
+  this.instances = function() {
+    var contexts = jcontext.instances().toArray();
     var arr = new Array(contexts.length);
     for (var i = 0; i < contexts.length; i++) {
       arr[i] = new context.InstanceContext(contexts[i]);
@@ -133,21 +129,13 @@ context.ComponentContext = function(jcontext) {
     return arr;
   }
 
-  this.instances = function() {
-    return that.instanceContexts();
-  }
-
   /**
    * Returns the parent network context.
    *
    * @returns {module:vertigo/context.NetworkContext} The parent context
    */
-  this.networkContext = function() {
-    return new context.NetworkContext(jcontext.networkContext());
-  }
-
   this.network = function() {
-    return that.networkContext();
+    return new context.NetworkContext(jcontext.network());
   }
 
 }
@@ -225,12 +213,8 @@ context.ModuleContext = function(jcontext) {
    *
    * @returns {module:vertigo/context.NetworkContext} The parent context
    */
-  this.networkContext = function() {
-    return new context.NetworkContext(jcontext.getNetwork());
-  }
-
   this.network = function() {
-    return that.networkContext();
+    return new context.NetworkContext(jcontext.network());
   }
   
 }
@@ -308,12 +292,8 @@ context.VerticleContext = function(jcontext) {
    *
    * @returns {module:vertigo/context.NetworkContext} The parent context
    */
-  this.networkContext = function() {
-    return new context.NetworkContext(jcontext.networkContext());
-  }
-
   this.network = function() {
-    return that.networkContext();
+    return new context.NetworkContext(jcontext.network());
   }
   
 }
@@ -354,8 +334,8 @@ context.NetworkContext = function(jcontext) {
    *
    * @returns {array} An array of component contexts
    */
-  this.componentContexts = function() {
-    var contexts = jcontext.componentContexts().toArray();
+  this.components = function() {
+    var contexts = jcontext.components().toArray();
     var components = {};
     for (var i = 0; i < contexts.length; i++) {
       var component = contexts[i];
@@ -369,18 +349,14 @@ context.NetworkContext = function(jcontext) {
     return components;
   }
 
-  this.components = function() {
-    return that.componentContexts();
-  }
-
   /**
    * Gets a component context at a specific address.
    *
    * @param {string} address The component address
    * @returns {module:vertigo/context.ComponentContext} The component context
    */
-  this.componentContext = function(address) {
-    var component = jcontext.componentContext(address);
+  this.component = function(address) {
+    var component = jcontext.component(address);
     if (component != null) {
       if (component instanceof net.kuujo.vertigo.context.ModuleContext) {
         return new context.ModuleContext(component);
@@ -390,10 +366,6 @@ context.NetworkContext = function(jcontext) {
       }
     }
     return null;
-  }
-
-  this.component = function(address) {
-    return that.componentContext(address);
   }
 
 }

@@ -34,7 +34,7 @@ worker.Worker = function(jworker) {
 
   this.__jworker = jworker;
   this.context = new context.InstanceContext(jworker.context());
-  this.config = this.context.componentContext().config();
+  this.config = this.context.component().config();
   this.logger = jworker.logger();
 
   var _startHandler = null;

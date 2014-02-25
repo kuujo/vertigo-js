@@ -101,7 +101,7 @@ input.Input = function(obj) {
    * Sets a fields grouping on the input.
    */
   this.fieldsGrouping = function(fields) {
-    jinput.fieldsGrouping(fields);
+    jinput.fieldsGrouping([fields]);
     return that;
   }
 

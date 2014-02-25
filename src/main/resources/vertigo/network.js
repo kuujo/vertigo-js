@@ -100,14 +100,18 @@ network.Network = function(obj) {
    *
    * @param {Integer} [timeout] The network ack timeout.
    */
-  this.ackTimeout = function(timeout) {
+  this.messageTimeout = function(timeout) {
     if (timeout === undefined) {
-      return jnetwork.getAckTimeout();
+      return jnetwork.getMessageTimeout();
     }
     else {
-      jnetwork.setAckTimeout(timeout);
+      jnetwork.setMessageTimeout(timeout);
       return that;
     }
+  }
+
+  this.ackTimeout = function(timeout) {
+    return that.messageTimeout(timeout);
   }
 
   /**
@@ -692,7 +696,8 @@ network.Module = function(obj) {
    * @returns {module:vertigo/network.Component} this
    */
   this.addHook = function(event, handler) {
-    return component.addHook(event, handler);
+    component.addHook(event, handler);
+    return that;
   }
 
   /**
@@ -823,7 +828,8 @@ network.Verticle = function(obj) {
    * @returns {module:vertigo/network.Component} this
    */
   this.addHook = function(event, handler) {
-    return component.addHook(event, handler);
+    component.addHook(event, handler);
+    return that;
   }
 
   /**

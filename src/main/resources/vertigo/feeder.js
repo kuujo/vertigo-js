@@ -34,7 +34,7 @@ feeder.Feeder = function(jfeeder) {
 
   this.__jfeeder = jfeeder;
   this.context = new context.InstanceContext(jfeeder.context());
-  this.config = this.context.componentContext().config();
+  this.config = this.context.component().config();
   this.logger = jfeeder.logger();
 
   var _startHandler = null;

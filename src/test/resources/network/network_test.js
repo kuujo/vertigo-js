@@ -47,7 +47,7 @@ var network_tests = {
       for (var i = 0; i < instances.length; i++) {
         var instance = instances[i];
         test.assertNotNull(instance.id());
-        test.assertNotNull(instance.componentContext());
+        test.assertNotNull(instance.component());
         test.assertEquals(component.address(), instance.component().address());
         test.assertEquals(network.address(), instance.component().network().address());
       }
@@ -306,32 +306,6 @@ var network_tests = {
     network.ackTimeout(500);
     network.addExecutor('test_executor', 'test_timeout_executor.js').addInput('test_worker');
     network.addWorker('test_worker', 'test_timeout_worker.js').addInput('test_executor');
-    var that = this;
-    vertigo.deployLocalNetwork(network, function(error, context) {
-      test.assertNull(error);
-      that.checkContext(context);
-    });
-  },
-  testNestedNetwork: function() {
-    var network1 = vertigo.createNetwork('test1');
-    network1.addFeederVerticle('test1.feeder', 'test_periodic_feeder.js');
-    var that = this;
-    vertigo.deployLocalNetwork(network1, function(error, context) {
-      test.assertNull(error);
-      that.checkContext(context);
-      var network2 = vertigo.createNetwork('test2');
-      network2.addWorkerVerticle('test2.worker', 'test_completing_worker.js').addInput('test1.feeder');
-      vertigo.deployLocalNetwork(network2, function(error) {
-        test.assertNull(error);
-        that.checkContext(context);
-      });
-    });
-  },
-  testSimpleHook: function() {
-    var network = vertigo.createNetwork('test');
-    network.addWorkerVerticle('test_worker', 'test_acking_worker.js').addHook('start', function(messageid) {
-      test.testComplete()
-    });
     var that = this;
     vertigo.deployLocalNetwork(network, function(error, context) {
       test.assertNull(error);
