@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,209 +13,211 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-load('vertx/helpers.js');
-
-var message = require('vertigo/message');
 
 /**
- * The <code>vertigo/input</code> module provides classes for operating
- * on component inputs.
- * @exports vertigo/input
+ * The 'input' module provides an interface for handling component input
+ * messages.
+ * @exports input
  */
-var input = {}
+var input = {};
 
 /**
- * A component input.
+ * The input collector wraps a set of input ports.
  * @constructor
  */
-input.Input = function(obj) {
+input.InputCollector = function(jcollector) {
+  this.__jcollector = jcollector;
   var that = this;
-
-  if (typeof(obj) == 'string') {
-    var jinput = new net.kuujo.vertigo.input.Input(obj);
-  }
-  else {
-    var jinput = obj;
-  }
-
-  this.__jinput = jinput;
+  var ports = {};
 
   /**
-   * Get the input address.
+   * Loads an input port.
    *
-   * @returns {string} The input address.
+   * @param {string} name The input port name.
+   * @returns {module:vertigo/input.InputPort} An input port instance.
    */
-  this.address = function() {
-    return jinput.getAddress();
-  }
-
-  /**
-   * Gets or sets the input stream.
-   *
-   * @param {string} stream The input stream name.
-   * @returns {string} The input stream name.
-   */
-  this.stream = function(stream) {
-    if (stream === undefined) {
-      return jinput.getStream();
+  this.port = function(name) {
+    if (ports[name] === undefined) {
+      ports[name] = new input.InputPort(jcollector.port(name));
     }
-    else {
-      jinput.setStream(stream);
-      return that;
-    }
-  }
-
-  /**
-   * Adds an input grouping.
-   *
-   * @param {module:vertigo/grouping.Grouping} An input grouping.
-   * @returns {module:vertigo/input.Input} this
-   */
-  this.groupBy = function(grouping) {
-    if (typeof(grouping) == 'string') {
-      jinput.groupBy(grouping);
-    }
-    else {
-      jinput.groupBy(grouping.__jgrouping);
-    }
-    return that;
-  }
-
-  /**
-   * Sets a random grouping on the input.
-   */
-  this.randomGrouping = function() {
-    jinput.randomGrouping();
-    return that;
-  }
-
-  /**
-   * Sets a round-robin grouping on the input.
-   */
-  this.roundGrouping = function() {
-    jinput.roundGrouping();
-    return that;
-  }
-
-  /**
-   * Sets a fields grouping on the input.
-   */
-  this.fieldsGrouping = function(fields) {
-    jinput.fieldsGrouping([fields]);
-    return that;
-  }
-
-  /**
-   * Sets an all grouping on the input.
-   */
-  this.allGrouping = function() {
-    jinput.allGrouping();
-    return that;
+    return ports[name];
   }
 
 }
 
 /**
- * An input listener.
+ * A named input port.
  * @constructor
  */
-input.Listener = function(obj) {
+input.InputPort = function(jport) {
+  this.__jport = jport;
   var that = this;
 
-  if (typeof(obj) == 'string' || obj.__jinput !== undefined) {
-    var jlistener = new net.kuujo.vertigo.input.impl.DefaultListener(obj, __jvertx, __jcontainer.logger());
-  }
-  else {
-    var jlistener = obj;
-  }
-
-  this.__jlistener = jlistener;
+  /**
+   * The input port name.
+   */
+  this.name = jport.name();
 
   /**
-   * Sets or gets auto acking setting for the listener.
+   * Pauses receiving messages on the input.
    *
-   * @param {boolean} [autoAck] Indicates whether to auto-ack received messages
-   * @returns {module:vertigo/input.Listener} this
+   * @returns {module:vertigo/input.InputPort} this
    */
-  this.autoAck = function(autoAck) {
-    if (autoAck === undefined) {
-      return jlistener.isAutoAck();
-    }
-    else {
-      jlistener.setAutoAck(autoAck);
-      return that;
-    }
-  }
-
-  /**
-   * Starts the listener.
-   *
-   * @param {Handler} [handler] An optional asynchronous handler to be called once the
-   * listener has been started.
-   * @returns {module:vertigo/input.Listener} this
-   */
-  this.start = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-      jlistener.start(handler);
-    }
-    else {
-      jlistener.start();
-    }
+  this.pause = function() {
+    jport.pause();
     return that;
   }
 
   /**
-   * Sets a message handler on the listener.
+   * Resumes receiving messages on the input.
    *
-   * @param {Handler} handler A handler to be called when each message is received.
-   * @returns {module:vertigo/input.Listener} this
+   * @returns {module:vertigo/input.InputPort} this
+   */
+  this.resume = function() {
+    jport.resume();
+    return that;
+  }
+
+  /**
+   * Sets a message handler on the input.
+   *
+   * @param {function} handler A handler to be called when a message is received.
+   * @returns {module:vertigo/input.InputPort} this
    */
   this.messageHandler = function(handler) {
-    jlistener.messageHandler(function(jmessage) {
-      handler(new message.Message(jmessage));
-    });
+    jport.messageHandler(new org.vertx.java.core.Handler({
+      handle: function(jmessage) {
+        handler(convertMessage(jmessage));
+      }
+    }));
     return that;
   }
 
   /**
-   * Acks a message.
+   * Sets a named group handler on the input.
    *
-   * @param {module:vertigo/message.Message} The message to ack.
-   * @returns {module:vertigo/input.Listener} this
+   * @param {string} group The name of the group.
+   * @param {function} handler A handler to be called when a new group of the given name is received.
+   * @returns {module:vertigo/input.InputPort} this
    */
-  this.ack = function(message) {
-    jlistener.ack(message.__jmessage);
+  this.groupHandler = function(group, handler) {
+    jport.groupHandler(new org.vertx.java.core.Handler({
+      handle: function(jgroup) {
+        handler(new input.InputGroup(jgroup));
+      }
+    }));
     return that;
   }
-
-  /**
-   * Fails a message.
-   *
-   * @param {module:vertigo/message.Message} The message to fail.
-   * @returns {module:vertigo/input.Listener} this
-   */
-  this.fail = function(message) {
-    jlistener.fail(message.__jmessage);
-    return that;
-  }
-
-  /**
-   * Stops the listener.
-   *
-   * @param {Handler} [handler] An optional asynchronous handler to be called once the
-   * listener has been started.
-   */
-  this.stop = function(handler) {
-    if (handler) {
-      handler = adaptAsyncResultHandler(handler);
-      jlistener.stop(handler);
-    }
-    else {
-      jlistener.stop();
-    }
-  }
-
 }
+
+/**
+ * Named input group.
+ * @constructor
+ */
+input.InputGroup = function(jgroup) {
+  this.__jgroup = jgroup;
+  var that = this;
+
+  /**
+   * The input group name.
+   */
+  this.name = jgroup.name();
+
+  /**
+   * Pauses receiving messages on the input.
+   *
+   * @returns {module:vertigo/input.InputGroup} this
+   */
+  this.pause = function() {
+    jgroup.pause();
+    return that;
+  }
+
+  /**
+   * Resumes receiving messages on the input.
+   *
+   * @returns {module:vertigo/input.InputGroup} this
+   */
+  this.resume = function() {
+    jgroup.resume();
+    return that;
+  }
+
+  /**
+   * Sets a start handler on the group.
+   *
+   * @param {function} handler A handler to be called when the group is started.
+   * @returns {module:vertigo/input.InputGroup} this
+   */
+  this.startHandler = function(handler) {
+    jgroup.startHandler(new org.vertx.java.core.Handler({
+      handle: handler
+    }));
+    return that;
+  }
+
+  /**
+   * Sets a message handler on the group.
+   *
+   * @param {function} handler A handler to be called when a message is received within the group.
+   * @returns {module:vertigo/input.InputGroup} this
+   */
+  this.messageHandler = function(handler) {
+    jport.messageHandler(new org.vertx.java.core.Handler({
+      handle: function(jmessage) {
+        handler(convertMessage(jmessage));
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Sets a named group handler on the input.
+   *
+   * @param {string} group The name of the group.
+   * @param {function} handler A handler to be called when a new group of the given name is received.
+   * @returns {module:vertigo/input.InputGroup} this
+   */
+  this.groupHandler = function(group, handler) {
+    jport.groupHandler(new org.vertx.java.core.Handler({
+      handle: function(jgroup) {
+        handler(new input.InputGroup(jgroup));
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Sets an end handler on the group.
+   *
+   * @param {function} handler A handler to be called once the group is complete.
+   * @returns {module:vertigo/input.InputGroup} this
+   */
+  this.endHandler = function(handler) {
+    jgroup.endHandler(new org.vertx.java.core.Handler({
+      handle: handler
+    }));
+    return that;
+  }
+}
+
+function convertMessage(jmessage) {
+  if (typeof jmessage === 'object') {
+    var clazz = jmessage.getClass();
+    if (clazz === jsonObjectClass || clazz === jsonArrayClass) {
+      // Convert to JS JSON
+      if (jmessage) {
+        jmessage = JSON.parse(body.encode());
+      } else {
+        jmessage = undefined;
+      }
+    }
+  } else if (jmessage && typeof jmessage === 'org.vertx.java.core.json.JsonObject') {
+    // DynJS returns a fully qualified class name for `typeof` on most
+    // java objects, so we need to check for this too.
+    jmessage = JSON.parse(jmessage.encode());
+  }
+  return jmessage;
+};
 
 module.exports = input;

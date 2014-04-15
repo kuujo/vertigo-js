@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var vertigo = require('vertigo');
+var component = require('vertigo/component');
 var test = require('testtools');
 
-vertigo.createBasicExecutor().start(function(error, executor) {
-  test.assertNull(error);
-  executor.execute(executor.config['input'], function(error, result) {
-    test.assertNull(error);
-    test.assertEquals(executor.config['output'], result.body);
-  });
+component.input.port('in').messageHandler(function(message) {
+  test.assertEquals('Hello world!', message);
+  test.testComplete();
 });

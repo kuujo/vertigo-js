@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var vertigo = require('vertigo');
-var test = require('testtools');
+var component = require('vertigo/component');
 
-vertigo.worker.messageHandler(function(message) {
-  vertigo.worker.ack(message);
-  test.testComplete();
+component.startHandler(function() {
+  component.output.port('out').send('Hello world!');
 });
