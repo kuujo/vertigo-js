@@ -51,14 +51,14 @@ vertigo.createNetwork = function(config) {
 }
 
 /**
- * Deploys a local network.
+ * Deploys a network.
  *
  * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
- * @param {function} handler A handler to be called once deployment is complete.
+ * @param {function} [handler] A handler to be called once deployment is complete.
  *
  * @returns {module:vertigo}
  */
-vertigo.deployLocalNetwork = function(config, handler) {
+vertigo.deployNetwork = function(config, handler) {
   if (handler !== undefined) {
     handler = adaptAsyncResultHandler(handler, function(result) {
       return new network.ActiveNetwork(result);
@@ -66,74 +66,30 @@ vertigo.deployLocalNetwork = function(config, handler) {
   }
 
   if (typeof(config) === 'string') {
-    __jvertigo.deployLocalNetwork(config, handler);
+    __jvertigo.deployNetwork(config, handler);
   } else {
-    __jvertigo.deployLocalNetwork(config.__jnetwork, handler);
+    __jvertigo.deployNetwork(config.__jnetwork, handler);
   }
   return vertigo;
 }
 
 /**
- * Undeploys a local network.
+ * Undeploys a network.
  *
  * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
  * @param {function} handler A handler to be called once undeployment is complete.
  *
  * @returns {module:vertigo}
  */
-vertigo.undeployLocalNetwork = function(config, handler) {
+vertigo.undeployNetwork = function(config, handler) {
   if (handler !== undefined) {
     handler = adaptAsyncResultHandler(handler);
   }
 
   if (typeof(config) === 'string') {
-    __jvertigo.undeployLocalNetwork(config, handler);
+    __jvertigo.undeployNetwork(config, handler);
   } else {
-    __jvertigo.undeployLocalNetwork(config.__jnetwork, handler);
-  }
-  return vertigo;
-}
-
-/**
- * Deploys a remove network.
- *
- * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
- * @param {function} handler A handler to be called once deployment is complete.
- *
- * @returns {module:vertigo}
- */
-vertigo.deployRemoteNetwork = function(config, handler) {
-  if (handler !== undefined) {
-    handler = adaptAsyncResultHandler(handler, function(result) {
-      return new network.ActiveNetwork(result);
-    });
-  }
-
-  if (typeof(config) === 'string') {
-    __jvertigo.deployRemoteNetwork(config, handler);
-  } else {
-    __jvertigo.deployRemoteNetwork(config.__jnetwork, handler);
-  }
-  return vertigo;
-}
-
-/**
- * Undeploys a remote network.
- *
- * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
- * @param {function} handler A handler to be called once undeployment is complete.
- *
- * @returns {module:vertigo}
- */
-vertigo.undeployRemoteNetwork = function(config, handler) {
-  if (handler !== undefined) {
-    handler = adaptAsyncResultHandler(handler);
-  }
-
-  if (typeof(config) === 'string') {
-    __jvertigo.undeployRemoteNetwork(config, handler);
-  } else {
-    __jvertigo.undeployRemoteNetwork(config.__jnetwork, handler);
+    __jvertigo.undeployNetwork(config.__jnetwork, handler);
   }
   return vertigo;
 }

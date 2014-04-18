@@ -40,6 +40,20 @@ network.NetworkConfig = function(jnetwork) {
   }
 
   /**
+   * Sets or gets the network scope.
+   *
+   * @param {string} [scope] The network scope. Either "local" or "cluster"
+   */
+  this.scope = function(scope) {
+    if (scope === undefined) {
+      return jnetwork.getScope().toString();
+    } else {
+      jnetwork.setScope(net.kuujo.vertigo.cluster.ClusterScope.parse(scope));
+      return that;
+    }
+  }
+
+  /**
    * Adds a component to the network.
    *
    * @param {string} name The component name.
