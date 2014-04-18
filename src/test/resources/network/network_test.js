@@ -35,7 +35,7 @@ var network_tests = {
     network.addVerticle('sender', 'test_basic_sender.js');
     network.addVerticle('receiver', 'test_basic_receiver.js');
     network.createConnection('sender', 'out', 'receiver', 'in');
-    vertigo.deployLocalNetwork(network, function(error) {
+    vertigo.deployNetwork(network, function(error) {
       test.assertNull(error);
     });
   }
