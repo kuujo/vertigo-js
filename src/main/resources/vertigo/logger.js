@@ -13,9 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var component = require('vertigo/component');
-var output = require('vertigo/output');
+load('vertx/helpers.js');
 
-component.startHandler(function() {
-  output.port('out').send('Hello world!');
-});
+/**
+ * The 'logger' module provides a port logger.
+ * @exports cluster
+ */
+var logger = {};
+var component = require('vertigo/component');
+
+if (component.__jcomponent === undefined) {
+  throw "Not a valid Vertigo component.";
+}
+
+module.exports = component.__jcomponent.logger();

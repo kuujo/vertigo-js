@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var component = require('vertigo/component');
+var input = require('vertigo/input');
 var test = require('testtools');
 
-component.input.port('in').messageHandler(function(message) {
+input.port('in').messageHandler(function(message) {
   test.assertEquals('Hello world!', message);
   test.testComplete();
 });

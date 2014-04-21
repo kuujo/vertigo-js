@@ -15,10 +15,6 @@
  */
 load('vertx/helpers.js');
 
-var input = require('vertigo/input');
-var output = require('vertigo/output');
-var cluster = require('vertigo/cluster');
-
 /**
  * The 'component' module provides the primary API for working with
  * components within a Javascript component verticle. In order for
@@ -27,49 +23,6 @@ var cluster = require('vertigo/cluster');
  * @exports component
  */
 var component = {};
-
-/**
- * The current Vertigo cluster.
- *
- * The component cluster can be used to deploy modules and verticles within
- * the same cluster as the current component instance. If the component and
- * its network were deployed to a local cluster then the component's cluster
- * will be a local cluster instance, e.g. within a single Vert.x instance.
- * Conversely, if the network was deployed as a distributed cluster then the
- * component's cluster will be a Xync-backed distributed deployment interface.
- *
- * @see module:vertigo/cluster.VertigoCluster
- */
-component.cluster = undefined;
-
-/**
- * The component logger.
- *
- * This is a special Vert.x logger implementation that automatically logs
- * messages to special output ports. It exposes all the same methods as the
- * standard Vert.x logger and logs messages to output ports with the same
- * names as the method called. For example, an error message will be automatically
- * sent on the component's 'error' output port.
- */
-component.logger = undefined;
-
-/**
- * The component's input.
- *
- * This is a simple wrapper around component input ports.
- *
- * @see module:vertigo/input.InputCollector
- */
-component.input = undefined;
-
-/**
- * The component's output.
- *
- * This is a simple wrapper around component output ports.
- *
- * @see module:vertigo/output.OutputCollector
- */
-component.output = undefined;
 
 var _start_handler = null;
 var _started = false;
@@ -98,20 +51,15 @@ function check_start() {
   }
 }
 
-var jcomponent = undefined;
+component.__jcomponent = undefined;
 try {
-  jcomponent = net.kuujo.vertigo.util.Factories.createComponent(__jvertx, __jcontainer);
+  component.__jcomponent = net.kuujo.vertigo.util.Factories.createComponent(__jvertx, __jcontainer);
 } catch (e) {
   // Do nothing.
 }
 
-if (jcomponent !== undefined) {
-  component.cluster = new cluster.VertigoCluster(jcomponent.cluster());
-  component.logger = jcomponent.logger();
-  component.input = new input.InputCollector(jcomponent.input());
-  component.output = new output.OutputCollector(jcomponent.output());
-
-  jcomponent.start(adaptAsyncResultHandler(function(error, jcomponent) {
+if (component.__jcomponent !== undefined) {
+  component.__jcomponent.start(adaptAsyncResultHandler(function(error, jcomponent) {
     _started = true;
     _error = error
     check_start();

@@ -480,42 +480,42 @@ network.ConnectionConfig = function(jconnection) {
   }
 
   /**
-   * Sets a round grouping on the connection.
+   * Sets a round selector on the connection.
    */
-  this.roundGrouping = function() {
-    jconnection.roundGrouping();
+  this.roundSelect = function() {
+    jconnection.roundSelect();
     return that;
   }
 
   /**
-   * Sets a random grouping on the connection.
+   * Sets a random selector on the connection.
    */
-  this.randomGrouping = function() {
-    jconnection.randomGrouping();
+  this.randomSelect = function() {
+    jconnection.randomSelect();
     return that;
   }
 
   /**
-   * Sets a hash grouping on the connection.
+   * Sets a hash selector on the connection.
    */
-  this.hashGrouping = function() {
-    jconnection.hashGrouping();
+  this.hashSelect = function() {
+    jconnection.hashSelect();
     return that;
   }
 
   /**
-   * Sets a fair grouping on the connection.
+   * Sets a fair selector on the connection.
    */
-  this.fairGrouping = function() {
-    jconnection.fairGrouping();
+  this.fairSelect = function() {
+    jconnection.fairSelect();
     return that;
   }
 
   /**
-   * Sets an all grouping on the connection.
+   * Sets an all selector on the connection.
    */
-  this.allGrouping = function() {
-    jconnection.allGrouping();
+  this.allSelect = function() {
+    jconnection.allSelect();
     return that;
   }
 

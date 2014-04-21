@@ -20,6 +20,11 @@
  * @exports output
  */
 var output = {};
+var component = require('vertigo/component');
+
+if (component.__jcomponent === undefined) {
+  throw "Not a valid Vertigo component.";
+}
 
 /**
  * The output collector wraps a set of output ports.
@@ -231,4 +236,4 @@ function convertMessage(message) {
   return message;
 }
 
-module.exports = output;
+module.exports = new output.OutputCollector(component.__jcomponent.output());

@@ -21,6 +21,11 @@ load('vertx/helpers.js');
  * @exports cluster
  */
 var cluster = {};
+var component = require('vertigo/component');
+
+if (component.__jcomponent === undefined) {
+  throw "Not a valid Vertigo component.";
+}
 
 /**
  * Vertigo cluster. Vertigo supports two types of clusters - local
@@ -314,4 +319,4 @@ cluster.VertigoCluster = function(jcluster) {
 
 }
 
-module.exports = cluster;
+module.exports = new cluster.Cluster(component.__jcomponent.cluster());
