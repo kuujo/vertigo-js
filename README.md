@@ -418,12 +418,8 @@ Vertigo components send and receive messages using only output and input *ports*
 and are hidden from event bus address details which are defined in network configurations.
 This is the element that makes Vertigo components reusable.
 
-While Vertigo does use an acking mechanism internally, Vertigo messages are
-not guaranteed to arrive in order. When a message is sent on an output port,
-the message will be immediately sent to all connected components. Once each component
-replies to the message indicating that it has received the message successfully,
-the message will be removed from the output queue. Vertigo uses adaptive event
-bus timeouts to quickly detect failures and resend lost messages.
+Vertigo messages are guaranteed to arrive in order. See [how it works](#how-it-works)
+for more information.
 
 Vertigo also provides an API that allows for logical grouping and ordering of messages
 known as [groups](#working-with-message-groups). Groups are strongly ordered named
