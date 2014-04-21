@@ -31,9 +31,18 @@ var network_tests = {
     test.testComplete();
   },
   testBasicNetwork: function() {
-    var network = vertigo.createNetwork('test');
+    var network = vertigo.createNetwork('test-basic');
     network.addVerticle('sender', 'test_basic_sender.js');
     network.addVerticle('receiver', 'test_basic_receiver.js');
+    network.createConnection('sender', 'out', 'receiver', 'in');
+    vertigo.deployNetwork(network, function(error) {
+      test.assertNull(error);
+    });
+  },
+  testGroupNetwork: function() {
+    var network = vertigo.createNetwork('test-group');
+    network.addVerticle('sender', 'test_group_sender.js');
+    network.addVerticle('receiver', 'test_group_receiver.js');
     network.createConnection('sender', 'out', 'receiver', 'in');
     vertigo.deployNetwork(network, function(error) {
       test.assertNull(error);

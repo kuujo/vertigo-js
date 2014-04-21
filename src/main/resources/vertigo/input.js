@@ -106,7 +106,7 @@ input.InputPort = function(jport) {
    * @returns {module:vertigo/input.InputPort} this
    */
   this.groupHandler = function(group, handler) {
-    jport.groupHandler(new org.vertx.java.core.Handler({
+    jport.groupHandler(group, new org.vertx.java.core.Handler({
       handle: function(jgroup) {
         handler(new input.InputGroup(jgroup));
       }
@@ -168,7 +168,7 @@ input.InputGroup = function(jgroup) {
    * @returns {module:vertigo/input.InputGroup} this
    */
   this.messageHandler = function(handler) {
-    jport.messageHandler(new org.vertx.java.core.Handler({
+    jgroup.messageHandler(new org.vertx.java.core.Handler({
       handle: function(jmessage) {
         handler(convertMessage(jmessage));
       }
@@ -184,7 +184,7 @@ input.InputGroup = function(jgroup) {
    * @returns {module:vertigo/input.InputGroup} this
    */
   this.groupHandler = function(group, handler) {
-    jport.groupHandler(new org.vertx.java.core.Handler({
+    jgroup.groupHandler(group, new org.vertx.java.core.Handler({
       handle: function(jgroup) {
         handler(new input.InputGroup(jgroup));
       }
