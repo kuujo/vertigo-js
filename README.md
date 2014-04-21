@@ -11,7 +11,7 @@ fault-tolerance for data streams and components, allowing developers to spend mo
 time focusing on application code.
 
 For an in-depth look at the concepts underlying Vertigo, check out
-[how it works](https://github.com/kuujo/vertigo-js/wiki/How-it-works).
+[how it works](#how-it-works).
 
 # Javascript User Manual
 1. [Introduction](#introduction)
@@ -36,7 +36,6 @@ For an in-depth look at the concepts underlying Vertigo, check out
    * [Sending messages on an output port](#sending-messages-on-an-output-port)
    * [Receiving messages on an input port](#receiving-messages-on-an-input-port)
    * [Working with message groups](#working-with-message-groups)
-   * [Providing serializeable messages](#providing-serializeable-messages)
 1. [Logging](#logging)
    * [Logging messages to output ports](#logging-messages-to-output-ports)
    * [Reading log messages](#reading-log-messages)
