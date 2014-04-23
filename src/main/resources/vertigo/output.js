@@ -51,7 +51,7 @@ output.OutputCollector = function(jcollector) {
 }
 
 /**
- * A named input port.
+ * A named output port.
  * @constructor
  */
 output.OutputPort = function(jport) {
@@ -127,10 +127,22 @@ output.OutputPort = function(jport) {
 
 }
 
+/**
+ * A named output group.
+ * @constructor
+ */
 output.OutputGroup = function(jgroup) {
   this.__jgroup = jgroup;
   var that = this;
 
+  /**
+   * The unique output group identifier.
+   */
+  this.id = jgroup.id();
+
+  /**
+   * The output group name.
+   */
   this.name = jgroup.name();
 
   /**

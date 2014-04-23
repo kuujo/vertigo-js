@@ -124,6 +124,11 @@ input.InputGroup = function(jgroup) {
   var that = this;
 
   /**
+   * The unique input group identifier.
+   */
+  this.id = jgroup.id();
+
+  /**
    * The input group name.
    */
   this.name = jgroup.name();
