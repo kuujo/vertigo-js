@@ -3,5 +3,6 @@
   "licenses": ["The Apache Software License Version 2.0"],
   "author": "Jordan Halterman",
   "keywords": ["event", "processing", "real-time", "javascript"],
-  "homepage": "https://github.com/kuujo/vertigo-js"
+  "homepage": "https://github.com/kuujo/vertigo-js",
+  "includes": "net.kuujo~vertigo~0.7.0-SNAPSHOT"
 }
