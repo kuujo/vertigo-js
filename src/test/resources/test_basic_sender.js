@@ -17,5 +17,5 @@ var component = require('vertigo/component');
 var output = require('vertigo/output');
 
 component.startHandler(function() {
-  output.port('out').send('Hello world!');
+  output.port('out').send({body: 'Hello world!'});
 });

@@ -17,6 +17,6 @@ var input = require('vertigo/input');
 var test = require('testtools');
 
 input.port('in').messageHandler(function(message) {
-  test.assertEquals('Hello world!', message);
+  test.assertEquals('Hello world!', message['body']);
   test.testComplete();
 });

@@ -211,13 +211,16 @@ input.InputGroup = function(jgroup) {
   }
 }
 
+var jsonObjectClass = new org.vertx.java.core.json.JsonObject().getClass();
+var jsonArrayClass  = new org.vertx.java.core.json.JsonArray().getClass();
+
 function convertMessage(jmessage) {
   if (typeof jmessage === 'object') {
     var clazz = jmessage.getClass();
     if (clazz === jsonObjectClass || clazz === jsonArrayClass) {
       // Convert to JS JSON
       if (jmessage) {
-        jmessage = JSON.parse(body.encode());
+        jmessage = JSON.parse(jmessage.encode());
       } else {
         jmessage = undefined;
       }
