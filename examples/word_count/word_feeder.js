@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var vertigo = require('vertigo');
-var console = require('vertx/console');
+var component = require('vertigo/component');
+var output = require('vertigo/output');
+var vertx = require('vertx');
 
-var words = vertigo.feeder.config['words'];
+var config = vertx.config();
+var words = config['words'];
 
-// Enable unlimited auto retries for timeouts.
-vertigo.feeder.autoRetry(true);
-vertigo.feeder.autoRetryAttempts(-1);
-
-// Register a feed handler that emits a random word each time it's called.
-vertigo.feeder.feedHandler(function(feeder) {
-  // Emit a random word.
-  var word = words[Math.floor(Math.random() * words.length)];
-  feeder.emit({word: word}, function(error) {
-    if (error) {
-      console.log(error.getMessage());
+component.startHandler(function() {
+  var doSend = function() {
+    while (!output.port('out').sendQueueFull()) {
+      output.port('out').send("Hello world!");
     }
-  });
+    output.port('out').drainHandler(this);
+  }
+  doSend();
 });

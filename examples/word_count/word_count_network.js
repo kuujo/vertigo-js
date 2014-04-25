@@ -16,12 +16,12 @@
 var vertigo = require('vertigo');
 var console = require('vertx/console');
 
-var network = vertigo.createNetwork('word_count');
+var network = vertigo.createNetwork('word-count');
+network.addVerticle('word-feeder', 'word_feeder.js', {words: ['apple', 'banana', 'orange']});
+network.addVerticle('word-counter', 'word_counter.js', 4);
+network.createConnection('word-feeder', 'out', 'word-counter', 'in').hashSelect();
 
-network.addFeeder('word_feeder', 'word_count_feeder.js', {'words': ['apple', 'banana', 'orange']});
-network.addWorker('word_counter', 'word_count_worker.js').addInput('word_feeder');
-
-vertigo.deployLocalNetwork(network, function(error, context) {
+vertigo.deployNetwork(network, function(error, network) {
   if (error) {
     console.log(error.getMessage());
   }

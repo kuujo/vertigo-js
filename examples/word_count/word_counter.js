@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var vertigo = require('vertigo');
+var input = require('vertigo/input');
+var output = require('vertigo/output');
 
 var counts = {};
 
-// Register a message handler that counts the number of times a word is received.
-vertigo.worker.messageHandler(function(message) {
-  if (counts[message.body['word']] === undefined) {
-    counts[message.body['word']] = 0;
+input.port('in').messageHandler(function(word) {
+  if (counts[word] === undefined) {
+    counts[word] = 0;
   }
-  counts[message.body['word']]++;
-
-  // Emit the new count with the current message as the parent.
-  vertigo.worker.emit({word: message.body['word'], count: counts[message.body['word']]}, message);
+  counts[word]++;
+  output.port('out').send({word: word, count: counts[word]});
 });
