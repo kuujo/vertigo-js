@@ -60,6 +60,7 @@ cluster.VertigoCluster = function(jcluster) {
    * @param {string} module The module name.
    * @param {object} [config] The module configuration.
    * @param {number} [instances] The number of instances to deploy.
+   * @param {boolean} [ha] Whether to deploy the module with HA.
    * @param {function} [handler] A handler to be called once complete.
    * @returns {module:vertigo/cluster.VertigoCluster} this
    */
@@ -71,6 +72,10 @@ cluster.VertigoCluster = function(jcluster) {
     if (handler != null) {
       handler = adaptAsyncResultHandler(handler);
     }
+    var ha = getArgValue('boolean', args);
+    if (ha == null) {
+      ha = false;
+    }
     var instances = getArgValue('number', args);
     if (instances == null) {
       instances = 1;
@@ -81,11 +86,7 @@ cluster.VertigoCluster = function(jcluster) {
     } else {
       config = new org.vertx.java.core.json.JsonObject();
     }
-    if (handler != null) {
-      jcluster.deployModule(deploymentID, module, config, instances, handler);
-    } else {
-      jcluster.deployModule(deploymentID, module, config, instances);
-    }
+    jcluster.deployModule(deploymentID, module, config, instances, ha, handler);
     return that;
   }
 
@@ -97,6 +98,7 @@ cluster.VertigoCluster = function(jcluster) {
    * @param {string} module The module name.
    * @param {object} [config] The module configuration.
    * @param {number} [instances] The number of instances to deploy.
+   * @param {boolean} [ha] Whether to deploy the module with HA.
    * @param {function} [handler] A handler to be called once complete.
    * @returns {module:vertigo/cluster.VertigoCluster} this
    */
@@ -109,6 +111,10 @@ cluster.VertigoCluster = function(jcluster) {
     if (handler != null) {
       handler = adaptAsyncResultHandler(handler);
     }
+    var ha = getArgValue('boolean', args);
+    if (ha == null) {
+      ha = false;
+    }
     var instances = getArgValue('number', args);
     if (instances == null) {
       instances = 1;
@@ -119,11 +125,7 @@ cluster.VertigoCluster = function(jcluster) {
     } else {
       config = new org.vertx.java.core.json.JsonObject();
     }
-    if (handler != null) {
-      jcluster.deployModuleTo(deploymentID, group, module, config, instances, handler);
-    } else {
-      jcluster.deployModuleTo(deploymentID, group, module, config, instances);
-    }
+    jcluster.deployModuleTo(deploymentID, group, module, config, instances, ha, handler);
     return that;
   }
 
@@ -134,6 +136,7 @@ cluster.VertigoCluster = function(jcluster) {
    * @param {string} main The verticle main.
    * @param {object} [config] The verticle configuration.
    * @param {number} [instances] The number of instances to deploy.
+   * @param {boolean} [ha] Whether to deploy the verticle with HA.
    * @param {function} [handler] A handler to be called once complete.
    * @returns {module:vertigo/cluster.VertigoCluster} this
    */
@@ -145,6 +148,10 @@ cluster.VertigoCluster = function(jcluster) {
     if (handler != null) {
       handler = adaptAsyncResultHandler(handler);
     }
+    var ha = getArgValue('boolean', args);
+    if (ha == null) {
+      ha = false;
+    }
     var instances = getArgValue('number', args);
     if (instances == null) {
       instances = 1;
@@ -155,11 +162,7 @@ cluster.VertigoCluster = function(jcluster) {
     } else {
       config = new org.vertx.java.core.json.JsonObject();
     }
-    if (handler != null) {
-      jcluster.deployVerticle(deploymentID, main, config, instances, handler);
-    } else {
-      jcluster.deployVerticle(deploymentID, main, config, instances);
-    }
+    jcluster.deployVerticle(deploymentID, main, config, instances, ha, handler);
     return that;
   }
 
@@ -171,6 +174,7 @@ cluster.VertigoCluster = function(jcluster) {
    * @param {string} main The verticle main.
    * @param {object} [config] The verticle configuration.
    * @param {number} [instances] The number of instances to deploy.
+   * @param {boolean} [ha] Whether to deploy the verticle with HA.
    * @param {function} [handler] A handler to be called once complete.
    * @returns {module:vertigo/cluster.VertigoCluster} this
    */
@@ -183,6 +187,10 @@ cluster.VertigoCluster = function(jcluster) {
     if (handler != null) {
       handler = adaptAsyncResultHandler(handler);
     }
+    var ha = getArgValue('boolean', args);
+    if (ha == null) {
+      ha = false;
+    }
     var instances = getArgValue('number', args);
     if (instances == null) {
       instances = 1;
@@ -193,11 +201,7 @@ cluster.VertigoCluster = function(jcluster) {
     } else {
       config = new org.vertx.java.core.json.JsonObject();
     }
-    if (handler != null) {
-      jcluster.deployVerticleTo(deploymentID, group, main, config, instances, handler);
-    } else {
-      jcluster.deployVerticleTo(deploymentID, group, main, config, instances);
-    }
+    jcluster.deployVerticleTo(deploymentID, group, main, config, instances, ha, handler);
     return that;
   }
 
@@ -209,6 +213,7 @@ cluster.VertigoCluster = function(jcluster) {
    * @param {object} [config] The verticle configuration.
    * @param {number} [instances] The number of instances to deploy.
    * @param {boolean} [multiThreaded] Whether to deploy the worker multi-threaded.
+   * @param {boolean} [ha] Whether to deploy the verticle with HA.
    * @param {function} [handler] A handler to be called once complete.
    * @returns {module:vertigo/cluster.VertigoCluster} this
    */
@@ -219,6 +224,10 @@ cluster.VertigoCluster = function(jcluster) {
     var handler = getArgValue('function', args);
     if (handler != null) {
       handler = adaptAsyncResultHandler(handler);
+    }
+    var ha = getArgValue('boolean', args);
+    if (ha == null) {
+      ha = false;
     }
     var multiThreaded = getArgValue('boolean', args);
     if (multiThreaded === null) {
@@ -234,11 +243,7 @@ cluster.VertigoCluster = function(jcluster) {
     } else {
       config = new org.vertx.java.core.json.JsonObject();
     }
-    if (handler != null) {
-      jcluster.deployWorkerVerticle(deploymentID, main, config, instances, multiThreaded, handler);
-    } else {
-      jcluster.deployWorkerVerticle(deploymentID, main, config, instances, multiThreaded);
-    }
+    jcluster.deployWorkerVerticle(deploymentID, main, config, instances, multiThreaded, ha, handler);
     return that;
   }
 
@@ -251,6 +256,7 @@ cluster.VertigoCluster = function(jcluster) {
    * @param {object} [config] The verticle configuration.
    * @param {number} [instances] The number of instances to deploy.
    * @param {boolean} [multiThreaded] Whether to deploy the worker multi-threaded.
+   * @param {boolean} [ha] Whether to deploy the verticle with HA.
    * @param {function} [handler] A handler to be called once complete.
    * @returns {module:vertigo/cluster.VertigoCluster} this
    */
@@ -262,6 +268,10 @@ cluster.VertigoCluster = function(jcluster) {
     var handler = getArgValue('function', args);
     if (handler != null) {
       handler = adaptAsyncResultHandler(handler);
+    }
+    var ha = getArgValue('boolean', args);
+    if (ha == null) {
+      ha = false;
     }
     var multiThreaded = getArgValue('boolean', args);
     if (multiThreaded === null) {
@@ -277,11 +287,7 @@ cluster.VertigoCluster = function(jcluster) {
     } else {
       config = new org.vertx.java.core.json.JsonObject();
     }
-    if (handler != null) {
-      jcluster.deployWorkerVerticleTo(deploymentID, group, main, config, instances, multiThreaded, handler);
-    } else {
-      jcluster.deployWorkerVerticleTo(deploymentID, group, main, config, instances, multiThreaded);
-    }
+    jcluster.deployWorkerVerticleTo(deploymentID, group, main, config, instances, multiThreaded, ha, handler);
     return that;
   }
 

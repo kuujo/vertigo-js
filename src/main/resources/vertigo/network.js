@@ -40,17 +40,12 @@ network.NetworkConfig = function(jnetwork) {
   }
 
   /**
-   * Sets or gets the network scope.
+   * Returns the network's cluster configuration.
    *
-   * @param {string} [scope] The network scope. Either "local" or "cluster"
+   * @returns {module:vertigo/network.ClusterConfig} The cluster configuration.
    */
-  this.scope = function(scope) {
-    if (scope === undefined) {
-      return jnetwork.getScope().toString();
-    } else {
-      jnetwork.setScope(net.kuujo.vertigo.cluster.ClusterScope.parse(scope));
-      return that;
-    }
+  this.cluster = function() {
+    return new network.ClusterConfig(jnetwork.getClusterConfig());
   }
 
   /**
@@ -205,6 +200,44 @@ network.NetworkConfig = function(jnetwork) {
   this.destroyConnection = function(source, outPort, target, inPort) {
     jnetwork.destroyConnection(source, outPort, target, inPort);
     return that;
+  }
+
+}
+
+/**
+ * Cluster configuration.
+ * @constructor
+ */
+network.ClusterConfig = function(jcluster) {
+  this.__jcluster = jcluster;
+  var that = this;
+
+  /**
+   * Sets or gets the cluster address.
+   *
+   * @param {string} [address] The cluster address.
+   */
+  this.address = function(address) {
+    if (address === undefined) {
+      return jcluster.getAddress();
+    } else {
+      jcluster.setAddress(address);
+      return that;
+    }
+  }
+
+  /**
+   * Sets or gets the cluster scope.
+   *
+   * @param {string} [scope] The cluster scope. Either "local" or "cluster"
+   */
+  this.scope = function(scope) {
+    if (scope === undefined) {
+      return jcluster.getScope().toString();
+    } else {
+      jcluster.setScope(net.kuujo.vertigo.cluster.ClusterScope.parse(scope));
+      return that;
+    }
   }
 
 }

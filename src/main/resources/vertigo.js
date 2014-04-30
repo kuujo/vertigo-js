@@ -66,9 +66,11 @@ vertigo.deployNetwork = function(config, handler) {
   }
 
   if (typeof(config) === 'string') {
-    __jvertigo.deployNetwork(config, handler);
+    __jvertigo['deployNetwork(java.lang.String,org.vertx.java.core.Handler)'](config, handler);
+  } else if (config.__jnetwork !== undefined) {
+    __jvertigo['deployNetwork(net.kuujo.vertigo.network.NetworkConfig,org.vertx.java.core.Handler)'](config.__jnetwork, handler);
   } else {
-    __jvertigo.deployNetwork(config.__jnetwork, handler);
+    __jvertigo['deployNetwork(org.vertx.java.core.json.JsonObject,org.vertx.java.core.Handler)'](new org.vertx.java.core.json.JsonObject(JSON.stringify(config)), handler);
   }
   return vertigo;
 }
@@ -87,9 +89,11 @@ vertigo.undeployNetwork = function(config, handler) {
   }
 
   if (typeof(config) === 'string') {
-    __jvertigo.undeployNetwork(config, handler);
+    __jvertigo['undeployNetwork(java.lang.String,org.vertx.java.core.Handler)'](config, handler);
+  } else if (config.__jnetwork !== undefined) {
+    __jvertigo['undeployNetwork(net.kuujo.vertigo.network.NetworkConfig,org.vertx.java.core.Handler)'](config.__jnetwork, handler);
   } else {
-    __jvertigo.undeployNetwork(config.__jnetwork, handler);
+    __jvertigo['undeployNetwork(org.vertx.java.core.json.JsonObject,org.vertx.java.core.Handler)'](new org.vertx.java.core.json.JsonObject(JSON.stringify(config)), handler);
   }
   return vertigo;
 }
