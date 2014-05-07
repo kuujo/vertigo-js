@@ -40,15 +40,6 @@ network.NetworkConfig = function(jnetwork) {
   }
 
   /**
-   * Returns the network's cluster configuration.
-   *
-   * @returns {module:vertigo/network.ClusterConfig} The cluster configuration.
-   */
-  this.cluster = function() {
-    return new network.ClusterConfig(jnetwork.getClusterConfig());
-  }
-
-  /**
    * Adds a component to the network.
    *
    * @param {string} name The component name.
@@ -200,44 +191,6 @@ network.NetworkConfig = function(jnetwork) {
   this.destroyConnection = function(source, outPort, target, inPort) {
     jnetwork.destroyConnection(source, outPort, target, inPort);
     return that;
-  }
-
-}
-
-/**
- * Cluster configuration.
- * @constructor
- */
-network.ClusterConfig = function(jcluster) {
-  this.__jcluster = jcluster;
-  var that = this;
-
-  /**
-   * Sets or gets the cluster address.
-   *
-   * @param {string} [address] The cluster address.
-   */
-  this.address = function(address) {
-    if (address === undefined) {
-      return jcluster.getAddress();
-    } else {
-      jcluster.setAddress(address);
-      return that;
-    }
-  }
-
-  /**
-   * Sets or gets the cluster scope.
-   *
-   * @param {string} [scope] The cluster scope. Either "local" or "cluster"
-   */
-  this.scope = function(scope) {
-    if (scope === undefined) {
-      return jcluster.getScope().toString();
-    } else {
-      jcluster.setScope(net.kuujo.vertigo.cluster.ClusterScope.parse(scope));
-      return that;
-    }
   }
 
 }
