@@ -21,6 +21,7 @@ load('vertx/helpers.js');
  * @exports cluster
  */
 var cluster = {};
+var network = require('vertigo/network');
 var component = require('vertigo/component');
 
 if (component.__jcomponent === undefined) {
@@ -37,9 +38,14 @@ if (component.__jcomponent === undefined) {
  * the event bus.
  * @constructor
  */
-cluster.VertigoCluster = function(jcluster) {
+cluster.Cluster = function(jcluster) {
   var that = this;
   this.__jcluster = jcluster;
+
+  /**
+   * The cluster address.
+   */
+  this.address = __jcluster.address();
 
   /**
    * Checks whether a deployment is deployed in the cluster.
@@ -325,4 +331,4 @@ cluster.VertigoCluster = function(jcluster) {
 
 }
 
-module.exports = new cluster.Cluster(component.__jcomponent.cluster());
+module.exports = new cluster.Cluster(component.__jcomponent);

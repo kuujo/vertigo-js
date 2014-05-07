@@ -51,50 +51,164 @@ vertigo.createNetwork = function(config) {
 }
 
 /**
- * Deploys a network.
- *
- * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
- * @param {function} [handler] A handler to be called once deployment is complete.
- *
- * @returns {module:vertigo}
+ * Cluster manager.
+ * @constructor
  */
-vertigo.deployNetwork = function(config, handler) {
-  if (handler !== undefined) {
+vertigo.ClusterManager = function(jmanager) {
+  var that = this;
+  this.__jmanager = jmanager;
+
+  /**
+   * The cluster address.
+   */
+  this.address = jmanager.address();
+
+  /**
+   * Loads a network from the cluster.
+   *
+   * @param {string} network The network to load.
+   * @param {function} handler A handler to be called once the network is loaded.
+   *
+   * @returns {module:vertigo.ClusterManager} The cluster manager.
+   */
+  this.getNetwork = function(network, handler) {
     handler = adaptAsyncResultHandler(handler, function(result) {
       return new network.ActiveNetwork(result);
     });
+    jmanager.getNetwork(network, handler);
+    return that;
   }
 
-  if (typeof(config) === 'string') {
-    __jvertigo['deployNetwork(java.lang.String,org.vertx.java.core.Handler)'](config, handler);
-  } else if (config.__jnetwork !== undefined) {
-    __jvertigo['deployNetwork(net.kuujo.vertigo.network.NetworkConfig,org.vertx.java.core.Handler)'](config.__jnetwork, handler);
-  } else {
-    __jvertigo['deployNetwork(org.vertx.java.core.json.JsonObject,org.vertx.java.core.Handler)'](new org.vertx.java.core.json.JsonObject(JSON.stringify(config)), handler);
+  /**
+   * Loads a list of networks from the cluster.
+   *
+   * @param {function} handler A handler to be called once the networks are loaded.
+   *
+   * @returns {module:vertigo.ClusterManager} The cluster manager.
+   */
+  this.getNetworks = function(handler) {
+    jmanager.getNetworks(adaptAsyncResultHandler(handler, function(result) {
+      var iterator = result.iterator();
+      var results = [];
+      while (iterator.hasNext()) {
+        results.push(new network.ActiveNetwork(iterator.next()));
+      }
+      return results;
+    }));
+    return that;
   }
+
+  /**
+   * Deploys a network.
+   *
+   * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
+   * @param {function} [handler] A handler to be called once deployment is complete.
+   *
+   * @returns {module:vertigo.ClusterManager} The cluster manager.
+   */
+  this.deployNetwork = function(config, handler) {
+    if (handler !== undefined) {
+      handler = adaptAsyncResultHandler(handler, function(result) {
+        return new network.ActiveNetwork(result);
+      });
+    }
+
+    if (typeof(config) === 'string') {
+      jmanager['deployNetwork(java.lang.String,org.vertx.java.core.Handler)'](config, handler);
+    } else if (config.__jnetwork !== undefined) {
+      jmanager['deployNetwork(net.kuujo.vertigo.network.NetworkConfig,org.vertx.java.core.Handler)'](config.__jnetwork, handler);
+    } else {
+      jmanager['deployNetwork(org.vertx.java.core.json.JsonObject,org.vertx.java.core.Handler)'](new org.vertx.java.core.json.JsonObject(JSON.stringify(config)), handler);
+    }
+    return that;
+  }
+
+  /**
+   * Undeploys a network.
+   *
+   * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
+   * @param {function} handler A handler to be called once undeployment is complete.
+   *
+   * @returns {module:vertigo.ClusterManager} The cluster manager.
+   */
+  this.undeployNetwork = function(config, handler) {
+    if (handler !== undefined) {
+      handler = adaptAsyncResultHandler(handler);
+    }
+
+    if (typeof(config) === 'string') {
+      jmanager['undeployNetwork(java.lang.String,org.vertx.java.core.Handler)'](config, handler);
+    } else if (config.__jnetwork !== undefined) {
+      jmanager['undeployNetwork(net.kuujo.vertigo.network.NetworkConfig,org.vertx.java.core.Handler)'](config.__jnetwork, handler);
+    } else {
+      jmanager['undeployNetwork(org.vertx.java.core.json.JsonObject,org.vertx.java.core.Handler)'](new org.vertx.java.core.json.JsonObject(JSON.stringify(config)), handler);
+    }
+    return that;
+  }
+
+}
+
+/**
+ * Deploys a cluster.
+ *
+ * @param {string} address The cluster address.
+ * @param {number} [nodes] The number of nodes to deploy.
+ * @param {function} [handler] A handler to be called once complete.
+ *
+ * @returns {module:vertigo} The vertigo module.
+ */
+vertigo.deployCluster = function(address) {
+  var args = Array.prototype.slice.call(arguments);
+  args.shift();
+  var handler = getArgValue('function', args);
+  if (handler !== null) {
+    handler = adaptAsyncResultHandler(handler, function(result) {
+      return new vertigo.ClusterManager(result);
+    });
+  }
+  var nodes = getArgValue('number', args);
+  if (nodes === null) {
+    nodes = 1;
+  }
+  __jvertigo.deployCluster(address, nodes, handler);
   return vertigo;
 }
 
 /**
- * Undeploys a network.
+ * Gets a cluster.
  *
- * @param {string|module:vertigo/network.NetworkConfig} config A network name or configuration.
- * @param {function} handler A handler to be called once undeployment is complete.
+ * @param {string} cluster The cluster address.
  *
- * @returns {module:vertigo}
+ * @returns {module:vertigo/cluster.ClusterManager} A cluster manager.
  */
-vertigo.undeployNetwork = function(config, handler) {
-  if (handler !== undefined) {
-    handler = adaptAsyncResultHandler(handler);
-  }
+vertigo.getCluster = function(cluster) {
+  return new vertigo.ClusterManager(__jvertigo.getCluster(cluster));
+}
 
-  if (typeof(config) === 'string') {
-    __jvertigo['undeployNetwork(java.lang.String,org.vertx.java.core.Handler)'](config, handler);
-  } else if (config.__jnetwork !== undefined) {
-    __jvertigo['undeployNetwork(net.kuujo.vertigo.network.NetworkConfig,org.vertx.java.core.Handler)'](config.__jnetwork, handler);
-  } else {
-    __jvertigo['undeployNetwork(org.vertx.java.core.json.JsonObject,org.vertx.java.core.Handler)'](new org.vertx.java.core.json.JsonObject(JSON.stringify(config)), handler);
-  }
+/**
+ * Deploys a network to a specific cluster.
+ *
+ * @param {string} cluster The cluster to which to deploy the network.
+ * @param {string|module:vertigo/network.NetworkConfig|object} The network to deploy.
+ * @param {function} [handler] A handler to be called once complete.
+ *
+ * @returns {module:vertigo/cluster.ClusterManager} A cluster manager.
+ */
+vertigo.deployNetwork = function(cluster, config, handler) {
+  vertigo.getCluster(cluster).deployNetwork(config, handler);
+  return vertigo;
+}
+
+/**
+ * Undeploys a network from a specific cluster.
+ * @param {string} cluster The cluster from which to undeploy the network.
+ * @param {string|module:vertigo/network.NetworkConfig|object} The network to undeploy.
+ * @param {function} [handler] A handler to be called once complete.
+ *
+ * @returns {module:vertigo/cluster.ClusterManager} A cluster manager.
+ */
+vertigo.undeployNetwork = function(cluster, config, handler) {
+  vertigo.getCluster(cluster).undeployNetwork(config, handler);
   return vertigo;
 }
 
