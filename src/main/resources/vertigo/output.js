@@ -110,6 +110,21 @@ output.OutputPort = function(jport) {
   }
 
   /**
+   * Creates a new output batch.
+   *
+   * @param {function} handler A handler to be called once the batch has been created.
+   * @returns {module:vertigo/output.OutputPort} this
+   */
+  this.batch = function(handler) {
+    jport.batch(new org.vertx.java.core.Handler({
+      handle: function(jbatch) {
+        handler(new output.OutputBatch(jbatch));
+      }
+    }));
+    return that;
+  }
+
+  /**
    * Creates a new output group.
    *
    * @param {string} group The name of the group to create.
@@ -122,6 +137,96 @@ output.OutputPort = function(jport) {
         handler(new output.OutputGroup(jgroup));
       }
     }));
+    return that;
+  }
+
+}
+
+/**
+ * An output batch.
+ * @constructor
+ */
+output.OutputBatch = function(jbatch) {
+  this.__jbatch = jbatch;
+  var that = this;
+
+  /**
+   * The unique output batch identifier.
+   */
+  this.id = jbatch.id();
+
+  /**
+   * Sets or gets the maximum send queue size for the batch.
+   *
+   * @param {number} [maxSize] The maximum size for the batch.
+   */
+  this.sendQueueMaxSize = function(maxSize) {
+    if (maxSize === undefined) {
+      return jbatch.getSendQueueMaxSize();
+    } else {
+      jbatch.setSendQueueMaxSize(maxSize);
+      return that;
+    }
+  }
+
+  /**
+   * Checks whether the send queue is full.
+   *
+   * @return {boolean} Indicates whether the send queue is full.
+   */
+  this.sendQueueFull = function() {
+    return jbatch.sendQueueFull();
+  }
+
+  /**
+   * Sets a drain handler on the batch.
+   *
+   * @param {function} handler A handler to be called when the output is ready to
+   *                           accept new messages.
+   * @returns {module:vertigo/output.OutputBatch} this
+   */
+  this.drainHandler = function(handler) {
+    jbatch.drainHandler(new org.vertx.java.core.Handler({handle: handler}));
+    return that;
+  }
+
+  /**
+   * Sends a message.
+   *
+   * @param message The message to send.
+   * @returns {module:vertigo/output.OutputBatch} this
+   */
+  this.send = function(message) {
+    jbatch.send(convertMessage(message));
+    return that;
+  }
+
+  /**
+   * Creates a new output group.
+   *
+   * @param {string} group The name of the group to create.
+   * @param {function} handler A handler to be called once the group has been created.
+   * @returns {module:vertigo/output.OutputBatch} this
+   */
+  this.group = function(group, handler) {
+    jbatch.group(group, new org.vertx.java.core.Handler({
+      handle: function(jgroup) {
+        handler(new output.OutputGroup(jgroup));
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Ends the output batch.
+   *
+   * This method must be called after all messages for the batch have been
+   * sent.
+   *
+   * @returns {module:vertigo/output.OutputBatch} this
+   */
+  this.end = function() {
+    jbatch.end();
     return that;
   }
 

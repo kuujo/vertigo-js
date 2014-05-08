@@ -36,6 +36,7 @@ var network_tests = {
     network.addVerticle('receiver', 'test_basic_receiver.js');
     network.createConnection('sender', 'out', 'receiver', 'in');
     vertigo.deployCluster("testBasicNetwork", function(error, cluster) {
+      test.assertNull(error);
       cluster.deployNetwork(network, function(error) {
         test.assertNull(error);
       });
@@ -47,6 +48,19 @@ var network_tests = {
     network.addVerticle('receiver', 'test_group_receiver.js');
     network.createConnection('sender', 'out', 'receiver', 'in');
     vertigo.deployCluster("testGroupNetwork", function(error, cluster) {
+      test.assertNull(error);
+      cluster.deployNetwork(network, function(error) {
+        test.assertNull(error);
+      });
+    });
+  },
+  testBatchNetwork: function() {
+    var network = vertigo.createNetwork('test-batch');
+    network.addVerticle('sender', 'test_batch_sender.js');
+    network.addVerticle('receiver', 'test_batch_receiver.js');
+    network.createConnection('sender', 'out', 'receiver', 'in');
+    vertigo.deployCluster("testBatchNetwork", function(error, cluster) {
+      test.assertNull(error);
       cluster.deployNetwork(network, function(error) {
         test.assertNull(error);
       });

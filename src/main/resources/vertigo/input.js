@@ -99,6 +99,21 @@ input.InputPort = function(jport) {
   }
 
   /**
+   * Sets a batch handler on the input.
+   *
+   * @param {function} handler A handler to be called when a new batch is received.
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.batchHandler = function(handler) {
+    jport.batchHandler(new org.vertx.java.core.Handler({
+      handle: function(jbatch) {
+        handler(new input.InputBatch(jbatch));
+      }
+    }));
+    return that;
+  }
+
+  /**
    * Sets a named group handler on the input.
    *
    * @param {string} group The name of the group.
@@ -110,6 +125,97 @@ input.InputPort = function(jport) {
       handle: function(jgroup) {
         handler(new input.InputGroup(jgroup));
       }
+    }));
+    return that;
+  }
+}
+
+/**
+ * Input batch.
+ * @constructor
+ */
+input.InputBatch = function(jbatch) {
+  this.__jbatch = jbatch;
+  var that = this;
+
+  /**
+   * The unique input batch identifier.
+   */
+  this.id = jbatch.id();
+
+  /**
+   * Pauses receiving messages on the input.
+   *
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.pause = function() {
+    jbatch.pause();
+    return that;
+  }
+
+  /**
+   * Resumes receiving messages on the input.
+   *
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.resume = function() {
+    jbatch.resume();
+    return that;
+  }
+
+  /**
+   * Sets a start handler on the batch.
+   *
+   * @param {function} handler A handler to be called when the batch is started.
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.startHandler = function(handler) {
+    jbatch.startHandler(new org.vertx.java.core.Handler({
+      handle: handler
+    }));
+    return that;
+  }
+
+  /**
+   * Sets a message handler on the batch.
+   *
+   * @param {function} handler A handler to be called when a message is received within the batch.
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.messageHandler = function(handler) {
+    jbatch.messageHandler(new org.vertx.java.core.Handler({
+      handle: function(jmessage) {
+        handler(convertMessage(jmessage));
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Sets a named group handler on the input.
+   *
+   * @param {string} group The name of the group.
+   * @param {function} handler A handler to be called when a new group of the given name is received.
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.groupHandler = function(group, handler) {
+    jbatch.groupHandler(group, new org.vertx.java.core.Handler({
+      handle: function(jgroup) {
+        handler(new input.InputGroup(jgroup));
+      }
+    }));
+    return that;
+  }
+
+  /**
+   * Sets an end handler on the batch.
+   *
+   * @param {function} handler A handler to be called once the batch is complete.
+   * @returns {module:vertigo/input.InputBatch} this
+   */
+  this.endHandler = function(handler) {
+    jbatch.endHandler(new org.vertx.java.core.Handler({
+      handle: handler
     }));
     return that;
   }
